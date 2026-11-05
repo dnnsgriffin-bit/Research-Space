@@ -917,7 +917,7 @@
   flex-direction: column;
   justify-content: center;
   gap: 14px;
-  opacity: 0.28;
+  opacity: 0.55;
   transition: opacity 0.5s var(--ec-ease);
 }
 .gd-step.on {
@@ -2320,6 +2320,9 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
+  .gd-step {
+    opacity: 1 !important;
+  }
   .l *,
   .l *::before,
   .l *::after,
