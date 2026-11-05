@@ -1,0 +1,477 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Evidence Studio design system — warm editorial.
+ * Paper: ivory #F8F6F0. Ink: charcoal-navy #192132. Accent: forest/teal #14594C.
+ * Evidence states are fixed and meaningful:
+ *   measured = forest, assumed = muted amber, unknown = quiet grey.
+ * All colour values are oklch. Fine rules, restrained radius, compact spacing.
+ */
+
+@theme inline {
+  --font-sans: "Source Sans 3", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "DM Serif Display", ui-serif, Georgia, serif;
+  --radius-sm: calc(var(--radius) - 1px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 6px);
+  --radius-3xl: calc(var(--radius) + 8px);
+  --radius-4xl: calc(var(--radius) + 10px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --color-ink: var(--ink);
+  --color-navy: var(--navy);
+  --color-teal: var(--teal);
+  --color-sage: var(--sage);
+  --color-stone: var(--stone);
+  --color-rule: var(--rule);
+  --color-surface: var(--surface);
+  --color-signal: var(--signal);
+  --color-evidence: var(--evidence);
+  --color-clay: var(--clay);
+  --color-plum: var(--plum);
+  --color-deep: var(--deep);
+  --color-tint-teal: var(--tint-teal);
+  --color-tint-clay: var(--tint-clay);
+  --color-tint-navy: var(--tint-navy);
+  --color-tint-plum: var(--tint-plum);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  --site-header-height: 69px;
+  --radius: 2px;
+  --ease-expo: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur: 180ms;
+
+  /* Paper — warm ivory */
+  --background: oklch(0.9718 0.0093 92); /* #F8F6F0 */
+  --surface: oklch(0.9895 0.005 92); /* near-white card on ivory */
+  --foreground: oklch(0.2418 0.0246 265); /* #192132 */
+  --ink: oklch(0.2418 0.0246 265);
+
+  /* Ink family */
+  --navy: oklch(0.2418 0.0246 265); /* #192132 */
+  --deep: oklch(0.1962 0.0223 265);
+  --mid: oklch(0.3402 0.0289 264);
+
+  /* Accent — forest / teal */
+  --teal: oklch(0.4106 0.0742 175); /* #14594C */
+  --sage: oklch(0.6412 0.0632 172);
+  --stone: oklch(0.5315 0.0142 264);
+  --rule: oklch(0.8878 0.0093 92);
+
+  /* Alert + evidence states (fixed meanings) */
+  --signal: oklch(0.4938 0.1354 30); /* restrained brick, for caution only */
+  --evidence: oklch(0.4106 0.0742 175); /* measured: forest */
+  --clay: oklch(0.5905 0.1004 72); /* assumed: muted amber */
+  --plum: oklch(0.5315 0.0142 264); /* unknown: quiet grey */
+
+  --tint-teal: oklch(0.9538 0.0173 172);
+  --tint-clay: oklch(0.9578 0.0233 84);
+  --tint-navy: oklch(0.9448 0.0072 265);
+  --tint-plum: oklch(0.9496 0.0045 264);
+
+  --state-measured: var(--evidence);
+  --state-assumed: var(--clay);
+  --state-unknown: var(--plum);
+
+  --card: var(--surface);
+  --card-foreground: var(--ink);
+  --popover: var(--surface);
+  --popover-foreground: var(--ink);
+  --primary: var(--navy);
+  --primary-foreground: oklch(0.9895 0.005 92);
+  --secondary: oklch(0.9448 0.0072 265);
+  --secondary-foreground: var(--navy);
+  --muted: oklch(0.9448 0.0072 265);
+  --muted-foreground: var(--stone);
+  --accent: var(--teal);
+  --accent-foreground: oklch(0.9895 0.005 92);
+  --destructive: var(--signal);
+  --destructive-foreground: oklch(0.9895 0.005 92);
+  --border: var(--rule);
+  --input: var(--rule);
+  --ring: var(--teal);
+
+  --chart-1: var(--navy);
+  --chart-2: var(--teal);
+  --chart-3: var(--evidence);
+  --chart-4: var(--clay);
+  --chart-5: var(--plum);
+
+  --sidebar: var(--surface);
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--navy);
+  --sidebar-primary-foreground: oklch(0.9895 0.005 92);
+  --sidebar-accent: oklch(0.9448 0.0072 265);
+  --sidebar-accent-foreground: var(--navy);
+  --sidebar-border: var(--rule);
+  --sidebar-ring: var(--teal);
+}
+
+.dark {
+  --background: oklch(0.2038 0.0203 265);
+  --surface: oklch(0.2532 0.0219 265);
+  --foreground: oklch(0.9502 0.0072 92);
+  --ink: oklch(0.9502 0.0072 92);
+  --navy: oklch(0.9502 0.0072 92);
+  --teal: oklch(0.7108 0.0788 172);
+  --evidence: oklch(0.7108 0.0788 172);
+  --clay: oklch(0.7611 0.1006 78);
+  --plum: oklch(0.7015 0.012 264);
+  --rule: oklch(1 0 0 / 14%);
+  --card: var(--surface);
+  --card-foreground: var(--ink);
+  --popover: var(--surface);
+  --popover-foreground: var(--ink);
+  --primary: oklch(0.9502 0.0072 92);
+  --primary-foreground: oklch(0.2038 0.0203 265);
+  --secondary: oklch(0.2912 0.0221 265);
+  --secondary-foreground: oklch(0.9502 0.0072 92);
+  --muted: oklch(0.2912 0.0221 265);
+  --muted-foreground: oklch(0.7402 0.0106 264);
+  --border: oklch(1 0 0 / 14%);
+  --input: oklch(1 0 0 / 18%);
+  --tint-teal: oklch(0.3 0.03 172);
+  --tint-clay: oklch(0.3 0.04 80);
+  --tint-navy: oklch(0.2698 0.0216 265);
+  --tint-plum: oklch(0.29 0.008 264);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--teal);
+    outline-offset: 2px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: -0.012em;
+    color: var(--navy);
+  }
+}
+
+@utility label-xs {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  line-height: 1.1;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+@utility rule-t {
+  border-top: 1px solid var(--rule);
+}
+
+@utility editorial {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4.4vw, 3.3rem);
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  font-weight: 400;
+}
+
+@utility measure {
+  max-width: 64ch;
+}
+
+@utility band-tint {
+  background-color: var(--tint-navy);
+}
+
+@utility band-deep {
+  background-color: var(--deep);
+  color: oklch(0.95 0.007 92);
+  & :is(h1, h2, h3):not(.on-light *, .on-light) {
+    color: oklch(0.97 0.006 92);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Motion — purposeful only: 150–220ms state, inspector and progress changes.
+ * ------------------------------------------------------------------------ */
+
+@utility state-transition {
+  transition:
+    background-color var(--dur) var(--ease-expo),
+    border-color var(--dur) var(--ease-expo),
+    color var(--dur) var(--ease-expo),
+    box-shadow var(--dur) var(--ease-expo);
+}
+
+@utility inspector-enter {
+  animation: inspector-in 200ms var(--ease-expo) both;
+}
+
+@keyframes inspector-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@utility progress-bar {
+  transition: width 220ms var(--ease-expo);
+}
+
+@utility lift {
+  transition:
+    background-color var(--dur) var(--ease-expo),
+    border-color var(--dur) var(--ease-expo),
+    box-shadow var(--dur) var(--ease-expo);
+  &:hover {
+    box-shadow: 0 1px 0 0 color-mix(in oklab, var(--navy) 18%, transparent);
+  }
+}
+
+.case-preview-scene {
+  background: var(--deep);
+}
+.chain-spine > li {
+  position: relative;
+}
+.chain-spine > li + li {
+  border-top: 1px solid var(--rule);
+}
+.chain-spine > li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  left: 2.02rem;
+  bottom: -0.65rem;
+  height: 1.15rem;
+  width: 1px;
+  background: var(--stone);
+  pointer-events: none;
+}
+.chain-spine button[aria-expanded="true"] .chain-index {
+  border-color: var(--teal);
+  color: var(--teal);
+  background: var(--tint-teal);
+}
+@media (max-width: 640px) {
+  .chain-spine button {
+    gap: 0.7rem;
+    padding: 0.65rem 0.7rem;
+  }
+  .chain-spine button .label-xs {
+    font-size: 0.59rem;
+  }
+  .chain-spine > li:not(:last-child)::after {
+    left: 1.68rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* A small motion vocabulary: select, reveal, inspect. No continuous motion. */
+.action-primary,
+.action-secondary {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  padding: 0.75rem 1.1rem;
+  font-size: 15px;
+  line-height: 1.4;
+  font-weight: 600;
+  transition:
+    background-color 180ms var(--ease-expo),
+    border-color 180ms var(--ease-expo);
+}
+.action-primary {
+  background: var(--navy);
+  color: var(--surface);
+  border: 1px solid var(--navy);
+}
+.action-primary:hover {
+  background: var(--teal);
+  border-color: var(--teal);
+}
+.action-secondary {
+  border: 1px solid var(--rule);
+  color: var(--navy);
+}
+.action-secondary:hover {
+  border-color: var(--teal);
+  background: var(--tint-teal);
+}
+.decision-demo {
+  box-shadow: 0 8px 28px oklch(0.24 0.025 265 / 5%);
+}
+.decision-choice {
+  transition:
+    background-color 180ms,
+    border-color 180ms,
+    transform 150ms;
+}
+.decision-choice:active {
+  transform: scale(0.992);
+}
+.disclosure > summary {
+  list-style: none;
+}
+.disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+.disclosure > summary > svg {
+  transition: transform 180ms var(--ease-expo);
+}
+.disclosure[open] > summary > svg {
+  transform: rotate(180deg);
+}
+.disclosure[open] > .disclosure-content {
+  animation: inspector-in 200ms var(--ease-expo);
+}
+.skeptical-band {
+  background: oklch(0.31 0.047 175);
+  color: var(--surface);
+}
+.skeptical-band h2 {
+  color: var(--surface);
+}
+.skeptical-band :focus-visible {
+  outline-color: white;
+}
+.chain-spine button[aria-expanded="true"] .chain-index {
+  animation: chain-select 220ms var(--ease-expo);
+}
+@keyframes chain-select {
+  from {
+    box-shadow: 0 0 0 6px color-mix(in oklab, var(--teal) 12%, transparent);
+  }
+  to {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+.review-overlay {
+  animation: review-fade 180ms ease-out;
+}
+.review-drawer {
+  animation: review-in 260ms var(--ease-expo);
+}
+@keyframes review-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes review-in {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .decision-choice:active {
+    transform: none;
+  }
+}
+@media print {
+  .site-header,
+  .site-footer,
+  .studio-phase-nav,
+  .studio-working-header,
+  .no-print {
+    display: none !important;
+  }
+  .brief-workspace > p,
+  .brief-analysis > summary {
+    display: none !important;
+  }
+  .decision-brief {
+    border: 0;
+    margin-top: 0;
+  }
+  .decision-brief header {
+    position: static;
+  }
+  .decision-brief section,
+  .decision-brief dl > div {
+    break-inside: avoid;
+  }
+  body {
+    background: white;
+  }
+}
