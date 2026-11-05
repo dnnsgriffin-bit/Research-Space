@@ -201,7 +201,7 @@ function Presets({ origin, onPick }: { origin: InputOrigin; onPick: (id: string)
         Start from a common situation, or a blank slate
       </p>
       <div className="ec-preset-row" role="group" aria-labelledby={labelId}>
-        {PRESETS.map((p) => (
+        {PRESETS.filter((p) => p.id !== "blank").map((p) => (
           <button
             key={p.id}
             type="button"
@@ -212,6 +212,10 @@ function Presets({ origin, onPick }: { origin: InputOrigin; onPick: (id: string)
             {p.label}
           </button>
         ))}
+        <span className="ec-preset-sep" aria-hidden />
+        <button type="button" className="ec-preset reset" onClick={() => onPick("blank")}>
+          <span aria-hidden>↺ </span>Blank slate
+        </button>
       </div>
       <p className="ec-note">
         {origin.kind === "example" && preset
@@ -394,7 +398,7 @@ function ChainStage({
           Barrier you reported
         </span>
       </div>
-      <div className="ec-reach" role="status" aria-live="polite">
+      <div className="ec-reach" role="status" aria-live="polite" aria-atomic="true">
         <span className="ec-label">Claim reach</span>
         <span className="ec-big">
           {msg.lead}

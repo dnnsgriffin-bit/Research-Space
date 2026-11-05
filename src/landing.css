@@ -25,6 +25,8 @@
   --ec-haze: #93b4cc;
   --ec-haze-soft: rgba(147, 180, 204, 0.12);
   --ec-ash: #69737c;
+  /* Text on unknown links: the dotted ring stays ash, the number must stay readable (>= 4.5:1). */
+  --ec-ash-text: #8b949c;
   --ec-flag: #ef8f74;
   --ec-flag-soft: rgba(239, 143, 116, 0.13);
   --ec-display: "Instrument Serif", "Iowan Old Style", Georgia, serif;
@@ -80,7 +82,7 @@
 }
 .ph-tag {
   font-family: var(--ec-mono);
-  font-size: 0.62rem;
+  font-size: 0.72rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--ec-lamp);
@@ -230,7 +232,7 @@
 }
 .pf-h {
   font-family: var(--ec-mono);
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--ec-muted);
@@ -265,6 +267,14 @@
 }
 
 /* ---------- Landing base ---------- */
+/* The dark product pages own the page background (no ivory flash on overscroll). */
+body:has(.product-shell) {
+  background: var(--ec-void, #0a0d10);
+}
+.l p,
+.ec p {
+  text-wrap: pretty;
+}
 .l {
   position: relative;
   padding-bottom: 0;
@@ -455,7 +465,6 @@
   border-radius: 50%;
   background: var(--ec-lamp);
   box-shadow: 0 0 0 4px rgba(242, 198, 109, 0.18);
-  animation: l-breathe 2.6s ease-in-out infinite;
 }
 @keyframes l-breathe {
   50% {
@@ -587,6 +596,9 @@
   height: 7px;
   border-radius: 50%;
   background: #7fd1a0;
+}
+/* Pulse only while the hero is actually auto-playing; a still dot otherwise. */
+.hc-dot.playing {
   box-shadow: 0 0 10px #7fd1a0;
   animation: l-breathe-g 2s ease-in-out infinite;
 }
@@ -712,7 +724,7 @@
   place-items: center;
   font-family: var(--ec-mono);
   font-size: 0.78rem;
-  color: var(--ec-ash);
+  color: var(--ec-ash-text);
   background: var(--ec-void);
   border: 2px dotted var(--ec-ash);
   transition:
@@ -748,7 +760,7 @@
 }
 .hc-state {
   font-family: var(--ec-mono);
-  font-size: 0.64rem;
+  font-size: 0.75rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--ec-muted);
@@ -894,7 +906,7 @@
 }
 .l-claim-ok span {
   font-family: var(--ec-mono);
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--ec-lamp);
@@ -935,7 +947,7 @@
   flex-direction: column;
   justify-content: center;
   gap: 14px;
-  opacity: 0.55;
+  opacity: 0.8;
   transition: opacity 0.5s var(--ec-ease);
 }
 .gd-step.on {
@@ -979,9 +991,9 @@
 .gd-result {
   margin-top: 4px;
   padding: 12px 14px;
-  border-left: 2px solid var(--ec-lamp);
+  border: 1px solid var(--ec-line-2);
   background: rgba(255, 255, 255, 0.03);
-  border-radius: 0 10px 10px 0;
+  border-radius: 10px;
   font-size: 0.92rem;
   line-height: 1.55;
   color: var(--ec-paper);
@@ -991,7 +1003,7 @@
   display: block;
   margin-bottom: 2px;
   font-family: var(--ec-mono);
-  font-size: 0.66rem;
+  font-size: 0.72rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--ec-lamp);
@@ -1067,7 +1079,7 @@
 .gd-steplabel {
   margin-left: auto;
   font-family: var(--ec-mono);
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   color: var(--ec-lamp);
   white-space: nowrap;
 }
@@ -1715,7 +1727,7 @@
 }
 .l-paper-k {
   font-family: var(--ec-mono);
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #5b636a;
@@ -2256,7 +2268,7 @@
 }
 .l-plan-note {
   font-family: var(--ec-mono);
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--ec-muted);

@@ -61,7 +61,8 @@ export function HeroChain() {
       <div className="hc-top">
         <div className="hc-live-row">
           <p className="hc-live">
-            <span aria-hidden className="hc-dot" /> Live engine · example situations
+            <span aria-hidden className={`hc-dot ${auto && !reduced ? "playing" : ""}`} /> Live
+            engine · example situations
           </p>
           {!reduced && (
             <button

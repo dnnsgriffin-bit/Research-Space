@@ -777,7 +777,7 @@
   font-size: 0.8rem;
   background: var(--ec-void);
   border: 2px dotted var(--ec-ash);
-  color: var(--ec-ash);
+  color: var(--ec-ash-text, #8b949c);
   transition:
     background 0.4s var(--ec-ease),
     box-shadow 0.4s var(--ec-ease),
@@ -864,7 +864,7 @@
 }
 .ec-state {
   font-family: var(--ec-mono);
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
@@ -1010,7 +1010,7 @@
   margin-bottom: 8px;
 }
 .ec-kp {
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   color: var(--ec-muted);
   border: 1px solid var(--ec-line);
   border-radius: 6px;
@@ -1633,3 +1633,5 @@
 .ec-pulse.assumed { background: linear-gradient(90deg, transparent, #bcd6ea, transparent); }
 .ec-finding cite a { color: var(--ec-muted); text-decoration: underline; text-underline-offset: 3px; }
 .ec-finding cite a:hover { color: var(--ec-lamp); }
+.ec-preset.reset { border-style: dashed; }
+.ec-preset-sep { width: 1px; align-self: stretch; margin: 4px 4px; background: var(--ec-line); }

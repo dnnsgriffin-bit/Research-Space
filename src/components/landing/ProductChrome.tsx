@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 
 export const PERSONAL_SITE = "https://dennisrgriffin.com";
 
@@ -43,6 +43,7 @@ export function ProductHeader() {
   const ref = useRef<HTMLElement>(null);
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const onTool = useLocation({ select: (l) => l.pathname }) === "/check";
 
   useEffect(() => {
     const el = ref.current;
@@ -90,9 +91,15 @@ export function ProductHeader() {
           </a>
         </nav>
         <div className="ph-actions">
-          <Link to="/check" className="ph-cta">
-            Try the prototype
-          </Link>
+          {onTool ? (
+            <a href="#ec-brief-title" className="ph-cta">
+              Jump to your brief ↓
+            </a>
+          ) : (
+            <Link to="/check" className="ph-cta">
+              Try the prototype
+            </Link>
+          )}
           <button
             type="button"
             className="ph-menu"
@@ -115,9 +122,15 @@ export function ProductHeader() {
         <a href={PERSONAL_SITE} target="_blank" rel="noopener">
           DennisRGriffin.com ↗
         </a>
-        <Link to="/check" className="ph-cta" onClick={() => setOpen(false)}>
-          Try the prototype
-        </Link>
+        {onTool ? (
+          <a href="#ec-brief-title" className="ph-cta" onClick={() => setOpen(false)}>
+            Jump to your brief ↓
+          </a>
+        ) : (
+          <Link to="/check" className="ph-cta" onClick={() => setOpen(false)}>
+            Try the prototype
+          </Link>
+        )}
       </div>
     </header>
   );
