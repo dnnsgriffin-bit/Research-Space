@@ -39,7 +39,9 @@ function usePrefersReducedMotion() {
  * written to the Studio store, so trying it cannot overwrite a visitor's Studio work.
  */
 export function EvidenceCheck() {
-  const [measured, setMeasured] = useState<string[]>(PRESETS[0]!.measured);
+  const [measured, setMeasured] = useState<string[]>(
+    PRESETS.find((p) => p.id === "numbers")!.measured,
+  );
   const [answers, setAnswers] = useState<Record<string, Answer>>(DEFAULT_ANSWERS);
   const [selected, setSelected] = useState<string | null>("transfer");
   const inspectorRef = useRef<HTMLElement>(null);
@@ -82,15 +84,26 @@ export function EvidenceCheck() {
   return (
     <div className="ec">
       <header className="ec-wrap ec-hero">
-        <p className="ec-label">For corporate learning, talent &amp; L&amp;D leaders</p>
+        <p className="ec-label">Evidence Check · for corporate learning &amp; L&amp;D leaders</p>
         <h1 className="ec-title">
           Training was completed. <em>Did work change?</em>
         </h1>
         <p className="ec-sub">
-          Most training reports stop at completion and satisfaction scores. Tick what you{" "}
-          <b>actually measured</b>, and see how far an honest claim can go, what could be getting in
-          the way, and the cheapest evidence to collect next.
+          Tick what you <b>actually measured</b>. The chain lights up only where something was
+          observed, so you can see how far an honest claim can go.
         </p>
+
+        <ChainStage
+          states={states}
+          barriers={barriers}
+          selected={selected}
+          onSelect={select}
+          nodeRefs={nodeRefs}
+          reach={reach}
+        >
+          <Presets presetId={presetId} onPick={(m) => setMeasured(m)} />
+        </ChainStage>
+
         <ol className="ec-how" aria-label="How it works, about two minutes">
           <li>
             <span className="ec-n">1</span>
@@ -111,22 +124,6 @@ export function EvidenceCheck() {
             </span>
           </li>
         </ol>
-
-        <Presets
-          presetId={presetId}
-          onPick={(m) => {
-            setMeasured(m);
-          }}
-        />
-
-        <ChainStage
-          states={states}
-          barriers={barriers}
-          selected={selected}
-          onSelect={select}
-          nodeRefs={nodeRefs}
-          reach={reach}
-        />
       </header>
 
       <div className="ec-wrap ec-work">
@@ -216,7 +213,9 @@ function ChainStage({
   onSelect,
   nodeRefs,
   reach,
+  children,
 }: {
+  children?: React.ReactNode;
   states: Record<string, ChainState>;
   barriers: Record<string, string[]>;
   selected: string | null;
@@ -230,6 +229,12 @@ function ChainStage({
   const prevStates = useRef<Record<string, ChainState> | null>(null);
   const [changed, setChanged] = useState<Record<string, "ignite" | "dim">>({});
   const lastLit = useRef(-1);
+  // Opening sequence: plays once on first load, then the chain behaves normally.
+  const [intro, setIntro] = useState(true);
+  useEffect(() => {
+    const t = window.setTimeout(() => setIntro(false), 3400);
+    return () => window.clearTimeout(t);
+  }, []);
 
   // Mark links whose state just changed, so they can ignite or dim once.
   useLayoutEffect(() => {
@@ -267,9 +272,17 @@ function ChainStage({
     pulse.style.setProperty("--to", `${b.right - s.left}px`);
     pulse.style.setProperty("--d", `${500 + lit * 130}ms`);
     pulse.style.top = `${a.top - s.top + a.height / 2 - 1}px`;
-    pulse.classList.remove("run");
-    void pulse.offsetWidth;
-    pulse.classList.add("run");
+    const run = () => {
+      pulse.classList.remove("run");
+      void pulse.offsetWidth;
+      pulse.classList.add("run");
+    };
+    if (first.closest(".intro")) {
+      const t = window.setTimeout(run, 650);
+      return () => window.clearTimeout(t);
+    }
+    run();
+    return undefined;
   }, [reach.litFromStart, reduced]);
 
   const far = reach.furthest >= 0 ? CHAIN[reach.furthest]!.label : null;
@@ -297,7 +310,14 @@ function ChainStage({
   }
 
   return (
-    <div className="ec-stage" ref={stageRef} aria-labelledby="ec-chain-title">
+    <div
+      className={`ec-stage ${intro && !reduced ? "intro" : ""}`}
+      ref={stageRef}
+      aria-labelledby="ec-chain-title"
+      onPointerDown={() => setIntro(false)}
+      onKeyDown={() => setIntro(false)}
+    >
+      {children}
       <div className="ec-stage-top">
         <h2 id="ec-chain-title" className="ec-label">
           The evidence chain · select any link to inspect it
@@ -318,7 +338,11 @@ function ChainStage({
                 : "seg-dark";
           const bar = barriers[n.id];
           return (
-            <li key={n.id} className={`ec-link ${s} ${seg} ${changed[n.id] ?? ""}`}>
+            <li
+              key={n.id}
+              className={`ec-link ${s} ${seg} ${changed[n.id] ?? ""}`}
+              style={{ "--i": i } as React.CSSProperties}
+            >
               <span className="ec-seg" aria-hidden />
               <button
                 type="button"

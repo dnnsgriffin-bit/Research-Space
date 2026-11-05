@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from "react";
 export type StageKey = "about" | "framework" | "example" | "studio";
 
 type NavItem = {
-  to: "/" | "/about" | "/framework" | "/example" | "/studio";
-  key: StageKey | "home";
+  to: "/" | "/check" | "/about" | "/framework" | "/example" | "/studio";
+  key: StageKey | "home" | "check";
   label: string;
   blurb: string;
 };
@@ -13,6 +13,12 @@ type NavItem = {
 /** Primary navigation. No forced journey — every destination is directly reachable. */
 export const NAV: NavItem[] = [
   { to: "/", key: "home", label: "Home", blurb: "What this tool does." },
+  {
+    to: "/check",
+    key: "check",
+    label: "Evidence Check",
+    blurb: "A two-minute check of what your training evidence can support.",
+  },
   {
     to: "/example",
     key: "example",
@@ -40,10 +46,10 @@ export const NAV: NavItem[] = [
 ];
 
 const STAGE_META: Record<StageKey, { label: string; blurb: string }> = {
-  example: { label: "Worked Example", blurb: NAV[1]!.blurb },
-  studio: { label: "Studio", blurb: NAV[2]!.blurb },
-  framework: { label: "Framework", blurb: NAV[3]!.blurb },
-  about: { label: "About", blurb: NAV[4]!.blurb },
+  example: { label: "Worked Example", blurb: NAV[2]!.blurb },
+  studio: { label: "Studio", blurb: NAV[3]!.blurb },
+  framework: { label: "Framework", blurb: NAV[4]!.blurb },
+  about: { label: "About", blurb: NAV[5]!.blurb },
 };
 
 export function stageColor(_key: StageKey) {
@@ -99,10 +105,10 @@ export function SiteHeader() {
             </Link>
           ))}
           <Link
-            to="/studio"
+            to="/check"
             className="state-transition min-h-10 bg-[var(--navy)] px-4 py-2 text-[14px] font-medium text-[oklch(0.99_0_0)] hover:bg-[var(--teal)]"
           >
-            Work through your decision
+            Run a free check
           </Link>
         </nav>
 
@@ -139,11 +145,11 @@ export function SiteHeader() {
             ))}
             <li className="pt-4">
               <Link
-                to="/studio"
+                to="/check"
                 onClick={() => setOpen(false)}
                 className="block bg-[var(--navy)] px-4 py-3.5 text-center text-[15px] font-medium text-[oklch(0.99_0_0)]"
               >
-                Work through your decision
+                Run a free check
               </Link>
             </li>
           </ul>
