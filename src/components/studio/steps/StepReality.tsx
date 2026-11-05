@@ -296,7 +296,7 @@ export function StepReality() {
               <li>
                 Observed change in how the task is performed, rated against a defined standard.
               </li>
-              <li>System or workflow usage that only occurs when the behaviour occurs.</li>
+              <li>System or workflow usage that only occurs when the behavior occurs.</li>
               <li>Manager observation collected on a schedule, not on request.</li>
             </ul>
             <div className="mt-4">

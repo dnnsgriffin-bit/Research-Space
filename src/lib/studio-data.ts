@@ -42,7 +42,7 @@ export const CHAIN: ChainNode[] = [
     id: "performance",
     label: "Performance",
     short: "Quality of work",
-    description: "Change in the quality, speed, consistency or judgement of the work output.",
+    description: "Change in the quality, speed, consistency or judgment of the work output.",
   },
   {
     id: "outcome",
@@ -525,7 +525,7 @@ export const MEASURE_META: Record<
   },
   knowledge: {
     directness: 2,
-    licenses: "what participants can recall or recognise",
+    licenses: "what participants can recall or recognize",
     overreach: "that they will act differently at work",
   },
   skill: {

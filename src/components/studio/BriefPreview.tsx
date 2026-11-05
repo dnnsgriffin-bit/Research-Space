@@ -36,7 +36,7 @@ export function BriefPreview() {
           <div>
             <dt className="label-xs text-muted-foreground">What is still unknown</dt>
             <dd className="mt-2 text-sm leading-relaxed">
-              Whether learning or coaching at work changed, and whether the programme caused a
+              Whether learning or coaching at work changed, and whether the program caused a
               change.
             </dd>
           </div>

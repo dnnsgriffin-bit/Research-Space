@@ -189,7 +189,7 @@ export function EvidenceChain({
         </div>
       </div>
       <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
-        Measured means observed, not caused by the programme. Completion and reaction do not
+        Measured means observed, not caused by the program. Completion and reaction do not
         establish learning or transfer. Self-assessments are not independently verified.
       </p>
     </section>

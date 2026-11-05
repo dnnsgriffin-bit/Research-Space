@@ -96,9 +96,9 @@ export function TransferConditions({
               "Transfer depends on the work environment at least as much as on the quality of the instruction.",
             rule: "Each condition maps its input to one of four bands by a fixed threshold. A supporting design element can raise a band by one step but cannot rescue an absent condition. The weakest condition is reported as the break point.",
             uncertainty:
-              "These are plausibility bands, not measurements. Ratings are your judgement of the environment, so the output inherits that subjectivity.",
+              "These are plausibility bands, not measurements. Ratings are your judgment of the environment, so the output inherits that subjectivity.",
             wouldChange:
-              "Observed application data — behaviour ratings, system usage or manager observation after the event — would replace these bands with evidence.",
+              "Observed application data — behavior ratings, system usage or manager observation after the event — would replace these bands with evidence.",
           }}
         />
       </div>

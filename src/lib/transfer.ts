@@ -113,7 +113,7 @@ export function transferConditions(
     conditions.push({
       id: "manager",
       label: "Manager reinforcement",
-      question: "Will anyone with authority notice, ask about, or make room for the new behaviour?",
+      question: "Will anyone with authority notice, ask about, or make room for the new behavior?",
       band,
       driver: `Manager support is rated ${managerSupport.toFixed(1)} of 5 and the design ${
         managerInvolved ? "includes a manager touchpoint" : "includes no manager touchpoint"
@@ -148,7 +148,7 @@ export function transferConditions(
     conditions.push({
       id: "social",
       label: "Social and peer support",
-      question: "Is anyone else practising this at the same time, so it is not a solo act?",
+      question: "Is anyone else practicing this at the same time, so it is not a solo act?",
       band,
       driver: `The design ${hasPeer ? "includes peer practice" : "has no peer element"} and ${
         hasReinforcement
@@ -187,6 +187,6 @@ export function transferEvidenceStatus(measured: string[]) {
     observed: present.length > 0,
     statement: present.length
       ? "Some post-event application data exists, so transfer can be discussed as observed — carefully, and without attributing the change to the program alone."
-      : "No post-event behaviour, system usage or manager observation is recorded. Transfer is unmeasured: it can be designed for and argued for, but not claimed.",
+      : "No post-event behavior, system usage or manager observation is recorded. Transfer is unmeasured: it can be designed for and argued for, but not claimed.",
   };
 }

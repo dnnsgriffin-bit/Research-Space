@@ -4,7 +4,7 @@ import { ArrowDown, ArrowRight, Check, CircleHelp, RotateCcw } from "lucide-reac
 
 const OPTIONS = [
   {
-    text: "The programme improved coaching.",
+    text: "The program improved coaching.",
     title: "A promising story. A missing observation.",
     explanation:
       "Completion and confidence tell us about participation and perception. We would need a direct measure of coaching at work to establish a change in performance.",
@@ -16,10 +16,10 @@ const OPTIONS = [
       "We can describe participation and self-reported confidence. Learning and workplace transfer remain unmeasured. A useful next step is to observe coaching against a shared rubric.",
   },
   {
-    text: "The programme did not work.",
+    text: "The program did not work.",
     title: "Missing evidence is not evidence of failure.",
     explanation:
-      "Without measuring learning or coaching at work, we cannot tell whether either changed. Test the missing link before deciding to stop or scale the programme.",
+      "Without measuring learning or coaching at work, we cannot tell whether either changed. Test the missing link before deciding to stop or scale the program.",
   },
 ];
 
@@ -43,7 +43,7 @@ export function DecisionDemo({ onInspect }: { onInspect: () => void }) {
           What can we conclude?
         </h2>
         <p className="mt-3 text-[15px] leading-relaxed text-foreground/85">
-          Managers completed a coaching programme and reported confidence. Coaching at work was not
+          Managers completed a coaching program and reported confidence. Coaching at work was not
           assessed.
         </p>
         <div className="my-5 grid grid-cols-2 gap-px border border-border bg-border text-sm">

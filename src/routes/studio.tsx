@@ -14,7 +14,7 @@ export const Route = createFileRoute("/studio")({
       {
         name: "description",
         content:
-          "Four phases — diagnose, design, test, decide — across six connected steps, ending in an executive decision brief with every claim labelled.",
+          "Four phases — diagnose, design, test, decide — across six connected steps, ending in an executive decision brief with every claim labeled.",
       },
       { property: "og:title", content: "Studio — work through the decision | Evidence Studio" },
       {

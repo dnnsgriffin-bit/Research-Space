@@ -17,7 +17,7 @@ export const NAV: NavItem[] = [
     to: "/example",
     key: "example",
     label: "Worked Example",
-    blurb: "One fictional programme, followed end to end.",
+    blurb: "One fictional program, followed end to end.",
   },
   {
     to: "/studio",

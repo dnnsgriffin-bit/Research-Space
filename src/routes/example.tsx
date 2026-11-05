@@ -31,7 +31,7 @@ export const Route = createFileRoute("/example")({
       {
         property: "og:description",
         content:
-          "A fictional worked example following one programme from learner context to executive decision brief.",
+          "A fictional worked example following one program from learner context to executive decision brief.",
       },
       { property: "og:type", content: "article" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -93,7 +93,7 @@ function ExamplePage() {
               Northstar Services: the completion question
             </h1>
             <p className="measure mt-5 text-[1.07rem] leading-relaxed text-foreground/85">
-              New managers attended a coaching programme. Completion looked reassuring. Leaders
+              New managers attended a coaching program. Completion looked reassuring. Leaders
               still heard that coaching quality varied. Before commissioning more training, what
               does the evidence actually say?
             </p>
@@ -168,7 +168,7 @@ function ExamplePage() {
               Skeptical Review · the signature challenge
             </p>
             <h2 className="mt-3 text-[1.55rem] leading-tight">
-              What if the programme was never the constraint?
+              What if the program was never the constraint?
             </h2>
             <p className="measure mt-3 text-[15px] leading-relaxed text-foreground/85">
               A careful reviewer would ask whether managers had time, support and real opportunities
@@ -232,7 +232,7 @@ function ExamplePage() {
                 <p className="measure mt-3 text-[15.5px] leading-relaxed text-foreground/85">
                   Two illustrative manager profiles show why a single explanation is unlikely:
                   motivation, manager support, protected time and practice opportunity differ
-                  sharply across the population. These ratings are practitioner judgements, not
+                  sharply across the population. These ratings are practitioner judgments, not
                   measurements.
                 </p>
                 <ul className="mt-6 grid gap-px bg-border md:grid-cols-2">
@@ -297,7 +297,7 @@ function ExamplePage() {
             {phase === "prove" && (
               <div>
                 <h2 className="text-[clamp(1.4rem,2.6vw,1.95rem)] leading-tight">
-                  What this programme has actually measured.
+                  What this program has actually measured.
                 </h2>
                 <p className="measure mt-3 text-[16px] leading-relaxed text-[var(--navy)]">
                   {evidenceStatement(DEMO_MEASURED)}

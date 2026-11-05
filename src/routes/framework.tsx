@@ -77,7 +77,7 @@ function FrameworkPage() {
               states={ILLUSTRATIVE}
               initialSelected={null}
               knownLabel="What this link means"
-              intro="A conceptual reference, with illustrative states. These definitions explain the framework; they are not observations from a programme."
+              intro="A conceptual reference, with illustrative states. These definitions explain the framework; they are not observations from a program."
             />
           </div>
         </details>

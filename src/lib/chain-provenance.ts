@@ -4,7 +4,7 @@ import type { ChainState } from "./studio-data";
  * Contextual content for the Evidence Inspector, one entry per chain link.
  *
  * Nothing here cites an external study. Where a figure appears it comes from the
- * fictional Northstar worked example and is labelled as such. The generic entries
+ * fictional Northstar worked example and is labeled as such. The generic entries
  * describe what a link means and what it would take to establish it.
  */
 export type NodeEvidence = {
@@ -24,7 +24,7 @@ export const GENERIC_PROVENANCE: ProvenanceSet = {
     known:
       "What was delivered can usually be recorded exactly: sessions, dates, who attended, how long it ran.",
     provenance:
-      "Delivery records are administrative data. They describe the programme, not its effect.",
+      "Delivery records are administrative data. They describe the program, not its effect.",
     limitations: [
       "Delivery records describe intent and logistics, not quality of the experience.",
       "Attendance is presence, not attention or effort.",
@@ -44,7 +44,7 @@ export const GENERIC_PROVENANCE: ProvenanceSet = {
     provenance:
       "A design rationale supplied by the practitioner, informed by general learning-science principles.",
     limitations: [
-      "A principle holding in general does not mean it is operating in your programme.",
+      "A principle holding in general does not mean it is operating in your program.",
       "Mechanisms compete: a design can include several and evidence none of them individually.",
     ],
     notEstablished: [
@@ -64,7 +64,7 @@ export const GENERIC_PROVENANCE: ProvenanceSet = {
     limitations: [
       "Post-only scores have no baseline, so any gain is inferred rather than measured.",
       "Self-rated confidence tracks comfort, not capability, and often moves in the wrong direction.",
-      "Assessments written and scored by the programme team are not independently verified.",
+      "Assessments written and scored by the program team are not independently verified.",
     ],
     notEstablished: [
       "Completion or reaction data cannot establish learning.",
@@ -96,10 +96,10 @@ export const GENERIC_PROVENANCE: ProvenanceSet = {
     known:
       "Observable change in how the work is performed after the intervention — the link most often skipped.",
     provenance:
-      "Established only by observation, structured work product review, or an independent report of behaviour.",
+      "Established only by observation, structured work product review, or an independent report of behavior.",
     limitations: [
       "Self-reported application is subject to recall and social-desirability bias.",
-      "Observation by the programme team is not independent.",
+      "Observation by the program team is not independent.",
       "Environmental support can move transfer with no change in learning at all.",
     ],
     notEstablished: [
@@ -108,12 +108,12 @@ export const GENERIC_PROVENANCE: ProvenanceSet = {
     ],
     nextEvidence: [
       "A small rubric-scored observation sample at 6–8 weeks in teams that did and did not take part.",
-      "A review of work artefacts produced before and after.",
+      "A review of work artifacts produced before and after.",
     ],
   },
   performance: {
-    known: "Change in the quality, speed, consistency or judgement of the work output itself.",
-    provenance: "Operational records and structured quality review, not programme-generated data.",
+    known: "Change in the quality, speed, consistency or judgment of the work output itself.",
+    provenance: "Operational records and structured quality review, not program-generated data.",
     limitations: [
       "Performance data is affected by staffing, tooling, incentives and seasonality at the same time.",
       "Aggregate metrics hide which teams actually moved.",
@@ -132,13 +132,13 @@ export const GENERIC_PROVENANCE: ProvenanceSet = {
       "The organizational condition the work was meant to move — retention, renewal, safety, throughput.",
     provenance: "Business systems of record, owned outside the learning function.",
     limitations: [
-      "Business outcomes have many causes; a learning programme is rarely the largest one.",
+      "Business outcomes have many causes; a learning program is rarely the largest one.",
       "The lag between intervention and outcome usually exceeds the measurement window.",
       "Financial return figures require cost and counterfactual assumptions that are rarely defensible.",
     ],
     notEstablished: [
       "Return on investment, in the absence of a credible counterfactual.",
-      "That the programme caused the outcome, even when both moved together.",
+      "That the program caused the outcome, even when both moved together.",
     ],
     nextEvidence: [
       "A pre-registered outcome metric with an agreed measurement window and owner.",
@@ -173,7 +173,7 @@ export const NORTHSTAR_PROVENANCE: ProvenanceSet = {
   mechanism: {
     known:
       "The design assumes modelling plus a single guided practice round is enough to change how managers open a difficult conversation.",
-    provenance: "Design rationale stated by the programme team in the fictional example.",
+    provenance: "Design rationale stated by the program team in the fictional example.",
     limitations: [
       "A single massed practice round gives no spacing and no retrieval.",
       "No feedback loop exists after the session ends.",
@@ -228,12 +228,12 @@ export const NORTHSTAR_PROVENANCE: ProvenanceSet = {
     provenance:
       "Fictional employee-survey signal used as the presenting problem. It is an outcome complaint, not transfer evidence.",
     limitations: [
-      "Employee perception is not a structured observation of behaviour.",
+      "Employee perception is not a structured observation of behavior.",
       "The reporting employees are not matched to trained managers.",
     ],
     notEstablished: [
       "That managers do or do not use the framework.",
-      "That the programme failed — it has not been tested at this link.",
+      "That the program failed — it has not been tested at this link.",
     ],
     nextEvidence: [
       "Rubric-score roughly twenty coaching conversations at week eight, in teams whose managers did and did not attend.",
@@ -241,7 +241,7 @@ export const NORTHSTAR_PROVENANCE: ProvenanceSet = {
     ],
   },
   performance: {
-    known: "No performance data has been connected to the programme.",
+    known: "No performance data has been connected to the program.",
     provenance: "Absent by design in this illustrative example.",
     limitations: ["Any quality metric would be confounded by team composition and workload."],
     notEstablished: ["Any change in the quality of documented performance conversations."],
@@ -249,7 +249,7 @@ export const NORTHSTAR_PROVENANCE: ProvenanceSet = {
   },
   outcome: {
     known:
-      "The organizational interest is consistent coaching quality across teams. No outcome measure is currently attributed to the programme.",
+      "The organizational interest is consistent coaching quality across teams. No outcome measure is currently attributed to the program.",
     provenance: "Stated business question in the fictional example.",
     limitations: [
       "Coaching quality is influenced by staffing, manager tenure and team churn.",
@@ -257,7 +257,7 @@ export const NORTHSTAR_PROVENANCE: ProvenanceSet = {
     ],
     notEstablished: [
       "Any return on investment.",
-      "That scaling the programme would move the outcome.",
+      "That scaling the program would move the outcome.",
     ],
     nextEvidence: [
       "Agree one outcome measure, an owner and a decision date before the next cohort runs.",
