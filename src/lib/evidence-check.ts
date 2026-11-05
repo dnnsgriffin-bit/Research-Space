@@ -67,7 +67,7 @@ export const PRESETS: Preset[] = [
     id: "numbers",
     label: "“We trained, and the numbers went up”",
     measured: ["completion", "satisfaction", "business"],
-    note: "A business metric moved. Watch what the chain says about the links in between.",
+    note: "In this example, a business metric was reported to have risen. Watch what the chain says about the links in between.",
   },
   {
     id: "blank",
@@ -149,9 +149,13 @@ export type Reach = {
   firstGap: number;
   /** Unknown links that sit before the furthest measured link. */
   brokenBefore: string[];
+  /** Assumed links that sit before the furthest measured link. */
+  assumedBefore: string[];
   observedCount: number;
-  /** Number of links from the start before the first unknown link. */
+  /** Links from the start up to (not including) the first unknown link. */
   litFromStart: number;
+  /** Consecutive measured links from the start. */
+  measuredRun: number;
 };
 
 export function claimReach(states: Record<string, ChainState>): Reach {
@@ -161,86 +165,193 @@ export function claimReach(states: Record<string, ChainState>): Reach {
     if (states[id] === "measured") furthest = i;
   });
   const firstGap = ids.findIndex((id) => states[id] === "unknown");
+  const firstUnmeasured = ids.findIndex((id) => states[id] !== "measured");
+  const before = furthest >= 0 ? ids.slice(0, furthest) : [];
   return {
     furthest,
     firstGap,
-    brokenBefore:
-      furthest >= 0 ? ids.slice(0, furthest).filter((id) => states[id] === "unknown") : [],
+    brokenBefore: before.filter((id) => states[id] === "unknown"),
+    assumedBefore: before.filter((id) => states[id] === "assumed"),
     observedCount: ids.filter((id) => states[id] === "measured").length,
     litFromStart: firstGap === -1 ? ids.length : firstGap,
+    measuredRun: firstUnmeasured === -1 ? ids.length : firstUnmeasured,
   };
 }
+
+export type ReachMessage = {
+  /** Lead-in before the emphasized link name, e.g. "The furthest measured link is ". */
+  lead: string;
+  /** The furthest measured link, or null when nothing is measured. */
+  link: string | null;
+  note: string;
+  tone: "warn" | "info";
+};
+
+/**
+ * One wording for the claim-reach readout, shared by the tool, the hero and the demo.
+ * It names the furthest measured link and, separately, the state of the links before it,
+ * so a lit outcome is never read as a supported connection.
+ */
+export function reachMessage(states: Record<string, ChainState>): ReachMessage {
+  const r = claimReach(states);
+  if (r.furthest < 0)
+    return {
+      lead: "Nothing observed yet.",
+      link: null,
+      note: "Tick the measures you have. A link lights up only where something was observed.",
+      tone: "info",
+    };
+  const far = CHAIN[r.furthest]!.label;
+  const are = (n: number) => (n > 1 ? "are" : "is");
+  if (r.brokenBefore.length)
+    return {
+      lead: "The furthest measured link is ",
+      link: far,
+      note: `${listPhrase(r.brokenBefore.map(linkLabel))} ${are(r.brokenBefore.length)} unknown, so nothing selected links the training to ${far === "Business outcome" ? "the business outcome" : far.toLowerCase()}.`,
+      tone: "warn",
+    };
+  const parts: string[] = [];
+  if (r.assumedBefore.length)
+    parts.push(
+      `${listPhrase(r.assumedBefore.map(linkLabel))} ${are(r.assumedBefore.length)} assumed, not observed.`,
+    );
+  if (r.firstGap > r.furthest)
+    parts.push(`Beyond ${far}, ${CHAIN[r.firstGap]!.label} has no evidence yet.`);
+  parts.push("Measured means recorded, not caused by the program.");
+  return { lead: "The furthest measured link is ", link: far, note: parts.join(" "), tone: "info" };
+}
+
+/* ---------------------------- Input provenance ---------------------------- */
+
+export type InputOrigin =
+  | { kind: "example"; presetId: string }
+  | { kind: "edited-example"; presetId: string }
+  | { kind: "own" };
+
+export function provenanceLabel(origin: InputOrigin): string {
+  if (origin.kind === "own") return "Your own selections.";
+  const label = PRESETS.find((p) => p.id === origin.presetId)?.label ?? "example";
+  return origin.kind === "example"
+    ? `Example inputs: ${label}. Illustrative, not real data.`
+    : `Example inputs (${label}), edited. Illustrative, not real data.`;
+}
+
+/** Editing an example keeps its example status; own selections stay your own. */
+export function originAfterEdit(origin: InputOrigin): InputOrigin {
+  return origin.kind === "example" ? { kind: "edited-example", presetId: origin.presetId } : origin;
+}
+
+/* --------------------------------- Brief --------------------------------- */
 
 export type CheckBrief = {
   headline: string;
   decision: string;
   canSay: string[];
+  /** Reminder that selections are measures, not results. */
+  resultsNote: string;
   cannotSay: string[];
-  nextEvidence: { link: string | null; text: string }[];
+  nextEvidence: { link: string | null; addresses: string | null; text: string }[];
   question: string;
   answer: string;
 };
 
+const ADDRESSES: Record<string, string> = {
+  learning: "whether people learned the skill",
+  transfer: "whether people use it on the job",
+  opportunity: "whether people had real chances to apply it",
+  performance: "whether the quality of work changed",
+  outcome: "whether the business result moved, and why",
+};
+
+/**
+ * The decision brief. Selections say which measures exist; they carry no results,
+ * baselines or comparisons. Every sentence is worded so it stays true when quoted alone.
+ */
 export function buildCheckBrief(measured: string[], answers: Record<string, Answer>): CheckBrief {
   const st = chainStates(measured);
+  const learningM = st["learning"] === "measured";
+  const transferM = st["transfer"] === "measured";
+  const perfM = st["performance"] === "measured";
+  const outM = st["outcome"] === "measured";
+
   const canSay: string[] = [];
-  const cannotSay: string[] = [];
-
   if (measured.includes("attendance") || measured.includes("completion"))
-    canSay.push("People attended or completed the program.");
+    canSay.push("Participation was recorded (attendance or completion).");
   if (measured.includes("satisfaction"))
-    canSay.push("Participants rated the experience (a reaction, not a learning measure).");
-  if (measured.includes("confidence") && st["learning"] !== "measured")
+    canSay.push("Participants’ reactions were collected (a satisfaction survey).");
+  if (measured.includes("confidence"))
     canSay.push(
-      "Participants reported feeling more confident (self-report, not demonstrated skill).",
+      "Participants rated their own confidence (a self-rating, not a demonstrated skill).",
     );
-  if (st["learning"] === "measured") canSay.push("Knowledge or skill was assessed.");
+  if (learningM) canSay.push("Knowledge or skill was assessed.");
   if (st["opportunity"] === "measured")
-    canSay.push("Managers checked whether people had chances to apply it.");
-  if (st["transfer"] === "measured") canSay.push("Use on the job was observed or recorded.");
-  if (st["performance"] === "measured") canSay.push("Work output or performance was recorded.");
-  if (st["outcome"] === "measured")
-    canSay.push("A business metric was tracked over the same period.");
+    canSay.push("Managers recorded whether people had chances to apply it.");
+  if (transferM) canSay.push("Workplace use was observed or recorded.");
+  if (perfM) canSay.push("Work output or performance was tracked.");
+  if (outM) canSay.push("A business metric was tracked.");
 
-  if (st["learning"] !== "measured") cannotSay.push("That people learned the skill.");
-  if (st["transfer"] !== "measured") cannotSay.push("That people use it on the job.");
-  if (st["performance"] !== "measured") cannotSay.push("That the quality of work improved.");
+  const cannotSay: string[] = [];
   cannotSay.push(
-    st["outcome"] === "measured" || st["performance"] === "measured"
-      ? "That the program caused the change. Measured links show what happened, not why."
-      : "Any ROI or business impact.",
+    learningM
+      ? "Whether knowledge or skill changed. That needs scores compared with a baseline."
+      : "That people learned the skill.",
   );
-
-  const target = ["learning", "transfer", "opportunity", "performance", "outcome"].find(
-    (id) => st[id] !== "measured",
+  cannotSay.push(
+    transferM
+      ? "Whether on-the-job behavior changed. That needs a before-and-after or comparison group."
+      : "That people use it on the job.",
   );
-  const nextEvidence: CheckBrief["nextEvidence"] = [];
-  if (target)
-    nextEvidence.push({
-      link: linkLabel(target),
-      text: GENERIC_PROVENANCE[target]!.nextEvidence[0]!,
-    });
-  if (target !== "transfer" && st["transfer"] !== "measured")
-    nextEvidence.push({ link: "Transfer", text: GENERIC_PROVENANCE["transfer"]!.nextEvidence[0]! });
-  if (!target)
-    nextEvidence.push({
-      link: null,
-      text: "Add a comparison: a group or period without the program, so a change has a reference point.",
-    });
+  if (outM || perfM)
+    cannotSay.push(
+      "Whether the metric moved, or why. Tracking a metric doesn’t show its direction or the program’s contribution.",
+    );
+  else cannotSay.push("That the quality of work improved, or any ROI or business impact.");
+  cannotSay.push(
+    "That the program caused any change. That needs a comparison design and a look at other explanations.",
+  );
 
   const no = CONDITIONS.filter((c) => answers[c.id] === "no").map((c) => c.barrier);
   const unsure = CONDITIONS.filter((c) => answers[c.id] === "unsure");
 
+  const nextEvidence: CheckBrief["nextEvidence"] = [];
+  if (no.length)
+    nextEvidence.push({
+      link: "Reported barrier",
+      addresses: "whether it is real and how widespread it is",
+      text: `Ask managers and a few participants whether ${no[0]} limited their use of the skill.`,
+    });
+  const target = ["learning", "transfer", "opportunity", "performance", "outcome"].find(
+    (id) => st[id] !== "measured",
+  );
+  if (target)
+    nextEvidence.push({
+      link: linkLabel(target),
+      addresses: ADDRESSES[target] ?? null,
+      text: GENERIC_PROVENANCE[target]!.nextEvidence[0]!,
+    });
+  if (target !== "transfer" && !transferM)
+    nextEvidence.push({
+      link: "Transfer",
+      addresses: ADDRESSES["transfer"]!,
+      text: GENERIC_PROVENANCE["transfer"]!.nextEvidence[0]!,
+    });
+  if (!target)
+    nextEvidence.push({
+      link: null,
+      addresses: "whether the program contributed",
+      text: "Compare results with a group or period without the program, so any change has a reference point.",
+    });
+
   let question: string;
   let answer: string;
   if (no.length) {
-    question = `What if ${no[0]} is the real constraint, not the training?`;
-    answer = `You reported ${listPhrase(no)}. More training won’t fix that. Check it before you scale, redesign or cut the program.`;
-  } else if (st["outcome"] === "measured" && st["transfer"] !== "measured") {
-    question = "What else moved the number during the same period?";
+    question = `What if ${no[0]} is the real constraint?`;
+    answer = `You reported ${listPhrase(no)}. If that’s confirmed, it can limit whether people use what they learned, and more training alone is unlikely to change it. Verify it before you scale, redesign or stop the program.`;
+  } else if ((outM || perfM) && !transferM) {
+    question = "What else could explain the metric?";
     answer =
-      "The metric changed, but nothing shows people did anything differently. Pricing, staffing, seasonality or a new tool could explain it.";
-  } else if (st["transfer"] !== "measured") {
+      "Nothing selected shows people did anything differently. Pricing, staffing, seasonality or a new tool could also move it.";
+  } else if (!transferM) {
     question = "What if people learned it but never used it on the job?";
     answer =
       "Nothing yet separates a learning problem from a transfer problem. One structured observation of real work would.";
@@ -250,39 +361,49 @@ export function buildCheckBrief(measured: string[], answers: Record<string, Answ
       "Staffing, tools, incentives and seasonality all move at once. Without a comparison group, a before-and-after change can’t be credited to the program.";
   }
   if (!no.length && unsure.length)
-    answer += ` You weren’t sure about ${unsure.length} work condition${unsure.length > 1 ? "s" : ""}; each is a competing explanation worth a quick check.`;
+    answer += ` You weren’t sure about ${unsure.length} work condition${unsure.length > 1 ? "s" : ""}; each is a competing explanation worth checking.`;
 
   let headline: string;
-  if (st["transfer"] === "measured" && st["learning"] === "measured")
-    headline = "You can describe change on the job. You can’t yet say the training caused it.";
-  else if (st["outcome"] === "measured" && st["transfer"] !== "measured")
-    headline = "A business number moved. Nothing yet links it to the training.";
-  else if (st["learning"] === "measured")
-    headline = "You can say people learned. You can’t yet say work changed.";
-  else if (canSay.length)
-    headline = "You can report participation and reactions. You can’t yet say anything changed.";
-  else headline = "No measures selected. There’s nothing to claim yet.";
+  if (!canSay.length) headline = "No measures selected. There’s nothing to claim yet.";
+  else if ((outM || perfM) && !transferM)
+    headline = `${outM ? "A business metric" : "Work performance"} is tracked. Nothing selected links it to the training.`;
+  else if (learningM && transferM)
+    headline =
+      "Learning and workplace use were measured. Whether they changed, and why, is still open.";
+  else if (transferM)
+    headline =
+      "Workplace use was recorded. What was learned, and whether anything changed, is still open.";
+  else if (learningM)
+    headline = "Knowledge or skill was assessed. Whether work changed is still unknown.";
+  else headline = "You can report participation and reactions. You can’t yet say anything changed.";
 
   let decision: string;
-  if (no.length) decision = "Fix the work conditions before investing more in training.";
-  else if (st["learning"] !== "measured" && st["transfer"] !== "measured")
+  if (no.length)
     decision =
-      "Hold off on scaling. Run a small check of learning and on-the-job use first, typically 4–8 weeks.";
-  else if (st["transfer"] !== "measured")
-    decision = "Learning is shown. Check on-the-job use before you scale.";
-  else if (st["performance"] !== "measured" && st["outcome"] !== "measured")
+      "Verify the reported barrier with managers and a few participants before deciding to scale, redesign or stop the program.";
+  else if (!learningM && !transferM)
     decision =
-      "Behavior change is observed. Connect it to a work metric before claiming business impact.";
+      "Hold off on scaling. A small check of learning and workplace use would show whether the program is doing its job. Time the workplace check for when people have had real chances to use the skill.";
+  else if (!transferM)
+    decision =
+      "Check workplace use before scaling, once people have had real chances to apply the skill.";
+  else if (!perfM && !outM)
+    decision =
+      "Collect results for the measures you have, then connect workplace use to a work measure before claiming business impact.";
   else
     decision =
-      "Evidence runs along the chain. To credit the program, compare with a group or period without it.";
+      "Collect results with a baseline or comparison group, and weigh other explanations, before crediting the program.";
 
-  return { headline, decision, canSay, cannotSay, nextEvidence, question, answer };
+  const resultsNote =
+    "These confirm which measures exist, not their results. To report a result, add the values and compare them with a baseline or a group that didn’t take part.";
+
+  return { headline, decision, canSay, resultsNote, cannotSay, nextEvidence, question, answer };
 }
 
-export function briefAsText(b: CheckBrief): string {
+export function briefAsText(b: CheckBrief, provenance: string): string {
   return [
     "TRAINING EVIDENCE BRIEF",
+    `Inputs: ${provenance}`,
     "",
     b.headline,
     "",
@@ -290,18 +411,22 @@ export function briefAsText(b: CheckBrief): string {
     "",
     "What we can say:",
     ...b.canSay.map((x) => `- ${x}`),
+    `(${b.resultsNote})`,
     "",
     "What we can't say yet:",
     ...b.cannotSay.map((x) => `- ${x}`),
     "",
-    "Cheapest next evidence:",
-    ...b.nextEvidence.map((x) => `- ${x.link ? `${x.link}: ` : ""}${x.text}`),
+    "Suggested next evidence:",
+    ...b.nextEvidence.map(
+      (x) =>
+        `- ${x.link ? `${x.link}` : "Next step"}${x.addresses ? ` (to find out ${x.addresses})` : ""}: ${x.text}`,
+    ),
     "",
     "What would make this wrong?",
     b.question,
     b.answer,
     "",
-    "Rule-based suggestions from Evidence Studio; practitioner judgment applies.",
+    "Generated by Evidence Studio, a prototype. It describes which measures exist; it does not report results, predict impact or calculate ROI. Practitioner judgment applies.",
   ].join("\n");
 }
 

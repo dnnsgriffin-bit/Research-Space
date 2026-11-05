@@ -1626,3 +1626,10 @@
   .ec-stage.intro .ec-link.seg-lit .ec-seg { transform-origin: top; animation-name: ec-seg-in-v; }
   @keyframes ec-seg-in-v { from { transform: scaleY(0); } }
 }
+.ec-prov { margin-top: 6px; display: inline-block; padding: 4px 12px; border-radius: 999px; background: #e6d6b0; color: #3d3220; font-size: .82rem; font-weight: 500; }
+.ec-prov.own { background: #dfe5ea; color: #26313a; }
+.ec-rnote { margin-top: 10px !important; font-size: .84rem; color: #4a5258; font-style: italic; }
+.ec-addr { color: #4a5258; }
+.ec-pulse.assumed { background: linear-gradient(90deg, transparent, #bcd6ea, transparent); }
+.ec-finding cite a { color: var(--ec-muted); text-decoration: underline; text-underline-offset: 3px; }
+.ec-finding cite a:hover { color: var(--ec-lamp); }

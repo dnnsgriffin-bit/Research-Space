@@ -595,6 +595,24 @@
     opacity: 0.35;
   }
 }
+.hc-live-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.hc-pause {
+  border: 1px solid var(--ec-line-2);
+  background: transparent;
+  color: var(--ec-muted);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 0.78rem;
+  min-height: 32px;
+}
+.hc-pause:hover {
+  color: var(--ec-paper);
+  border-color: var(--ec-muted);
+}
 .hc-tabs {
   display: flex;
   flex-wrap: wrap;
@@ -958,6 +976,26 @@
   line-height: 1.65;
   max-width: 46ch;
 }
+.gd-result {
+  margin-top: 4px;
+  padding: 12px 14px;
+  border-left: 2px solid var(--ec-lamp);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 0 10px 10px 0;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--ec-paper);
+  max-width: 46ch;
+}
+.gd-result span {
+  display: block;
+  margin-bottom: 2px;
+  font-family: var(--ec-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ec-lamp);
+}
 .gd-sticky {
   position: sticky;
   top: max(calc(var(--site-header-height, 70px) + 20px), calc(50vh - 250px));
@@ -1187,6 +1225,9 @@
   background: linear-gradient(90deg, transparent, #fff6d8, transparent);
   filter: blur(1px);
   animation: gd-pulse 1.6s 0.2s var(--ec-ease) both;
+}
+.gd-pulse.assumed {
+  background: linear-gradient(90deg, transparent, #bcd6ea, transparent);
 }
 @keyframes gd-pulse {
   0% {
@@ -1579,7 +1620,7 @@
   border-bottom: 1px solid #e6e2da;
 }
 .gd-mail-row span {
-  color: #868d93;
+  color: #545b61;
   margin-right: 10px;
 }
 .gd-mail-body {
@@ -1882,6 +1923,45 @@
   color: var(--ec-muted);
 }
 
+.l-transcript {
+  margin-top: 16px;
+  border: 1px solid var(--ec-line);
+  border-radius: 14px;
+  padding: 0 18px;
+}
+.l-transcript summary {
+  cursor: pointer;
+  padding: 14px 0;
+  color: var(--ec-paper);
+  font-weight: 500;
+}
+.l-transcript ol {
+  margin: 0 0 16px;
+  padding-left: 20px;
+  color: var(--ec-muted);
+  line-height: 1.6;
+}
+.l-video video:focus-visible {
+  outline: 2px solid var(--ec-lamp);
+  outline-offset: -2px;
+}
+.l-paper-prov {
+  margin-top: 8px;
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: #e6d6b0;
+  color: #3d3220;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+.l-paper-note {
+  margin-top: 10px;
+  font-size: 0.82rem;
+  font-style: italic;
+  color: #4a5258;
+}
+
 /* ---------- Audiences ---------- */
 .l-aud {
   display: grid;
@@ -1968,6 +2048,53 @@
 }
 .l-table thead .us {
   color: var(--ec-lamp);
+}
+
+@media (max-width: 640px) {
+  .l-table-wrap {
+    overflow: visible;
+    border: 0;
+  }
+  .l-table {
+    min-width: 0;
+  }
+  .l-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+  .l-table tr {
+    display: block;
+    margin-bottom: 12px;
+    border: 1px solid var(--ec-line);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .l-table th,
+  .l-table td {
+    display: block;
+    width: auto !important;
+    border-bottom: 1px solid var(--ec-line);
+    padding: 12px 16px;
+  }
+  .l-table tbody tr > :last-child {
+    border-bottom: 0;
+  }
+  .l-table td::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 4px;
+    font-family: var(--ec-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ec-muted);
+  }
+  .l-table td.us::before {
+    color: var(--ec-lamp);
+  }
 }
 
 /* ---------- Papers ---------- */

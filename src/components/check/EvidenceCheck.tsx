@@ -13,8 +13,11 @@ import {
   chainStates,
   claimReach,
   linkLabel,
-  matchPreset,
+  originAfterEdit,
+  provenanceLabel,
+  reachMessage,
   type Answer,
+  type InputOrigin,
 } from "@/lib/evidence-check";
 import { GENERIC_PROVENANCE } from "@/lib/chain-provenance";
 import type { ChainState } from "@/lib/studio-data";
@@ -43,6 +46,8 @@ export function EvidenceCheck() {
     PRESETS.find((p) => p.id === "numbers")!.measured,
   );
   const [answers, setAnswers] = useState<Record<string, Answer>>(DEFAULT_ANSWERS);
+  // Where the inputs came from, tracked separately from what they happen to match.
+  const [origin, setOrigin] = useState<InputOrigin>({ kind: "example", presetId: "numbers" });
   const [selected, setSelected] = useState<string | null>("transfer");
   const inspectorRef = useRef<HTMLElement>(null);
   const nodeRefs = useRef<Record<string, HTMLButtonElement | null>>({});
@@ -51,10 +56,17 @@ export function EvidenceCheck() {
   const barriers = useMemo(() => barriersByLink(answers), [answers]);
   const reach = useMemo(() => claimReach(states), [states]);
   const brief = useMemo(() => buildCheckBrief(measured, answers), [measured, answers]);
-  const presetId = matchPreset(measured);
-
-  const toggleMeasure = (id: string) =>
+  const toggleMeasure = (id: string) => {
     setMeasured((m) => (m.includes(id) ? m.filter((x) => x !== id) : [...m, id]));
+    setOrigin(originAfterEdit);
+  };
+  // A starting point is a fresh scenario: it replaces the measures and resets the answers.
+  const pickPreset = (id: string) => {
+    const p = PRESETS.find((x) => x.id === id)!;
+    setMeasured([...p.measured]);
+    setAnswers(DEFAULT_ANSWERS);
+    setOrigin(id === "blank" ? { kind: "own" } : { kind: "example", presetId: id });
+  };
 
   const select = (id: string) => {
     setSelected((cur) => (cur === id ? null : id));
@@ -101,7 +113,7 @@ export function EvidenceCheck() {
           nodeRefs={nodeRefs}
           reach={reach}
         >
-          <Presets presetId={presetId} onPick={(m) => setMeasured(m)} />
+          <Presets origin={origin} onPick={pickPreset} />
         </ChainStage>
 
         <ol className="ec-how" aria-label="How it works, about two minutes">
@@ -131,8 +143,8 @@ export function EvidenceCheck() {
           <p className="ec-label">Step 1</p>
           <h2 id="ec-measures-title">What did you measure?</h2>
           <p className="ec-hint">
-            Tick only what you have data for, not what you plan to collect. Kirkpatrick levels are
-            shown for reference.
+            Tick only what you have data for, not what you plan to collect. Kirkpatrick levels are a
+            rough cross-reference.
           </p>
           <MeasurePicker measured={measured} onToggle={toggleMeasure} />
         </section>
@@ -161,7 +173,10 @@ export function EvidenceCheck() {
               why={c.why}
               links={c.links}
               value={answers[c.id] ?? "unsure"}
-              onChange={(v) => setAnswers((a) => ({ ...a, [c.id]: v }))}
+              onChange={(v) => {
+                setAnswers((a) => ({ ...a, [c.id]: v }));
+                setOrigin(originAfterEdit);
+              }}
             />
           ))}
         </div>
@@ -170,15 +185,16 @@ export function EvidenceCheck() {
       <section className="ec-wrap ec-section" aria-labelledby="ec-brief-title">
         <span className="ec-label">Step 3</span>
         <h2 id="ec-brief-title">The claim you can defend today</h2>
-        <Brief brief={brief} fromPreset={presetId !== null} />
+        <Brief brief={brief} origin={origin} />
       </section>
     </div>
   );
 }
 
-function Presets({ presetId, onPick }: { presetId: string | null; onPick: (m: string[]) => void }) {
+function Presets({ origin, onPick }: { origin: InputOrigin; onPick: (id: string) => void }) {
   const labelId = useId();
-  const preset = PRESETS.find((p) => p.id === presetId);
+  const active = origin.kind === "example" ? origin.presetId : origin.kind === "own" ? null : null;
+  const preset = origin.kind !== "own" ? PRESETS.find((p) => p.id === origin.presetId) : null;
   return (
     <div className="ec-presets">
       <p className="ec-label" id={labelId}>
@@ -190,17 +206,20 @@ function Presets({ presetId, onPick }: { presetId: string | null; onPick: (m: st
             key={p.id}
             type="button"
             className="ec-preset"
-            aria-pressed={presetId === p.id}
-            onClick={() => onPick([...p.measured])}
+            aria-pressed={active === p.id}
+            onClick={() => onPick(p.id)}
           >
             {p.label}
           </button>
         ))}
       </div>
       <p className="ec-note">
-        {preset
-          ? `${preset.note} These are typical patterns, not real data. Change anything below.`
-          : "Custom: your own selection."}
+        {origin.kind === "example" && preset
+          ? `${preset.note} Example inputs, not real data.`
+          : origin.kind === "edited-example"
+            ? "Example inputs, edited. Still illustrative, not real data."
+            : "Your own selections."}{" "}
+        Choosing a starting point replaces the measures and resets the work-condition answers.
       </p>
     </div>
   );
@@ -271,6 +290,8 @@ function ChainStage({
     pulse.style.setProperty("--from", `${a.left - s.left}px`);
     pulse.style.setProperty("--to", `${b.right - s.left}px`);
     pulse.style.setProperty("--d", `${500 + lit * 130}ms`);
+    // Gold only when every link on the path was measured; otherwise the path rests on an assumption.
+    pulse.classList.toggle("assumed", reach.measuredRun < lit);
     pulse.style.top = `${a.top - s.top + a.height / 2 - 1}px`;
     const run = () => {
       pulse.classList.remove("run");
@@ -283,31 +304,9 @@ function ChainStage({
     }
     run();
     return undefined;
-  }, [reach.litFromStart, reduced]);
+  }, [reach.litFromStart, reach.measuredRun, reduced]);
 
-  const far = reach.furthest >= 0 ? CHAIN[reach.furthest]!.label : null;
-  let note: React.ReactNode = null;
-  if (far) {
-    if (reach.brokenBefore.length) {
-      note = (
-        <span className="ec-warn">
-          {far} was measured, but {listPhrase(reach.brokenBefore.map(linkLabel))}{" "}
-          {reach.brokenBefore.length > 1 ? "are" : "is"} still unknown. Nothing connects the
-          training to that result yet.
-        </span>
-      );
-    } else if (reach.firstGap > reach.furthest) {
-      note = (
-        <>
-          The first dark link is <b>{CHAIN[reach.firstGap]!.label}</b>. Anything you claim beyond it
-          rests on assumption.
-        </>
-      );
-    } else {
-      note =
-        "Every link has some evidence. That describes what happened; it doesn’t show the program caused it.";
-    }
-  }
+  const msg = reachMessage(states);
 
   return (
     <div
@@ -397,18 +396,15 @@ function ChainStage({
       </div>
       <div className="ec-reach" role="status" aria-live="polite">
         <span className="ec-label">Claim reach</span>
-        {far ? (
-          <span className="ec-big">
-            Your evidence describes the chain as far as <em>{far}</em>.
-          </span>
-        ) : (
-          <span className="ec-big">Nothing observed yet.</span>
-        )}
-        <p>
-          {far
-            ? note
-            : "Tick the measures you actually have. A link lights up only where something was observed."}
-        </p>
+        <span className="ec-big">
+          {msg.lead}
+          {msg.link && (
+            <>
+              <em>{msg.link}</em>.
+            </>
+          )}
+        </span>
+        <p className={msg.tone === "warn" ? "ec-warn" : ""}>{msg.note}</p>
       </div>
     </div>
   );
@@ -507,8 +503,8 @@ function Inspector({
               <section className="bar">
                 <h4>Barrier you reported</h4>
                 <p>
-                  You answered no for {listPhrase(barriers)}. That can block this link even if the
-                  training worked.
+                  You answered no for {listPhrase(barriers)}. If that’s confirmed, it can limit this
+                  link even when the training itself was sound.
                 </p>
               </section>
             )}
@@ -596,18 +592,19 @@ function ConditionCard({
 
 function Brief({
   brief,
-  fromPreset,
+  origin,
 }: {
   brief: ReturnType<typeof buildCheckBrief>;
-  fromPreset: boolean;
+  origin: InputOrigin;
 }) {
+  const provenance = provenanceLabel(origin);
   const [copied, setCopied] = useState(false);
   const [fallback, setFallback] = useState<string | null>(null);
   const timer = useRef<number | undefined>(undefined);
   useEffect(() => () => window.clearTimeout(timer.current), []);
 
   const copy = async () => {
-    const text = briefAsText(brief);
+    const text = briefAsText(brief, provenance);
     try {
       await navigator.clipboard.writeText(text);
       setFallback(null);
@@ -619,7 +616,7 @@ function Brief({
     }
   };
   const download = () => {
-    const blob = new Blob([briefAsText(brief)], { type: "text/plain" });
+    const blob = new Blob([briefAsText(brief, provenance)], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -630,9 +627,8 @@ function Brief({
 
   return (
     <article className="ec-brief">
-      <p className="ec-label">
-        Decision brief · {fromPreset ? "example starting point" : "your selection"}
-      </p>
+      <p className="ec-label">Decision brief</p>
+      <p className={`ec-prov ${origin.kind === "own" ? "own" : ""}`}>{provenance}</p>
       <h3 key={brief.headline} className="ec-swap">
         {brief.headline}
       </h3>
@@ -650,17 +646,20 @@ function Brief({
         <section>
           <h4>You can say</h4>
           {brief.canSay.length ? <List items={brief.canSay} /> : <p>Nothing yet.</p>}
+          {brief.canSay.length > 0 && <p className="ec-rnote">{brief.resultsNote}</p>}
         </section>
         <section className="no">
           <h4>You can’t say yet</h4>
           <List items={brief.cannotSay} />
         </section>
         <section className="full">
-          <h4>Cheapest next evidence</h4>
+          <h4>Suggested next evidence</h4>
           <ul>
             {brief.nextEvidence.map((x) => (
               <li key={x.text}>
-                {x.link && <b>{x.link}: </b>}
+                {x.link && <b>{x.link}</b>}
+                {x.addresses && <span className="ec-addr"> · to find out {x.addresses}</span>}
+                {x.link || x.addresses ? ": " : ""}
                 {x.text}
               </li>
             ))}
@@ -694,7 +693,8 @@ function Brief({
         />
       )}
       <p className="ec-fine">
-        These describe what the evidence can support. They are not a prediction of impact.
+        Rule-based suggestions. They describe which measures exist and what they can support; they
+        don’t report results, predict impact or calculate ROI.
       </p>
     </article>
   );

@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { CHAIN, PRESETS, chainStates, claimReach, linkLabel } from "@/lib/evidence-check";
-import { listPhrase } from "@/lib/studio-engine";
+import { CHAIN, PRESETS, chainStates, reachMessage } from "@/lib/evidence-check";
 
 const SCENES = PRESETS.filter((p) => p.id !== "blank");
 const CYCLE_MS = 5200;
@@ -31,7 +30,7 @@ export function HeroChain() {
 
   const scene = SCENES[index]!;
   const states = useMemo(() => chainStates(scene.measured), [scene]);
-  const reach = useMemo(() => claimReach(states), [states]);
+  const msg = useMemo(() => reachMessage(states), [states]);
 
   useEffect(() => {
     if (!auto || paused || reduced) return;
@@ -51,15 +50,6 @@ export function HeroChain() {
     tabRefs.current[next]?.focus();
   };
 
-  const far = reach.furthest >= 0 ? CHAIN[reach.furthest]!.label : null;
-  const verdict = !far
-    ? "Nothing observed yet."
-    : reach.brokenBefore.length
-      ? `${listPhrase(reach.brokenBefore.map(linkLabel))} ${reach.brokenBefore.length > 1 ? "are" : "is"} still unknown. Nothing connects the training to that result.`
-      : reach.firstGap > reach.furthest
-        ? `The first dark link is ${CHAIN[reach.firstGap]!.label}. Claims beyond it rest on assumption.`
-        : "Every link has evidence. That still isn’t proof the program caused it.";
-
   return (
     <div
       className="hc"
@@ -69,13 +59,25 @@ export function HeroChain() {
       onBlurCapture={() => setPaused(false)}
     >
       <div className="hc-top">
-        <p className="hc-live">
-          <span aria-hidden className="hc-dot" /> Live engine · pick a situation
-        </p>
+        <div className="hc-live-row">
+          <p className="hc-live">
+            <span aria-hidden className="hc-dot" /> Live engine · example situations
+          </p>
+          {!reduced && (
+            <button
+              type="button"
+              className="hc-pause"
+              aria-pressed={!auto}
+              onClick={() => setAuto((a) => !a)}
+            >
+              {auto ? "Pause auto-play" : "Resume auto-play"}
+            </button>
+          )}
+        </div>
         <div
           className="hc-tabs"
           role="tablist"
-          aria-label="Typical training reports"
+          aria-label="Example training reports"
           onKeyDown={onKey}
         >
           {SCENES.map((s, i) => (
@@ -135,18 +137,16 @@ export function HeroChain() {
             );
           })}
         </ol>
-        <div className="hc-read" aria-live="polite">
+        {/* Announce changes only when the visitor chose them, never during auto-play. */}
+        <div className="hc-read" aria-live={auto && !reduced ? "off" : "polite"}>
           <p className="hc-reach" key={scene.id}>
-            {far ? (
+            {msg.lead}
+            {msg.link && (
               <>
-                Your evidence reaches <em>{far}</em>.
+                <em>{msg.link}</em>.
               </>
-            ) : (
-              "Nothing observed yet."
             )}{" "}
-            <span className={`hc-verdict ${reach.brokenBefore.length ? "warn" : ""}`}>
-              {verdict}
-            </span>
+            <span className={`hc-verdict ${msg.tone === "warn" ? "warn" : ""}`}>{msg.note}</span>
           </p>
           <Link to="/check" className="hc-open">
             Run it on your program <span aria-hidden>→</span>

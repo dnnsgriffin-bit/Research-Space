@@ -8,7 +8,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "A two-minute evidence check for L&D teams. See which training claims your data supports, what might be getting in the way, and the cheapest evidence to collect next.",
+          "A two-minute evidence check for L&D teams. See which training claims your data supports, what might be getting in the way, and a suggested next step for evidence.",
       },
       {
         property: "og:title",

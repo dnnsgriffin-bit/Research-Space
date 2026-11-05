@@ -13,35 +13,40 @@ import { DEFAULT_ANSWERS, buildCheckBrief } from "@/lib/evidence-check";
 
 const PAPERS = [
   {
-    finding: "Satisfaction and “feel-good” reactions relate weakly to on-the-job behavior.",
+    finding:
+      "Across 34 studies, satisfaction-style reactions were only weakly related to learning and on-the-job behavior.",
     cite: "Alliger et al. (1997), Personnel Psychology",
-    href: "https://consensus.app/papers/details/f5473c748d7c51fa8f0ca951d9d61952/",
+    href: "https://doi.org/10.1111/j.1744-6570.1997.tb00911.x",
   },
   {
     finding:
-      "Reactions were generally unrelated to later job behavior; transfer climate predicted it.",
+      "In a longitudinal study, reactions were generally unrelated to later job behavior; transfer climate predicted it.",
     cite: "Warr, Allan & Birdi (1999), J. Occupational & Organizational Psychology",
-    href: "https://consensus.app/papers/details/0046cfdf47c258c7a0b02e1e0c84f69a/",
+    href: "https://doi.org/10.1348/096317999166725",
   },
   {
-    finding: "Well-designed training works, with medium-to-large effects on behavior and results.",
+    finding:
+      "Organizational training showed medium-to-large average effects on learning, behavior and results criteria.",
     cite: "Arthur et al. (2003), Journal of Applied Psychology",
-    href: "https://consensus.app/papers/details/281bf20e0b1c564988560bfa5b7dea5f/",
+    href: "https://doi.org/10.1037/0021-9010.88.2.234",
   },
   {
-    finding: "A supportive work environment is among the strongest predictors of transfer.",
+    finding:
+      "Across 89 studies, a supportive work environment was among the predictors positively related to transfer.",
     cite: "Blume et al. (2010), Journal of Management",
-    href: "https://consensus.app/papers/details/68f4fe1840045a3b830f8f2fc86ce1f8/",
+    href: "https://doi.org/10.1177/0149206309352880",
   },
   {
-    finding: "Opportunity to perform, supervisor support and follow-up matter most after training.",
+    finding:
+      "A review identified opportunity to perform, supervisor support and follow-up as consistent work-environment factors in transfer.",
     cite: "Grossman & Salas (2011), Int. Journal of Training and Development",
-    href: "https://consensus.app/papers/details/734bcc29b2d75149baae30ca0d585a89/",
+    href: "https://doi.org/10.1111/j.1468-2419.2011.00373.x",
   },
   {
-    finding: "Peer, supervisor and organizational support explain about a third of transfer.",
+    finding:
+      "In one meta-analysis, peer, supervisor and organizational support together accounted for about 32% of the variance in transfer in the regression model.",
     cite: "Hughes et al. (2020), Human Factors",
-    href: "https://consensus.app/papers/details/1e48779bb1555b11973b7d2111eb7f32/",
+    href: "https://pubmed.ncbi.nlm.nih.gov/31136198/",
   },
 ];
 
@@ -208,6 +213,10 @@ function SampleBrief() {
     <div ref={ref} className={`l-artifact ${inView ? "in" : ""}`}>
       <article className="l-paper" aria-label="Sample decision brief (example inputs)">
         <p className="l-paper-k">Training evidence brief · example</p>
+        <p className="l-paper-prov">
+          Example inputs: completion, a satisfaction survey, a tracked business metric, and manager
+          support answered No. Illustrative, not real data.
+        </p>
         <h3>{brief.headline}</h3>
         <div className="l-paper-dec">
           <span aria-hidden>→</span>
@@ -224,6 +233,7 @@ function SampleBrief() {
                 <li key={x}>{x}</li>
               ))}
             </ul>
+            <p className="l-paper-note">{brief.resultsNote}</p>
           </div>
           <div>
             <p className="l-paper-k red">You can’t say yet</p>
@@ -257,34 +267,62 @@ function SampleBrief() {
   );
 }
 
+const VIDEO_STEPS = [
+  "Start from what your report already shows. All inputs in the video are examples.",
+  "The chain lights up only where something was measured.",
+  "In this example, a business metric is tracked, but nothing selected links it to the training.",
+  "Open any link to see what it can’t establish and a suggested next step.",
+  "Tick what you actually measured, such as a skill check or observed use on the job.",
+  "Check whether the workplace is a barrier. A “No” on manager support marks a reported barrier to verify.",
+  "Leave with a brief your leaders can act on, and copy it with its example label.",
+];
+
 function VideoDemo() {
   const [playing, setPlaying] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  // Keyboard users keep their place: focus moves from the poster button into the player.
+  useEffect(() => {
+    if (playing) videoRef.current?.focus();
+  }, [playing]);
   return (
-    <div className="l-video">
-      {playing ? (
-        <video
-          src="/demo/evidence-check-demo.mp4"
-          poster="/demo/poster.webp"
-          controls
-          autoPlay
-          playsInline
-          aria-label="Walkthrough of the Evidence Check with on-screen captions"
-        />
-      ) : (
-        <button type="button" className="l-video-poster" onClick={() => setPlaying(true)}>
-          <img src="/demo/poster.webp" alt="" loading="lazy" />
-          <span className="l-play" aria-hidden>
-            <svg viewBox="0 0 24 24" width="28" height="28">
-              <path d="M8 5v14l11-7z" fill="currentColor" />
-            </svg>
-          </span>
-          <span className="l-video-label">
-            <b>Watch the walkthrough</b>
-            <span>About 45 seconds · captions on screen</span>
-          </span>
-        </button>
-      )}
-    </div>
+    <>
+      <div className="l-video">
+        {playing ? (
+          <video
+            ref={videoRef}
+            src="/demo/evidence-check-demo.mp4"
+            poster="/demo/poster.webp"
+            controls
+            autoPlay
+            playsInline
+            tabIndex={0}
+            aria-label="Silent walkthrough of the Evidence Check with on-screen captions. A transcript follows the video."
+            aria-describedby="l-video-transcript"
+          />
+        ) : (
+          <button type="button" className="l-video-poster" onClick={() => setPlaying(true)}>
+            <img src="/demo/poster.webp" alt="" loading="lazy" />
+            <span className="l-play" aria-hidden>
+              <svg viewBox="0 0 24 24" width="28" height="28">
+                <path d="M8 5v14l11-7z" fill="currentColor" />
+              </svg>
+            </span>
+            <span className="l-video-label">
+              <b>Watch the walkthrough</b>
+              <span>About 45 seconds · silent, captions on screen · example inputs</span>
+            </span>
+          </button>
+        )}
+      </div>
+      <details className="l-transcript" id="l-video-transcript">
+        <summary>Read the walkthrough as text</summary>
+        <ol>
+          {VIDEO_STEPS.map((t) => (
+            <li key={t}>{t}</li>
+          ))}
+        </ol>
+      </details>
+    </>
   );
 }
 
@@ -314,6 +352,9 @@ export function Landing() {
             <Link to="/check" className="l-btn primary">
               Try the prototype <span aria-hidden>→</span>
             </Link>
+            <a href="#sample-brief" className="l-btn ghost">
+              See a sample brief
+            </a>
             <a href="#demo" className="l-btn ghost">
               <span className="l-btn-play" aria-hidden>
                 ▶
@@ -375,7 +416,7 @@ export function Landing() {
       </section>
 
       {/* 4 · The output */}
-      <section className="l-wrap l-sec" aria-labelledby="l-out">
+      <section id="sample-brief" className="l-wrap l-sec" aria-labelledby="l-out">
         <p className="l-eyebrow">What you walk away with</p>
         <h2 id="l-out" className="l-h2">
           One page your leaders will actually read.
@@ -438,8 +479,10 @@ export function Landing() {
               {COMPARE.map(([k, a, b]) => (
                 <tr key={k}>
                   <th scope="row">{k}</th>
-                  <td>{a}</td>
-                  <td className="us">{b}</td>
+                  <td data-label="Typical learning dashboards">{a}</td>
+                  <td className="us" data-label="Evidence Studio">
+                    {b}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -451,11 +494,13 @@ export function Landing() {
       <section className="l-wrap l-sec" aria-labelledby="l-sci">
         <p className="l-eyebrow">Evidence-based by design</p>
         <h2 id="l-sci" className="l-h2">
-          Every rule traces back to research.
+          The research behind the rules.
         </h2>
         <p className="l-sub">
-          The engine is deliberately simple and transparent. Each rule reflects decades of
-          peer-reviewed work on training evaluation and transfer.
+          The rules are deliberately simple and transparent. These studies shaped what the check
+          looks for. Some details, such as the order of suggested next steps, are design choices for
+          this prototype, not research findings. Kirkpatrick levels appear as a rough
+          cross-reference.
         </p>
         <div className="l-papers">
           {PAPERS.map((p) => (

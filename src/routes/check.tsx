@@ -8,7 +8,7 @@ export const Route = createFileRoute("/check")({
       {
         name: "description",
         content:
-          "Tick what you measured and see how far an honest claim about your training can go, what could be getting in the way, and the cheapest evidence to collect next.",
+          "Tick what you measured and see how far an honest claim about your training can go, what could be getting in the way, and a suggested next step for evidence.",
       },
       {
         property: "og:title",
@@ -49,20 +49,35 @@ const DOORS = [
 
 const FINDINGS = [
   {
-    text: "Reaction measures (satisfaction, “I feel confident”) relate weakly to on-the-job behavior; feel-good ratings least of all.",
-    cite: "Alliger et al. (1997), Personnel Psychology, meta-analysis · Warr, Allan & Birdi (1999), J. Occupational & Organizational Psychology",
+    text: "Satisfaction-style reactions were only weakly related to learning and on-the-job behavior, so a high rating can’t stand in for either.",
+    sources: [
+      {
+        label: "Alliger et al. (1997)",
+        href: "https://doi.org/10.1111/j.1744-6570.1997.tb00911.x",
+      },
+      { label: "Warr, Allan & Birdi (1999)", href: "https://doi.org/10.1348/096317999166725" },
+    ],
   },
   {
-    text: "Well-designed training does work, with medium-to-large effects on learning, behavior and results. The problem is concluding from the wrong evidence.",
-    cite: "Arthur et al. (2003), Journal of Applied Psychology, meta-analysis",
+    text: "Organizational training showed medium-to-large average effects on learning, behavior and results. The risk is concluding from the wrong evidence, not that training can’t work.",
+    sources: [
+      { label: "Arthur et al. (2003)", href: "https://doi.org/10.1037/0021-9010.88.2.234" },
+    ],
   },
   {
-    text: "Whether learning gets used depends heavily on the work environment: manager and peer support, transfer climate and the chance to use the skill.",
-    cite: "Blume et al. (2010), Journal of Management · Grossman & Salas (2011) · Hughes et al. (2020), Human Factors",
+    text: "Work-environment factors such as supervisor and peer support and the opportunity to perform are consistently related to transfer. That’s why the check asks about them.",
+    sources: [
+      { label: "Blume et al. (2010)", href: "https://doi.org/10.1177/0149206309352880" },
+      {
+        label: "Grossman & Salas (2011)",
+        href: "https://doi.org/10.1111/j.1468-2419.2011.00373.x",
+      },
+      { label: "Hughes et al. (2020)", href: "https://pubmed.ncbi.nlm.nih.gov/31136198/" },
+    ],
   },
   {
-    text: "Few organizations measure behavior change or results; most stop at participation and reaction.",
-    cite: "Brandon Hall Group data as reported by practitioner sources (date unclear; directional) · Thalheimer’s LTEM (2018)",
+    text: "Prototype design choices, not research findings: the order of suggested next steps, the wording of the brief, and Kirkpatrick levels shown as a rough cross-reference.",
+    sources: [],
   },
 ];
 
@@ -86,12 +101,23 @@ function CheckPage() {
         </section>
         <section className="ec-wrap ec-section" aria-labelledby="research-title">
           <span className="ec-label">Why these rules</span>
-          <h2 id="research-title">What the research says</h2>
+          <h2 id="research-title">The research behind the rules</h2>
           <div className="ec-research">
             {FINDINGS.map((f) => (
-              <div key={f.cite} className="ec-finding">
+              <div key={f.text} className="ec-finding">
                 <p>{f.text}</p>
-                <cite>{f.cite}</cite>
+                {f.sources.length > 0 && (
+                  <cite>
+                    {f.sources.map((src, k) => (
+                      <span key={src.href}>
+                        {k > 0 && " · "}
+                        <a href={src.href} target="_blank" rel="noopener">
+                          {src.label} ↗
+                        </a>
+                      </span>
+                    ))}
+                  </cite>
+                )}
               </div>
             ))}
           </div>

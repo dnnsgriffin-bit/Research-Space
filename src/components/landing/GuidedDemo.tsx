@@ -5,6 +5,7 @@ import {
   buildCheckBrief,
   chainStates,
   claimReach,
+  reachMessage,
 } from "@/lib/evidence-check";
 import { GENERIC_PROVENANCE } from "@/lib/chain-provenance";
 
@@ -45,6 +46,18 @@ const FOCUS = [
   { x: 540, y: 200, w: 440, h: 380 },
 ];
 
+const FINAL_REACH = reachMessage(chainStates(MEASURED_FINAL));
+const FINAL_BRIEF = buildCheckBrief(MEASURED_FINAL, { ...DEFAULT_ANSWERS, manager: "no" });
+
+/** The essential outcome of each step as plain text: readable on phones and by screen readers. */
+const RESULTS = [
+  "Completion, a satisfaction survey and a business metric are ticked. Intervention and Business outcome light up: 2 of 7 links are observed.",
+  `${FINAL_REACH.lead}${FINAL_REACH.link}. ${FINAL_REACH.note}`,
+  `Transfer is unknown. ${GENERIC_PROVENANCE["transfer"]!.notEstablished[0]} Suggested next evidence: ${GENERIC_PROVENANCE["transfer"]!.nextEvidence[0]}`,
+  "Manager support is answered No, so a reported barrier is marked on Transfer, to be verified before any decision.",
+  `The example brief reads: “${FINAL_BRIEF.headline}” Suggested next decision: ${FINAL_BRIEF.decision}`,
+];
+
 type Step = { at: number; cursor?: [number, number]; click?: boolean };
 
 /** Timed scripts, one per scene. `k` = number of steps completed. */
@@ -76,10 +89,10 @@ const SCRIPTS: Step[][] = [
   ],
 ];
 
-const HEAD_BASE = "Your evidence describes the chain as far as ";
+const HEAD_BASE = "The furthest measured link is ";
 
 const EMAIL =
-  "Here’s where the coaching program stands. Completion and satisfaction look strong, and the business number moved. Nothing yet shows managers coach differently, and they told us they lack manager support. I recommend fixing that and running a six-week observation before we scale.";
+  "Here’s where the coaching program stands. We have completion, a satisfaction survey and a tracked business metric. Nothing yet shows whether managers coach differently, and they reported weak manager support, which we should check. I suggest verifying that and running a short observation before we decide whether to scale.";
 
 function useReducedMotion() {
   const [r, setR] = useState(false);
@@ -240,7 +253,7 @@ export function DemoStage({
                   </div>
                 );
               })}
-              {scene === 1 && !end && <span key={run} className="gd-pulse" />}
+              {scene === 1 && !end && <span key={run} className="gd-pulse assumed" />}
             </div>
           )}
 
@@ -275,7 +288,7 @@ export function DemoStage({
                 </p>
                 <p className="gd-p">
                   {reach.furthest >= 0
-                    ? `Furthest observed link: ${CHAIN[reach.furthest]!.label}.`
+                    ? `Furthest measured link: ${CHAIN[reach.furthest]!.label}.`
                     : "Tick a measure to light the chain."}
                 </p>
               </div>
@@ -296,10 +309,7 @@ export function DemoStage({
                 )}
                 {headDone ? "." : <span className="gd-caret" />}
               </p>
-              <p className={`gd-warn ${headDone ? "in" : ""}`}>
-                Business outcome was measured, but Learning, Opportunity to apply, Transfer and
-                Performance are still unknown. Nothing connects the training to that result yet.
-              </p>
+              <p className={`gd-warn ${headDone ? "in" : ""}`}>{FINAL_REACH.note}</p>
               <div className={`gd-legend ${headDone ? "in" : ""}`}>
                 <span>
                   <i className="m" />
@@ -383,7 +393,8 @@ export function DemoStage({
                 className={`gd-barrier-note ${managerNo ? "in" : ""}`}
                 style={{ left: 516, top: 420, width: 448 }}
               >
-                <b>!</b> Barrier marked on Transfer. More training won’t fix weak manager support.
+                <b>!</b> Reported barrier marked on Transfer, to verify. Weak manager support can
+                limit whether people use what they learned.
               </p>
             </>
           )}
@@ -392,7 +403,7 @@ export function DemoStage({
           {scene === 4 && (
             <>
               <div className="gd-brief" style={{ left: 36, top: 28, width: 600, height: 548 }}>
-                <p className="gd-k dark">Decision brief</p>
+                <p className="gd-k dark">Decision brief · example inputs</p>
                 <p className="gd-bh">{brief.headline}</p>
                 <div className="gd-dec">
                   <span>→</span>
@@ -424,7 +435,7 @@ export function DemoStage({
                 className={`gd-mail ${composeOpen ? "in" : ""}`}
                 style={{ left: 560, top: 214, width: 404, height: 352 }}
               >
-                <p className="gd-mail-bar">New message</p>
+                <p className="gd-mail-bar">New message · example</p>
                 <p className="gd-mail-row">
                   <span>To</span> VP, Talent
                 </p>
@@ -482,22 +493,22 @@ const STEPS = [
   {
     kicker: "Step 2",
     title: "See how far the claim can reach",
-    text: "Light runs along the chain only where something was observed. The business number lit up, but four links in between are dark, so nothing yet connects the training to that result.",
+    text: "A link lights up only where something was measured. In this example the business metric lights up because it was tracked, but four links in between are dark, so nothing selected connects the training to it.",
   },
   {
     kicker: "Step 3",
     title: "Open any gap to see what it can’t prove",
-    text: "Every link explains what it means, what it can’t establish, and the cheapest evidence that would close it. Transfer is the link organizations skip most often.",
+    text: "Every link explains what it means, what it can’t establish, and a suggested next step to close the gap. Transfer is the link organizations skip most often.",
   },
   {
     kicker: "Step 4",
     title: "Check whether the workplace is the real barrier",
-    text: "Four research-backed questions about opportunity, manager support, time and tools. Answer “No” and the blocked link is marked, so nobody blames the training for a workplace problem.",
+    text: "Four research-backed questions about opportunity, manager support, time and tools. A “No” marks the link it could block as a reported barrier to verify, so a workplace problem isn’t mistaken for a training problem.",
   },
   {
     kicker: "Step 5",
     title: "Leave with a brief your leaders can act on",
-    text: "What you can say, what you can’t say yet, a suggested next decision, and the question that could prove you wrong. Copy it straight into an email.",
+    text: "What you can say, what you can’t say yet, a suggested next decision, and the question that could prove you wrong. Copy it, with its example label, straight into an email.",
   },
 ];
 
@@ -547,6 +558,10 @@ export function GuidedDemo() {
             </p>
             <h3 id={`gd-t-${i}`}>{s.title}</h3>
             <p>{s.text}</p>
+            <p className="gd-result">
+              <span>What you’d see</span>
+              {RESULTS[i]}
+            </p>
             {!desktop && <DemoStage scene={i} playing={active === i} label={`${i + 1} / 5`} />}
           </section>
         ))}
