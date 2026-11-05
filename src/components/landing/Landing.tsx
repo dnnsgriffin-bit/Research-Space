@@ -1,150 +1,159 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { HeroChain } from "./HeroChain";
+import { GuidedDemo } from "./GuidedDemo";
+import { PERSONAL_SITE } from "./ProductChrome";
+import { DEFAULT_ANSWERS, buildCheckBrief } from "@/lib/evidence-check";
 
 /**
- * Product landing page for Evidence Studio. Presentation only: it reads no Studio or
- * Evidence Check state, and every screenshot shows the real tool with example inputs.
+ * Evidence Studio product landing page. Presentation only: it never reads or writes
+ * Studio data. The live pieces (hero chain, guided demo, sample brief) run the real
+ * rules engine on example inputs, which are labeled as examples.
  */
 
-const STEPS = [
+const PAPERS = [
   {
-    kicker: "01 · Tick what you measured",
-    title: "Start from the data you already have",
-    text: "Pick a common situation or tick your own measures: completion, a quiz, a manager observation, a business metric. Each one is tagged with its Kirkpatrick level, so nothing needs translating.",
-    img: "/landing/chain.webp",
-    alt: "Evidence Check with the “We trained, and the numbers went up” starting point selected. Intervention and Business outcome are lit; the links between them are dark.",
+    finding: "Satisfaction and “feel-good” reactions relate weakly to on-the-job behavior.",
+    cite: "Alliger et al. (1997), Personnel Psychology",
+    href: "https://consensus.app/papers/details/f5473c748d7c51fa8f0ca951d9d61952/",
   },
   {
-    kicker: "02 · See how far the claim reaches",
-    title: "The chain lights up only where something was observed",
-    text: "Seven links run from the program to the business result. Measured links glow, assumptions stay hazy, and gaps stay dark. Select any link to see what it can’t establish and what to collect next.",
-    img: "/landing/inspect.webp",
-    alt: "The measures picker beside the evidence inspector for the Transfer link, showing its limitations and the next evidence to collect.",
+    finding:
+      "Reactions were generally unrelated to later job behavior; transfer climate predicted it.",
+    cite: "Warr, Allan & Birdi (1999), J. Occupational & Organizational Psychology",
+    href: "https://consensus.app/papers/details/0046cfdf47c258c7a0b02e1e0c84f69a/",
   },
   {
-    kicker: "03 · Check the work conditions",
-    title: "Find out if training was ever the problem",
-    text: "Four research-backed questions about opportunity, manager support, time and tools. A “No” marks the link it blocks, because the strongest course can’t beat a workplace that won’t let people use it.",
-    img: "/landing/conditions.webp",
-    alt: "Four work-condition questions. Manager support is answered No and highlighted in coral.",
+    finding: "Well-designed training works, with medium-to-large effects on behavior and results.",
+    cite: "Arthur et al. (2003), Journal of Applied Psychology",
+    href: "https://consensus.app/papers/details/281bf20e0b1c564988560bfa5b7dea5f/",
   },
   {
-    kicker: "04 · Leave with a brief",
-    title: "A decision your leaders can act on",
-    text: "What you can say, what you can’t say yet, the cheapest next evidence, and the question that could prove you wrong. Copy it into an email or download it in one click.",
-    img: "/landing/brief.webp",
-    alt: "A decision brief headed “A business number moved. Nothing yet links it to the training,” with a suggested next decision for leaders.",
+    finding: "A supportive work environment is among the strongest predictors of transfer.",
+    cite: "Blume et al. (2010), Journal of Management",
+    href: "https://consensus.app/papers/details/68f4fe1840045a3b830f8f2fc86ce1f8/",
+  },
+  {
+    finding: "Opportunity to perform, supervisor support and follow-up matter most after training.",
+    cite: "Grossman & Salas (2011), Int. Journal of Training and Development",
+    href: "https://consensus.app/papers/details/734bcc29b2d75149baae30ca0d585a89/",
+  },
+  {
+    finding: "Peer, supervisor and organizational support explain about a third of transfer.",
+    cite: "Hughes et al. (2020), Human Factors",
+    href: "https://consensus.app/papers/details/1e48779bb1555b11973b7d2111eb7f32/",
   },
 ];
 
 const CLAIMS = [
   { claim: "The program improved coaching.", truth: "Managers completed it and rated it highly." },
-  {
-    claim: "Training drove the sales increase.",
-    truth: "Sales rose in the same quarter as the training.",
-  },
+  { claim: "Training drove the sales increase.", truth: "Sales rose in the same quarter." },
   {
     claim: "Our people are more capable now.",
     truth: "Participants say they feel more confident.",
   },
 ];
 
-const PERSONAS = [
+const AUDIENCES = [
   {
     who: "L&D practitioners",
-    need: "“My stakeholder wants to know if it worked.”",
-    gets: "Honest wording for today’s report, and a small measurement plan for next time.",
+    ask: "“My stakeholder wants to know if it worked.”",
+    get: "Honest wording for today’s report and a small plan for next time.",
   },
   {
     who: "L&D and talent leaders",
-    need: "“Should we scale this, fix it or stop it?”",
-    gets: "A suggested next decision with the evidence and its limits side by side.",
+    ask: "“Do we scale this, fix it, or stop it?”",
+    get: "A suggested next decision, with the evidence and its limits side by side.",
+  },
+  {
+    who: "Executives and finance",
+    ask: "“What are we actually getting for this spend?”",
+    get: "A one-page answer that separates what happened from what was assumed.",
   },
   {
     who: "Consultants and evaluators",
-    need: "“I need clients to see the gap themselves.”",
-    gets: "A shared, visual way to walk a client from completion data to a real test.",
+    ask: "“I need the client to see the gap themselves.”",
+    get: "A visual way to walk from completion data to a credible test.",
   },
 ];
 
 const COMPARE: [string, string, string][] = [
-  [
-    "Question it answers",
-    "How many people finished?",
-    "What can we honestly claim, and what next?",
-  ],
-  ["What it needs", "An LMS integration and clean data", "Two minutes and what you already know"],
-  ["What you get", "Charts", "A decision brief in plain language"],
-  ["Work environment", "Not considered", "Four research-backed barrier checks"],
+  ["The question", "How many people finished?", "What can we honestly claim, and what next?"],
+  ["What it needs", "Integrations and clean data", "Two minutes and what you already know"],
+  ["What you get", "Charts and completion rates", "A decision brief in plain language"],
+  ["The workplace", "Not considered", "Four research-backed barrier checks"],
   ["Limits", "Rarely stated", "Stated on every link"],
 ];
 
 const PLANS = [
   {
-    name: "Evidence Check",
+    name: "Prototype",
     price: "Free",
-    status: "Available now",
-    blurb: "The two-minute check for one program.",
+    note: "Available now",
+    blurb: "The full Evidence Check, for one program at a time.",
     features: [
       "Seven-link evidence chain",
       "Work-condition barrier check",
-      "Decision brief: copy or download",
+      "Decision brief to copy or download",
       "No sign-up; nothing leaves your browser",
     ],
-    cta: true,
+    cta: { kind: "app" as const, label: "Try the prototype" },
+    featured: true,
   },
   {
     name: "Evidence Plan",
-    price: "Coming soon",
-    status: "In development",
+    price: "Founding pricing",
+    note: "Planned",
     blurb: "Everything you need to run the next test.",
     features: [
       "Observation rubric builder",
-      "Survey item bank by chain link",
+      "Survey item bank for each link",
       "Six-week pilot plan template",
       "Branded PDF brief",
     ],
-    cta: false,
+    cta: null,
+    featured: false,
   },
   {
-    name: "Team",
-    price: "Coming soon",
-    status: "Planned",
-    blurb: "For L&D functions reviewing a portfolio.",
+    name: "Teams & enterprise",
+    price: "Let’s talk",
+    note: "By conversation",
+    blurb: "For L&D functions reviewing a portfolio of programs.",
     features: [
-      "Shared briefs across programs",
-      "Portfolio view of evidence gaps",
-      "Workshop facilitation kit",
-      "Priority support",
+      "Facilitated evidence workshops",
+      "Portfolio review of evidence gaps",
+      "Rules tuned to your measures",
+      "Guidance from a learning scientist",
     ],
-    cta: false,
+    cta: { kind: "site" as const, label: "Start a conversation" },
+    featured: false,
   },
 ];
 
 const FAQ = [
   {
     q: "Does it calculate ROI or predict impact?",
-    a: "No, on purpose. It shows what your evidence can support and what it can’t. Rule-based suggestions never claim a result the data doesn’t show.",
+    a: "No, on purpose. It shows what your evidence can support and what it can’t. The rules never claim a result your data doesn’t show.",
   },
   {
     q: "Is my information saved or shared?",
     a: "No. The Evidence Check runs entirely in your browser. Nothing you tick is stored or sent anywhere.",
   },
   {
-    q: "What is it based on?",
-    a: "Peer-reviewed research on training evaluation and transfer, including meta-analyses by Alliger et al. (1997), Arthur et al. (2003) and Blume et al. (2010). Sources are cited in the tool.",
+    q: "Is this a finished product?",
+    a: "It’s a working prototype. The core check is complete and free to use. Paid plans are being shaped with early users, and nothing is for sale yet.",
   },
   {
     q: "Do I need to know research methods?",
     a: "No. Every link explains itself in plain language, and Kirkpatrick levels are labeled for people who already use them.",
   },
   {
-    q: "Is the worked example real?",
-    a: "No. Northstar Services is a fictional organization, clearly labeled, used to show the full process end to end.",
+    q: "How is it different from Kirkpatrick or LTEM?",
+    a: "Those are frameworks for planning evaluation. Evidence Studio applies that thinking to your program in minutes, adds the work environment, and ends with a decision.",
   },
 ];
 
-function useReveal<T extends HTMLElement>() {
+function useInView<T extends HTMLElement>(threshold = 0.35) {
   const ref = useRef<T>(null);
   const [inView, setInView] = useState(false);
   useEffect(() => {
@@ -157,212 +166,267 @@ function useReveal<T extends HTMLElement>() {
           io.disconnect();
         }
       },
-      { threshold: 0.35 },
+      { threshold },
     );
     io.observe(el);
     return () => io.disconnect();
-  }, []);
+  }, [threshold]);
   return [ref, inView] as const;
 }
 
-function ScrollStory() {
-  const [active, setActive] = useState(0);
-  const stepRefs = useRef<(HTMLElement | null)[]>([]);
-  useEffect(() => {
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) {
-          if (e.isIntersecting) setActive(Number((e.target as HTMLElement).dataset["index"]));
-        }
-      },
-      { rootMargin: "-45% 0px -45% 0px" },
-    );
-    stepRefs.current.forEach((el) => el && io.observe(el));
-    return () => io.disconnect();
-  }, []);
-
-  return (
-    <div className="lp-story">
-      <div className="lp-story-stage" aria-hidden>
-        <div className="lp-frame">
-          <div className="lp-frame-bar">
-            <i />
-            <i />
-            <i />
-            <span>evidence-studio · Evidence Check</span>
-          </div>
-          <div className="lp-frame-screen">
-            {STEPS.map((s, i) => (
-              <img
-                key={s.img}
-                src={s.img}
-                alt=""
-                loading={i === 0 ? "eager" : "lazy"}
-                className={i === active ? "on" : ""}
-              />
-            ))}
-          </div>
-        </div>
-        <ol className="lp-rail">
-          {STEPS.map((s, i) => (
-            <li key={s.img} className={i === active ? "on" : i < active ? "done" : ""} />
-          ))}
-        </ol>
-      </div>
-      <div className="lp-story-steps">
-        {STEPS.map((s, i) => (
-          <section
-            key={s.img}
-            data-index={i}
-            ref={(el) => {
-              stepRefs.current[i] = el;
-            }}
-            className={`lp-step ${i === active ? "on" : ""}`}
-            aria-labelledby={`lp-step-${i}`}
-          >
-            <p className="ec-label">{s.kicker}</p>
-            <h3 id={`lp-step-${i}`}>{s.title}</h3>
-            <p>{s.text}</p>
-            <img src={s.img} alt={s.alt} loading="lazy" className="lp-step-img" />
-          </section>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function ClaimCard({ claim, truth, index }: { claim: string; truth: string; index: number }) {
-  const [ref, inView] = useReveal<HTMLDivElement>();
+function Claim({ claim, truth, i }: { claim: string; truth: string; i: number }) {
+  const [ref, inView] = useInView<HTMLDivElement>();
   return (
     <div
       ref={ref}
-      className={`lp-claim ${inView ? "in" : ""}`}
-      style={{ "--d": `${index * 160}ms` } as React.CSSProperties}
+      className={`l-claim ${inView ? "in" : ""}`}
+      style={{ "--d": `${i * 180}ms` } as React.CSSProperties}
     >
-      <p className="lp-claim-x">
-        <span className="lp-strike">{claim}</span>
+      <p className="l-claim-x">
+        <span className="l-strike">{claim}</span>
         <span className="sr-only"> (not supported by this evidence)</span>
       </p>
-      <p className="lp-claim-ok">
-        <span className="ec-label">What the data supports</span>
+      <p className="l-claim-ok">
+        <span>What the data supports</span>
         {truth}
       </p>
     </div>
   );
 }
 
+function SampleBrief() {
+  const brief = useMemo(
+    () =>
+      buildCheckBrief(["completion", "satisfaction", "business"], {
+        ...DEFAULT_ANSWERS,
+        manager: "no",
+      }),
+    [],
+  );
+  const [ref, inView] = useInView<HTMLDivElement>(0.25);
+  return (
+    <div ref={ref} className={`l-artifact ${inView ? "in" : ""}`}>
+      <article className="l-paper" aria-label="Sample decision brief (example inputs)">
+        <p className="l-paper-k">Training evidence brief · example</p>
+        <h3>{brief.headline}</h3>
+        <div className="l-paper-dec">
+          <span aria-hidden>→</span>
+          <div>
+            <p className="l-paper-k gold">Suggested next decision</p>
+            <p>{brief.decision}</p>
+          </div>
+        </div>
+        <div className="l-paper-cols">
+          <div>
+            <p className="l-paper-k">You can say</p>
+            <ul>
+              {brief.canSay.map((x) => (
+                <li key={x}>{x}</li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <p className="l-paper-k red">You can’t say yet</p>
+            <ul>
+              {brief.cannotSay.map((x) => (
+                <li key={x}>{x}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        <div className="l-paper-q">
+          <p className="l-paper-k red">What would make this wrong?</p>
+          <p className="q">{brief.question}</p>
+        </div>
+      </article>
+      <ol className="l-notes" aria-label="What the brief gives you">
+        <li style={{ "--d": "200ms" } as React.CSSProperties}>
+          <b>Plain-language claims</b> Wording you can put in a report without overreaching.
+        </li>
+        <li style={{ "--d": "380ms" } as React.CSSProperties}>
+          <b>A decision for leaders</b> Scale, fix or test, with the reason stated.
+        </li>
+        <li style={{ "--d": "560ms" } as React.CSSProperties}>
+          <b>The honest limits</b> What the evidence can’t show yet, named up front.
+        </li>
+        <li style={{ "--d": "740ms" } as React.CSSProperties}>
+          <b>A built-in challenge</b> The one question that could prove the plan wrong.
+        </li>
+      </ol>
+    </div>
+  );
+}
+
+function VideoDemo() {
+  const [playing, setPlaying] = useState(false);
+  return (
+    <div className="l-video">
+      {playing ? (
+        <video
+          src="/demo/evidence-check-demo.mp4"
+          poster="/demo/poster.webp"
+          controls
+          autoPlay
+          playsInline
+          aria-label="Walkthrough of the Evidence Check with on-screen captions"
+        />
+      ) : (
+        <button type="button" className="l-video-poster" onClick={() => setPlaying(true)}>
+          <img src="/demo/poster.webp" alt="" loading="lazy" />
+          <span className="l-play" aria-hidden>
+            <svg viewBox="0 0 24 24" width="28" height="28">
+              <path d="M8 5v14l11-7z" fill="currentColor" />
+            </svg>
+          </span>
+          <span className="l-video-label">
+            <b>Watch the walkthrough</b>
+            <span>About 45 seconds · captions on screen</span>
+          </span>
+        </button>
+      )}
+    </div>
+  );
+}
+
 export function Landing() {
   return (
-    <div className="ec lp">
-      {/* Hero */}
-      <section className="ec-wrap lp-hero" aria-labelledby="lp-title">
-        <div className="lp-hero-copy">
-          <p className="lp-pill">
-            <span className="lp-dotlive" aria-hidden /> Evidence Studio · free preview
+    <div className="ec l">
+      <div className="l-grain" aria-hidden />
+
+      {/* 1 · Hero */}
+      <section className="l-hero" aria-labelledby="l-title">
+        <div className="l-wrap l-hero-copy">
+          <p className="l-badge">
+            <span className="l-badge-dot" aria-hidden />
+            Prototype · early access is open
           </p>
-          <h1 id="lp-title">
-            Before you report training impact, <em>check what you can prove.</em>
+          <h1 id="l-title">
+            Training was completed.
+            <br />
+            <em>Did work change?</em>
           </h1>
-          <p className="lp-lede">
-            A two-minute evidence check for L&amp;D teams. See which claims your data supports, what
-            might be getting in the way, and the cheapest evidence to collect next. Leave with a
-            brief your leaders can act on.
+          <p className="l-lede">
+            Evidence Studio is a two-minute evidence check for learning teams. See what your data
+            can honestly support, what the workplace may be blocking, and what to measure next,
+            before anyone asks.
           </p>
-          <div className="lp-ctas">
-            <Link to="/check" className="lp-btn primary">
-              Run a free check <span aria-hidden>→</span>
+          <div className="l-ctas">
+            <Link to="/check" className="l-btn primary">
+              Try the prototype <span aria-hidden>→</span>
             </Link>
-            <a href="#how" className="lp-btn ghost">
-              See how it works
+            <a href="#demo" className="l-btn ghost">
+              <span className="l-btn-play" aria-hidden>
+                ▶
+              </span>
+              Watch the demo
             </a>
           </div>
-          <ul className="lp-trust">
-            <li>No sign-up</li>
-            <li>Nothing leaves your browser</li>
-            <li>Built on peer-reviewed research</li>
-          </ul>
         </div>
-        <div className="lp-hero-visual" aria-hidden>
-          <div className="lp-tilt">
-            <div className="lp-frame">
-              <div className="lp-frame-bar">
-                <i />
-                <i />
-                <i />
-                <span>evidence-studio · Evidence Check</span>
-              </div>
-              <div className="lp-frame-screen">
-                <img src="/landing/chain.webp" alt="" className="on" />
-              </div>
-            </div>
-            <span className="lp-float f1">
-              <b>●</b> Measured ≠ caused
-            </span>
-            <span className="lp-float f2">
-              <b className="coral">!</b> Barrier: manager support
-            </span>
-            <span className="lp-float f3">
-              <b className="dark">○</b> 4 links still unknown
-            </span>
-          </div>
+        <div className="l-wrap l-hero-instrument">
+          <HeroChain />
+        </div>
+        <div className="l-wrap">
+          <ul className="l-proof" aria-label="Why you can trust it">
+            <li>
+              <b>Built on peer-reviewed research</b> Alliger · Arthur · Blume · Warr
+            </li>
+            <li>
+              <b>Kirkpatrick levels built in</b> No new jargon to learn
+            </li>
+            <li>
+              <b>Private by design</b> No sign-up; nothing leaves your browser
+            </li>
+            <li>
+              <b>Made by a learning scientist</b> Dennis Griffin, Ed.D.
+            </li>
+          </ul>
         </div>
       </section>
 
-      {/* The problem */}
-      <section className="ec-wrap lp-section" aria-labelledby="lp-problem">
-        <p className="ec-label">The problem</p>
-        <h2 id="lp-problem" className="lp-h2">
-          Most training reports claim more than their data can show.
+      {/* 2 · The question */}
+      <section className="l-wrap l-sec" aria-labelledby="l-q">
+        <p className="l-eyebrow">The question every learning leader gets</p>
+        <h2 id="l-q" className="l-h2">
+          “So, did the training work?”
+          <br />
+          <span className="dim">Completion data can’t answer that.</span>
         </h2>
-        <p className="lp-sub">
-          Completion and satisfaction are useful. They just can’t show that work changed, and
-          research shows feel-good ratings relate only weakly to on-the-job behavior.
+        <p className="l-sub">
+          Completion and satisfaction are useful, but research shows feel-good ratings relate only
+          weakly to what people do at work. Here’s what typical reports claim, and what the data
+          behind them actually supports.
         </p>
-        <div className="lp-claims">
+        <div className="l-claims">
           {CLAIMS.map((c, i) => (
-            <ClaimCard key={c.claim} {...c} index={i} />
+            <Claim key={c.claim} {...c} i={i} />
           ))}
         </div>
       </section>
 
-      {/* How it works */}
-      <section id="how" className="ec-wrap lp-section" aria-labelledby="lp-how">
-        <p className="ec-label">How it works</p>
-        <h2 id="lp-how" className="lp-h2">
-          Four steps. About two minutes.
+      {/* 3 · Guided demo */}
+      <section id="how" className="l-wrap l-sec" aria-labelledby="l-how">
+        <p className="l-eyebrow">How it works</p>
+        <h2 id="l-how" className="l-h2">
+          Five moves. About two minutes.
+          <br />
+          <span className="dim">Scroll to watch one run.</span>
         </h2>
-        <ScrollStory />
+        <GuidedDemo />
       </section>
 
-      {/* Who it's for */}
-      <section className="ec-wrap lp-section" aria-labelledby="lp-who">
-        <p className="ec-label">Who it’s for</p>
-        <h2 id="lp-who" className="lp-h2">
-          Built for the people who get asked “did it work?”
+      {/* 4 · The output */}
+      <section className="l-wrap l-sec" aria-labelledby="l-out">
+        <p className="l-eyebrow">What you walk away with</p>
+        <h2 id="l-out" className="l-h2">
+          One page your leaders will actually read.
         </h2>
-        <div className="lp-personas">
-          {PERSONAS.map((p) => (
-            <article key={p.who} className="lp-persona">
-              <h3>{p.who}</h3>
-              <p className="lp-need">{p.need}</p>
-              <p className="lp-gets">{p.gets}</p>
+        <p className="l-sub">
+          Generated by the same rules you just watched, from example inputs: completion, a
+          satisfaction survey, a business metric, and weak manager support.
+        </p>
+        <SampleBrief />
+      </section>
+
+      {/* 5 · Video */}
+      <section id="demo" className="l-wrap l-sec" aria-labelledby="l-demo">
+        <p className="l-eyebrow">See the real thing</p>
+        <h2 id="l-demo" className="l-h2">
+          Watch a full check, start to finish.
+        </h2>
+        <VideoDemo />
+      </section>
+
+      {/* 6 · Audiences */}
+      <section className="l-wrap l-sec" aria-labelledby="l-who">
+        <p className="l-eyebrow">Who it’s for</p>
+        <h2 id="l-who" className="l-h2">
+          For everyone who gets asked “did it work?”
+        </h2>
+        <div className="l-aud">
+          {AUDIENCES.map((a) => (
+            <article key={a.who} className="l-aud-card">
+              <h3>{a.who}</h3>
+              <p className="ask">{a.ask}</p>
+              <p className="get">{a.get}</p>
             </article>
           ))}
         </div>
       </section>
 
-      {/* Difference */}
-      <section className="ec-wrap lp-section" aria-labelledby="lp-diff">
-        <p className="ec-label">Why it’s different</p>
-        <h2 id="lp-diff" className="lp-h2">
-          Other tools help you look good. <em>This one helps you be right.</em>
+      {/* 7 · Difference */}
+      <section className="l-wrap l-sec" aria-labelledby="l-diff">
+        <p className="l-eyebrow">Why it’s different</p>
+        <h2 id="l-diff" className="l-h2">
+          Most tools help you look good.
+          <br />
+          <em>This one helps you be right.</em>
         </h2>
-        <div className="lp-table-wrap">
-          <table className="lp-table">
+        <div className="l-table-wrap">
+          <table className="l-table">
             <thead>
               <tr>
                 <th scope="col">
-                  <span className="sr-only">Comparison</span>
+                  <span className="sr-only">Compared on</span>
                 </th>
                 <th scope="col">Typical learning dashboards</th>
                 <th scope="col" className="us">
@@ -383,83 +447,124 @@ export function Landing() {
         </div>
       </section>
 
-      {/* Research */}
-      <section className="ec-wrap lp-section" aria-labelledby="lp-research">
-        <p className="ec-label">Evidence-based by design</p>
-        <h2 id="lp-research" className="lp-h2">
+      {/* 8 · Science */}
+      <section className="l-wrap l-sec" aria-labelledby="l-sci">
+        <p className="l-eyebrow">Evidence-based by design</p>
+        <h2 id="l-sci" className="l-h2">
           Every rule traces back to research.
         </h2>
-        <div className="lp-stats">
-          <div>
-            <b>Reactions</b>
-            <span>relate weakly to job behavior</span>
-            <cite>Alliger et al., 1997</cite>
-          </div>
-          <div>
-            <b>Training works</b>
-            <span>when designed well, with medium-to-large effects</span>
-            <cite>Arthur et al., 2003</cite>
-          </div>
-          <div>
-            <b>Environment</b>
-            <span>strongly shapes whether learning gets used</span>
-            <cite>Blume et al., 2010</cite>
+        <p className="l-sub">
+          The engine is deliberately simple and transparent. Each rule reflects decades of
+          peer-reviewed work on training evaluation and transfer.
+        </p>
+        <div className="l-papers">
+          {PAPERS.map((p) => (
+            <a key={p.cite} href={p.href} target="_blank" rel="noopener" className="l-paper-link">
+              <p>{p.finding}</p>
+              <span>
+                {p.cite} <span aria-hidden>↗</span>
+              </span>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      {/* 9 · About */}
+      <section id="about" className="l-wrap l-sec" aria-labelledby="l-about">
+        <div className="l-about">
+          <figure className="l-portrait">
+            <img
+              src="/about/dennis-griffin.webp"
+              alt="Portrait of Dennis Griffin"
+              width={800}
+              height={636}
+              loading="lazy"
+            />
+          </figure>
+          <div className="l-about-copy">
+            <p className="l-eyebrow">Made by a learning scientist</p>
+            <h2 id="l-about" className="l-h2">
+              Dennis Griffin, Ed.D.
+            </h2>
+            <p className="l-about-lede">
+              A learning scientist, mixed-methods researcher and learning and development leader
+              with more than 20 years of experience helping organizations understand what works,
+              what doesn’t, and what to do next.
+            </p>
+            <p>
+              His work spans learning and development, adult learning, UX research, measurement and
+              evaluation, workforce development and organizational strategy. He has led research and
+              learning work at Allstate and Nationwide, with further experience in healthcare and
+              higher education.
+            </p>
+            <blockquote>“Make evidence useful, not just interesting.”</blockquote>
+            <ul className="l-creds">
+              <li>Ed.D., Leadership, Adult and Organizational Learning</li>
+              <li>Ed.S., Adult Learning and Workforce Development</li>
+              <li>
+                Master’s degrees in Human Resources Management and in Training and Development
+              </li>
+              <li>Bachelor’s degree in Psychology</li>
+            </ul>
+            <a href={PERSONAL_SITE} target="_blank" rel="noopener" className="l-btn ghost">
+              Visit DennisRGriffin.com <span aria-hidden>↗</span>
+            </a>
           </div>
         </div>
       </section>
 
-      {/* Pricing */}
-      <section className="ec-wrap lp-section" id="pricing" aria-labelledby="lp-pricing">
-        <p className="ec-label">Pricing</p>
-        <h2 id="lp-pricing" className="lp-h2">
-          Free while in preview.
+      {/* 10 · Pricing */}
+      <section id="pricing" className="l-wrap l-sec" aria-labelledby="l-price">
+        <p className="l-eyebrow">Pricing</p>
+        <h2 id="l-price" className="l-h2">
+          Free while it’s a prototype.
         </h2>
-        <p className="lp-sub">
-          The Evidence Check is free. Paid plans are being designed with early users; nothing below
-          is for sale yet.
+        <p className="l-sub">
+          Use the full Evidence Check today. Paid plans are being shaped with early users, and
+          nothing below is for sale yet.
         </p>
-        <div className="lp-plans">
+        <div className="l-plans">
           {PLANS.map((p) => (
-            <article key={p.name} className={`lp-plan ${p.cta ? "featured" : ""}`}>
-              <p className="lp-status">{p.status}</p>
+            <article key={p.name} className={`l-plan ${p.featured ? "featured" : ""}`}>
+              <p className="l-plan-note">{p.note}</p>
               <h3>{p.name}</h3>
-              <p className="lp-price">{p.price}</p>
-              <p className="lp-plan-blurb">{p.blurb}</p>
+              <p className="l-plan-price">{p.price}</p>
+              <p className="l-plan-blurb">{p.blurb}</p>
               <ul>
                 {p.features.map((f) => (
                   <li key={f}>{f}</li>
                 ))}
               </ul>
-              {p.cta ? (
-                <Link to="/check" className="lp-btn primary block">
-                  Run a free check →
+              {p.cta?.kind === "app" && (
+                <Link to="/check" className="l-btn primary block">
+                  {p.cta.label} <span aria-hidden>→</span>
                 </Link>
-              ) : (
-                <p className="lp-soon">Not available yet</p>
               )}
+              {p.cta?.kind === "site" && (
+                <a
+                  href={PERSONAL_SITE}
+                  target="_blank"
+                  rel="noopener"
+                  className="l-btn ghost block"
+                >
+                  {p.cta.label} <span aria-hidden>↗</span>
+                </a>
+              )}
+              {!p.cta && <p className="l-soon">Not available yet</p>}
             </article>
           ))}
         </div>
       </section>
 
-      {/* FAQ */}
-      <section className="ec-wrap lp-section lp-faq-wrap" aria-labelledby="lp-faq">
+      {/* 11 · FAQ */}
+      <section className="l-wrap l-sec l-faq" aria-labelledby="l-faq">
         <div>
-          <p className="ec-label">Questions</p>
-          <h2 id="lp-faq" className="lp-h2">
+          <p className="l-eyebrow">Questions</p>
+          <h2 id="l-faq" className="l-h2">
             Straight answers.
           </h2>
-          <div className="lp-maker">
-            <p className="ec-label">Made by</p>
-            <p className="lp-maker-name">Dennis Griffin, Ed.D.</p>
-            <p>
-              Learning and development leader working across adult learning, performance consulting,
-              measurement and UX.
-            </p>
-            <Link to="/about">About the creator →</Link>
-          </div>
         </div>
-        <div className="lp-faq">
+        <div className="l-faq-list">
           {FAQ.map((f) => (
             <details key={f.q}>
               <summary>{f.q}</summary>
@@ -469,15 +574,19 @@ export function Landing() {
         </div>
       </section>
 
-      {/* Final CTA */}
-      <section className="ec-wrap lp-final" aria-labelledby="lp-final">
-        <h2 id="lp-final">
-          Training was completed. <em>Did work change?</em>
-        </h2>
-        <p>Find out what you can honestly say in about two minutes.</p>
-        <Link to="/check" className="lp-btn primary">
-          Run a free check <span aria-hidden>→</span>
-        </Link>
+      {/* 12 · Final */}
+      <section className="l-final" aria-labelledby="l-final">
+        <div className="l-wrap">
+          <h2 id="l-final">
+            Know what you can claim
+            <br />
+            <em>before someone asks.</em>
+          </h2>
+          <p>Free, private, and about two minutes.</p>
+          <Link to="/check" className="l-btn primary">
+            Try the prototype <span aria-hidden>→</span>
+          </Link>
+        </div>
       </section>
     </div>
   );

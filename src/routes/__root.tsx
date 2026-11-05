@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
+  useLocation,
   Link,
   createRootRouteWithContext,
   useRouter,
@@ -13,6 +14,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { StudioProvider } from "../lib/studio-store";
 import { SiteFooter, SiteHeader } from "../components/site/SiteChrome";
+import { ProductFooter, ProductHeader } from "../components/landing/ProductChrome";
 
 function NotFoundComponent() {
   return (
@@ -130,17 +132,22 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  // The product pages (landing and Evidence Check) use their own dark chrome.
+  const pathname = useLocation({ select: (l) => l.pathname });
+  const product = pathname === "/" || pathname === "/check";
 
   return (
     <QueryClientProvider client={queryClient}>
       <StudioProvider>
-        <div className="relative z-10 flex min-h-screen flex-col">
-          <SiteHeader />
+        <div
+          className={`relative z-10 flex min-h-screen flex-col ${product ? "product-shell" : ""}`}
+        >
+          {product ? <ProductHeader /> : <SiteHeader />}
           <main className="flex-1">
             {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
             <Outlet />
           </main>
-          <SiteFooter />
+          {product ? <ProductFooter /> : <SiteFooter />}
         </div>
       </StudioProvider>
     </QueryClientProvider>
