@@ -400,10 +400,22 @@ export function buildCheckBrief(measured: string[], answers: Record<string, Answ
   return { headline, decision, canSay, resultsNote, cannotSay, nextEvidence, question, answer };
 }
 
-export function briefAsText(b: CheckBrief, provenance: string): string {
+/** The chain as one line of text, for copied and downloaded briefs. */
+export function chainLine(
+  states: Record<string, ChainState>,
+  barriers: Record<string, string[]> = {},
+): string {
+  return CHAIN.map(
+    (n, i) =>
+      `${String(i + 1).padStart(2, "0")} ${n.label} (${states[n.id] ?? "unknown"}${barriers[n.id] ? ", barrier reported" : ""})`,
+  ).join(" > ");
+}
+
+export function briefAsText(b: CheckBrief, provenance: string, chain?: string): string {
   return [
     "TRAINING EVIDENCE BRIEF",
     `Inputs: ${provenance}`,
+    ...(chain ? [`Evidence chain: ${chain}`] : []),
     "",
     b.headline,
     "",

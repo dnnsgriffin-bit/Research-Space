@@ -3,7 +3,13 @@ import { Link } from "@tanstack/react-router";
 import { HeroChain } from "./HeroChain";
 import { GuidedDemo } from "./GuidedDemo";
 import { PERSONAL_SITE } from "./ProductChrome";
-import { DEFAULT_ANSWERS, buildCheckBrief } from "@/lib/evidence-check";
+import {
+  DEFAULT_ANSWERS,
+  barriersByLink,
+  buildCheckBrief,
+  chainStates,
+} from "@/lib/evidence-check";
+import { BriefChain } from "@/components/check/BriefChain";
 
 /**
  * Evidence Studio product landing page. Presentation only: it never reads or writes
@@ -199,6 +205,8 @@ function Claim({ claim, truth, i }: { claim: string; truth: string; i: number })
   );
 }
 
+const SAMPLE_MEASURES = ["completion", "satisfaction", "business"];
+
 function SampleBrief() {
   const brief = useMemo(
     () =>
@@ -218,6 +226,10 @@ function SampleBrief() {
           support answered No. Illustrative, not real data.
         </p>
         <h3>{brief.headline}</h3>
+        <BriefChain
+          states={chainStates(SAMPLE_MEASURES)}
+          barriers={barriersByLink({ ...DEFAULT_ANSWERS, manager: "no" })}
+        />
         <div className="l-paper-dec">
           <span aria-hidden>→</span>
           <div>

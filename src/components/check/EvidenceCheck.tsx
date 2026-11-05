@@ -10,6 +10,7 @@ import {
   barriersByLink,
   briefAsText,
   buildCheckBrief,
+  chainLine,
   chainStates,
   claimReach,
   linkLabel,
@@ -17,9 +18,11 @@ import {
   provenanceLabel,
   reachMessage,
   type Answer,
+  type CheckBrief,
   type InputOrigin,
 } from "@/lib/evidence-check";
 import { GENERIC_PROVENANCE } from "@/lib/chain-provenance";
+import { BriefChain } from "./BriefChain";
 import type { ChainState } from "@/lib/studio-data";
 import { listPhrase } from "@/lib/studio-engine";
 
@@ -48,7 +51,7 @@ export function EvidenceCheck() {
   const [answers, setAnswers] = useState<Record<string, Answer>>(DEFAULT_ANSWERS);
   // Where the inputs came from, tracked separately from what they happen to match.
   const [origin, setOrigin] = useState<InputOrigin>({ kind: "example", presetId: "numbers" });
-  const [selected, setSelected] = useState<string | null>("transfer");
+  const [selected, setSelected] = useState<string | null>(null);
   const inspectorRef = useRef<HTMLElement>(null);
   const nodeRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
@@ -105,17 +108,6 @@ export function EvidenceCheck() {
           observed, so you can see how far an honest claim can go.
         </p>
 
-        <ChainStage
-          states={states}
-          barriers={barriers}
-          selected={selected}
-          onSelect={select}
-          nodeRefs={nodeRefs}
-          reach={reach}
-        >
-          <Presets origin={origin} onPick={pickPreset} />
-        </ChainStage>
-
         <ol className="ec-how" aria-label="How it works, about two minutes">
           <li>
             <span className="ec-n">1</span>
@@ -138,8 +130,34 @@ export function EvidenceCheck() {
         </ol>
       </header>
 
-      <div className="ec-wrap ec-work">
-        <section className="ec-card" aria-labelledby="ec-measures-title">
+      {/* The workbench: controls on the left, a pinned instrument on the right (wide screens).
+          On narrow screens it is one column: starting points, chain, measures, conditions. */}
+      <div className="ec-wrap ec-bench">
+        <div className="ec-card ec-bench-presets">
+          <Presets origin={origin} onPick={pickPreset} />
+        </div>
+
+        <div className="ec-bench-instrument">
+          <ChainStage
+            states={states}
+            barriers={barriers}
+            selected={selected}
+            onSelect={select}
+            nodeRefs={nodeRefs}
+            reach={reach}
+          />
+          <Inspector
+            ref={inspectorRef}
+            id={selected}
+            state={selected ? states[selected]! : "unknown"}
+            barriers={selected ? barriers[selected] : undefined}
+            onClose={close}
+            brief={brief}
+            origin={origin}
+          />
+        </div>
+
+        <section className="ec-card ec-bench-measures" aria-labelledby="ec-measures-title">
           <p className="ec-label">Step 1</p>
           <h2 id="ec-measures-title">What did you measure?</h2>
           <p className="ec-hint">
@@ -148,44 +166,37 @@ export function EvidenceCheck() {
           </p>
           <MeasurePicker measured={measured} onToggle={toggleMeasure} />
         </section>
-        <Inspector
-          ref={inspectorRef}
-          id={selected}
-          state={selected ? states[selected]! : "unknown"}
-          barriers={selected ? barriers[selected] : undefined}
-          onClose={close}
-        />
+
+        <section className="ec-card ec-bench-conds" aria-labelledby="ec-cond-title">
+          <p className="ec-label">Step 2</p>
+          <h2 id="ec-cond-title">Before you credit or blame the training</h2>
+          <p className="ec-hint">
+            Work conditions predict whether people use what they learned. A “No” marks the affected
+            link in the chain. “Not sure” is a fair answer.
+          </p>
+          <div className="ec-conds">
+            {CONDITIONS.map((c) => (
+              <ConditionCard
+                key={c.id}
+                id={c.id}
+                question={c.question}
+                why={c.why}
+                links={c.links}
+                value={answers[c.id] ?? "unsure"}
+                onChange={(v) => {
+                  setAnswers((a) => ({ ...a, [c.id]: v }));
+                  setOrigin(originAfterEdit);
+                }}
+              />
+            ))}
+          </div>
+        </section>
       </div>
 
-      <section className="ec-wrap ec-section" aria-labelledby="ec-cond-title">
-        <span className="ec-label">Step 2</span>
-        <h2 id="ec-cond-title">Before you credit or blame the training</h2>
-        <p className="ec-lede">
-          Work conditions predict whether people use what they learned. A “No” marks the affected
-          link in the chain. “Not sure” is a fair answer.
-        </p>
-        <div className="ec-conds">
-          {CONDITIONS.map((c) => (
-            <ConditionCard
-              key={c.id}
-              id={c.id}
-              question={c.question}
-              why={c.why}
-              links={c.links}
-              value={answers[c.id] ?? "unsure"}
-              onChange={(v) => {
-                setAnswers((a) => ({ ...a, [c.id]: v }));
-                setOrigin(originAfterEdit);
-              }}
-            />
-          ))}
-        </div>
-      </section>
-
-      <section className="ec-wrap ec-section" aria-labelledby="ec-brief-title">
+      <section className="ec-wrap ec-section ec-brief-section" aria-labelledby="ec-brief-title">
         <span className="ec-label">Step 3</span>
         <h2 id="ec-brief-title">The claim you can defend today</h2>
-        <Brief brief={brief} origin={origin} />
+        <Brief brief={brief} origin={origin} states={states} barriers={barriers} />
       </section>
     </div>
   );
@@ -462,12 +473,16 @@ function Inspector({
   state,
   barriers,
   onClose,
+  brief,
+  origin,
 }: {
   ref: React.Ref<HTMLElement>;
   id: string | null;
   state: ChainState;
   barriers: string[] | undefined;
   onClose: () => void;
+  brief: CheckBrief;
+  origin: InputOrigin;
 }) {
   const node = id ? CHAIN.find((n) => n.id === id) : null;
   const d = id ? GENERIC_PROVENANCE[id] : undefined;
@@ -476,17 +491,11 @@ function Inspector({
       ref={ref}
       id="ec-inspector"
       className="ec-card"
-      aria-label="Evidence inspector"
+      aria-label={node ? "Evidence inspector" : "Live brief"}
       tabIndex={-1}
     >
       {!node || !d ? (
-        <div className="ec-insp-empty">
-          <h3>Where does the claim need support?</h3>
-          <p>
-            Select a link in the chain to see what it means, what it can’t establish, and what to
-            collect next. An unknown link is something to investigate, not a failure.
-          </p>
-        </div>
+        <LiveBrief brief={brief} origin={origin} />
       ) : (
         <div key={node.id} className="ec-enter">
           <div className="ec-insp-head">
@@ -536,6 +545,49 @@ function Inspector({
         </div>
       )}
     </section>
+  );
+}
+
+/** A compact, always-current view of the brief, shown while no link is open. */
+function LiveBrief({ brief, origin }: { brief: CheckBrief; origin: InputOrigin }) {
+  const next = brief.nextEvidence[0];
+  return (
+    <div className="ec-live">
+      <div className="ec-live-top">
+        <p className="ec-label">Live brief · updates as you go</p>
+        <p className="ec-live-hint">Select a link in the chain to inspect it.</p>
+      </div>
+      <p className={`ec-live-prov ${origin.kind === "own" ? "own" : ""}`}>
+        {provenanceLabel(origin)}
+      </p>
+      <p key={brief.headline} className="ec-live-h ec-swap">
+        {brief.headline}
+      </p>
+      <div className="ec-live-dec">
+        <span className="ec-live-k">Suggested next decision</span>
+        <p>{brief.decision}</p>
+      </div>
+      <dl className="ec-live-counts">
+        <div>
+          <dt>You can say</dt>
+          <dd>{brief.canSay.length}</dd>
+        </div>
+        <div>
+          <dt>You can’t say yet</dt>
+          <dd>{brief.cannotSay.length}</dd>
+        </div>
+      </dl>
+      {next && (
+        <p className="ec-live-next">
+          <span className="ec-live-k">Suggested next evidence</span>
+          {next.link && <b>{next.link}: </b>}
+          {next.text}
+        </p>
+      )}
+      <a href="#ec-brief-title" className="ec-live-go">
+        Read the full brief <span aria-hidden>↓</span>
+      </a>
+    </div>
   );
 }
 
@@ -597,18 +649,30 @@ function ConditionCard({
 function Brief({
   brief,
   origin,
+  states,
+  barriers,
 }: {
   brief: ReturnType<typeof buildCheckBrief>;
   origin: InputOrigin;
+  states: Record<string, ChainState>;
+  barriers: Record<string, string[]>;
 }) {
   const provenance = provenanceLabel(origin);
+  const chain = chainLine(states, barriers);
+  // Set on the client only, so the printed date never causes a hydration mismatch.
+  const [today, setToday] = useState("");
+  useEffect(() => {
+    setToday(
+      new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }),
+    );
+  }, []);
   const [copied, setCopied] = useState(false);
   const [fallback, setFallback] = useState<string | null>(null);
   const timer = useRef<number | undefined>(undefined);
   useEffect(() => () => window.clearTimeout(timer.current), []);
 
   const copy = async () => {
-    const text = briefAsText(brief, provenance);
+    const text = briefAsText(brief, provenance, chain);
     try {
       await navigator.clipboard.writeText(text);
       setFallback(null);
@@ -620,7 +684,7 @@ function Brief({
     }
   };
   const download = () => {
-    const blob = new Blob([briefAsText(brief, provenance)], { type: "text/plain" });
+    const blob = new Blob([briefAsText(brief, provenance, chain)], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -630,12 +694,16 @@ function Brief({
   };
 
   return (
-    <article className="ec-brief">
+    <article className="ec-brief" id="ec-brief">
+      <p className="ec-print-head" aria-hidden>
+        Evidence Studio · Training evidence brief{today ? ` · ${today}` : ""}
+      </p>
       <p className="ec-label">Decision brief</p>
       <p className={`ec-prov ${origin.kind === "own" ? "own" : ""}`}>{provenance}</p>
       <h3 key={brief.headline} className="ec-swap">
         {brief.headline}
       </h3>
+      <BriefChain states={states} barriers={barriers} />
       <div className="ec-decision">
         <span className="ec-icon" aria-hidden>
           →
@@ -681,6 +749,9 @@ function Brief({
         </button>
         <button type="button" className="ec-btn ghost" onClick={download}>
           Download .txt
+        </button>
+        <button type="button" className="ec-btn ghost" onClick={() => window.print()}>
+          Save as PDF
         </button>
         <span className="ec-status" role="status" aria-live="polite">
           {copied ? "Brief copied. Paste it into an email or slide." : ""}

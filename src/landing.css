@@ -2471,3 +2471,461 @@ body:has(.product-shell) {
     transition: none !important;
   }
 }
+
+/* ===========================================================================
+ * Evidence Check workbench (/check). Wide screens: controls left, a pinned
+ * instrument right (chain, claim reach, live brief or inspector), so every
+ * tick visibly changes the claim. Narrow screens: one column.
+ * ======================================================================== */
+.ec-bench {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "presets" "instrument" "measures" "conds";
+  gap: 18px;
+  padding-top: 26px;
+}
+.ec-bench-presets {
+  grid-area: presets;
+}
+.ec-bench-instrument {
+  grid-area: instrument;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+/* Cards keep their full height; the pinned pane scrolls instead of clipping them. */
+.ec-bench-instrument > * {
+  flex-shrink: 0;
+}
+.ec-bench-measures {
+  grid-area: measures;
+}
+.ec-bench-conds {
+  grid-area: conds;
+}
+.ec-bench .ec-stage {
+  margin-top: 0;
+}
+.ec-bench-presets .ec-presets {
+  margin: 0;
+}
+.ec-bench-conds h2,
+.ec-bench-measures h2 {
+  font-size: 1.75rem;
+}
+@media (min-width: 1180px) {
+  .ec-bench {
+    grid-template-columns: minmax(0, 0.84fr) minmax(0, 1.16fr);
+    grid-template-areas:
+      "presets instrument"
+      "measures instrument"
+      "conds instrument";
+    align-items: start;
+    gap: 18px 22px;
+  }
+  .ec-bench-instrument {
+    position: sticky;
+    top: calc(var(--site-header-height, 70px) + 14px);
+    max-height: calc(100vh - var(--site-header-height, 70px) - 28px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--ec-line-2) transparent;
+    border-radius: 18px;
+  }
+  .ec-bench .ec-conds {
+    grid-template-columns: 1fr;
+  }
+  .ec-bench .ec-stage {
+    padding: 20px 18px 18px;
+  }
+  .ec-bench .ec-dot {
+    width: 48px;
+    height: 48px;
+  }
+  .ec-bench .ec-seg {
+    top: 23px;
+  }
+  .ec-bench .ec-name {
+    font-size: 0.86rem;
+  }
+  .ec-bench .ec-big {
+    font-size: clamp(1.35rem, 1.9vw, 1.75rem);
+  }
+  .ec-bench .ec-reach {
+    margin-top: 14px;
+  }
+  .ec-bench .ec-ends {
+    display: none;
+  }
+  .ec-bench .ec-legend {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--ec-line);
+    gap: 4px 16px;
+    font-size: 0.78rem;
+  }
+  .ec-bench .ec-chain {
+    margin-top: 16px;
+  }
+  .ec-bench-instrument .ec-card {
+    padding: 18px 20px;
+  }
+  .ec-bench .ec-live {
+    gap: 10px;
+  }
+  .ec-bench .ec-live-h {
+    font-size: 1.45rem;
+  }
+  .ec-bench .ec-live-counts dd {
+    font-size: 1.7rem;
+  }
+}
+
+/* Live brief: shown in the instrument while no link is open */
+.ec-live {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ec-live-top {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 6px 14px;
+}
+.ec-live-hint {
+  font-size: 0.85rem;
+  color: var(--ec-muted);
+}
+.ec-live-prov {
+  align-self: flex-start;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(242, 198, 109, 0.14);
+  color: var(--ec-lamp);
+  font-size: 0.8rem;
+}
+.ec-live-prov.own {
+  background: rgba(147, 180, 204, 0.14);
+  color: var(--ec-haze);
+}
+.ec-live-h {
+  font-family: var(--ec-display);
+  font-size: 1.6rem;
+  line-height: 1.15;
+  color: var(--ec-paper);
+  text-wrap: balance;
+}
+.ec-live-k {
+  display: block;
+  margin-bottom: 3px;
+  font-family: var(--ec-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ec-lamp);
+}
+.ec-live-dec {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--ec-raise);
+}
+.ec-live-dec p {
+  font-weight: 500;
+  line-height: 1.45;
+}
+.ec-live-counts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 0;
+}
+.ec-live-counts div {
+  padding: 8px 0 0;
+  border-top: 1px solid var(--ec-line);
+}
+.ec-live-counts dt {
+  font-size: 0.82rem;
+  color: var(--ec-muted);
+}
+.ec-live-counts dd {
+  margin: 2px 0 0;
+  font-family: var(--ec-display);
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--ec-paper);
+}
+.ec-live-counts div:last-child dd {
+  color: var(--ec-flag);
+}
+.ec-live-next {
+  font-size: 0.93rem;
+  line-height: 1.5;
+  color: var(--ec-paper);
+}
+.ec-live-go {
+  align-self: flex-start;
+  color: var(--ec-lamp);
+  font-weight: 500;
+  text-decoration: none;
+}
+.ec-live-go:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ===========================================================================
+ * Brief chain: the evidence chain in ink on the cream brief and its PDF.
+ * ======================================================================== */
+.bc {
+  margin: 18px 0 4px;
+}
+.bc-chain {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+.bc-link {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  text-align: center;
+}
+.bc-seg {
+  position: absolute;
+  top: 15px;
+  right: 50%;
+  width: 100%;
+  border-top: 2px dotted #8a9197;
+}
+.bc-link:first-child .bc-seg {
+  display: none;
+}
+.bc-link.seg-lit .bc-seg {
+  border-top: 3px solid #c9913a;
+}
+.bc-link.seg-haze .bc-seg {
+  border-top: 2px dashed #3f6a88;
+}
+.bc-node {
+  position: relative;
+  z-index: 1;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-family: var(--ec-mono);
+  font-size: 0.72rem;
+  background: #f1ebdf;
+  border: 2px dotted #7a8187;
+  color: #3c4349;
+}
+.bc-link.measured .bc-node {
+  background: #f2c66d;
+  border: 2px solid #9a6b1f;
+  color: #161b20;
+}
+.bc-link.assumed .bc-node {
+  background: #e7edf1;
+  border: 2px dashed #3f6a88;
+  color: #2a4a62;
+}
+.bc-bang {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #b5523a;
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+.bc-name {
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1.2;
+  color: #161b20;
+}
+.bc-state {
+  font-family: var(--ec-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #4a5258;
+}
+.bc-link.measured .bc-state {
+  color: #6f4f12;
+}
+.bc-link.assumed .bc-state {
+  color: #2a4a62;
+}
+.bc-cap {
+  margin-top: 10px;
+  font-size: 0.8rem;
+  color: #4a5258;
+}
+@media (max-width: 640px) {
+  .bc-chain {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .bc-link {
+    flex-direction: row;
+    text-align: left;
+    gap: 10px;
+  }
+  .bc-seg {
+    top: auto;
+    bottom: 100%;
+    right: auto;
+    left: 15px;
+    width: 0;
+    height: 8px;
+    border-top: 0;
+    border-left: 2px dotted #8a9197;
+  }
+  .bc-link.seg-lit .bc-seg {
+    border-top: 0;
+    border-left: 3px solid #c9913a;
+  }
+  .bc-link.seg-haze .bc-seg {
+    border-top: 0;
+    border-left: 2px dashed #3f6a88;
+  }
+  .bc-node {
+    flex: none;
+  }
+  .bc-state {
+    margin-left: auto;
+  }
+}
+
+/* ===========================================================================
+ * Print / Save as PDF: only the brief, as a clean one-pager.
+ * ======================================================================== */
+.ec-print-head {
+  display: none;
+}
+@media print {
+  @page {
+    margin: 14mm;
+  }
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    animation: none !important;
+    transition: none !important;
+  }
+  html,
+  body,
+  .product-shell,
+  .ec {
+    background: #fff !important;
+  }
+  .ph,
+  .pf,
+  .ec-hero,
+  .ec-bench,
+  .ec-page > .ec + .ec,
+  .ec-brief-section > :not(.ec-brief),
+  #ec-brief .ec-actions,
+  #ec-brief .ec-fallback {
+    display: none !important;
+  }
+  .ec,
+  .ec-brief-section {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: none !important;
+  }
+  #ec-brief {
+    margin: 0 !important;
+    padding: 0 !important;
+    border-radius: 0;
+    box-shadow: none;
+    background: #fff !important;
+  }
+  #ec-brief .ec-print-head {
+    display: block;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #c9c4b8;
+    font-family: var(--ec-mono);
+    font-size: 9pt;
+    color: #4a5258;
+  }
+  #ec-brief {
+    font-size: 9.5pt;
+    line-height: 1.4;
+  }
+  #ec-brief h3 {
+    font-size: 19pt !important;
+    max-width: none !important;
+  }
+  #ec-brief .ec-decision {
+    margin-top: 10px;
+    padding: 10px 12px;
+  }
+  #ec-brief .ec-d {
+    font-size: 10.5pt;
+  }
+  #ec-brief .ec-bgrid {
+    margin-top: 12px;
+    gap: 10px 22px;
+  }
+  #ec-brief .ec-bgrid li + li {
+    margin-top: 2px;
+  }
+  #ec-brief .ec-skeptic {
+    margin-top: 12px;
+    padding: 10px 14px;
+  }
+  #ec-brief .ec-sq {
+    font-size: 13pt;
+  }
+  #ec-brief .bc {
+    margin: 10px 0 0;
+  }
+  #ec-brief .ec-fine {
+    margin-top: 8px !important;
+    font-size: 8pt;
+  }
+  #ec-brief .ec-decision,
+  #ec-brief .ec-skeptic,
+  #ec-brief .bc,
+  #ec-brief .ec-bgrid section {
+    break-inside: avoid;
+  }
+}
+
+/* Inside the Step 2 card, conditions are rows, not cards within a card. */
+.ec-bench-conds .ec-conds {
+  gap: 0;
+}
+.ec-bench-conds .ec-cond {
+  border: 0;
+  border-top: 1px solid var(--ec-line);
+  border-radius: 0;
+  background: transparent;
+  padding: 16px 0;
+}
+.ec-bench-conds .ec-cond.is-no {
+  margin: 0 -12px;
+  padding: 16px 12px;
+  border-top-color: transparent;
+  border-radius: 12px;
+  background: var(--ec-flag-soft);
+}
