@@ -7,10 +7,11 @@ This page collects everything a reviewer needs. All links on it are public.
 
 | What | Link |
 |---|---|
+| **Response to the Nov 5 review (findings, fixes, matrix, rescore)** | [REVIEW_RESPONSE.md](REVIEW_RESPONSE.md) |
 | Reviewer prompt (copy into ChatGPT, Argon and others) | [REVIEW_PROMPT.md](REVIEW_PROMPT.md) |
 | Scoring rubric | [RUBRIC.md](RUBRIC.md) |
 | Narration scripts for the videos | [NARRATION_SCRIPTS.md](NARRATION_SCRIPTS.md) |
-| Product demo video (45 s, captioned) | [evidence-check-demo.mp4](https://github.com/dnnsgriffin-bit/research-space/raw/evidence-check-redesign/public/demo/evidence-check-demo.mp4) |
+| Product demo video (49 s, captioned, example inputs) | [evidence-check-demo.mp4](https://github.com/dnnsgriffin-bit/research-space/raw/evidence-check-redesign/public/demo/evidence-check-demo.mp4) |
 | Landing page walkthrough video (51 s) | [landing-v2-walkthrough.mp4](https://github.com/dnnsgriffin-bit/research-space/raw/evidence-check-redesign/screenshots/landing-v2-walkthrough.mp4) |
 | Live interactive preview (needs the owner to share it) | https://claude.ai/artifact/BkRiasthCe11fzU1okZxL9 |
 | Source code | [src/](../src) |
@@ -39,7 +40,7 @@ As visitors scroll, an animated cursor clicks through the real tool: it ticks me
 
 ![Guided demo, five steps](images/06-guided-demo-five-steps.jpg)
 
-On phones, each step zooms into the part that matters:
+On phones, each step zooms into the part that matters, and a plain-text “What you’d see” line carries the essential result:
 
 ![Guided demo on a phone](images/07-guided-demo-on-phone.jpg)
 
@@ -60,3 +61,4 @@ On phones, each step zooms into the part that matters:
 ![Phone, part 3](images/03-landing-phone-part3.jpg)
 ![Phone, part 4](images/03-landing-phone-part4.jpg)
 ![Phone, part 5](images/03-landing-phone-part5.jpg)
+![Phone, part 6](images/03-landing-phone-part6.jpg)
