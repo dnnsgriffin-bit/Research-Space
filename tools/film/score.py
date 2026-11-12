@@ -184,29 +184,32 @@ for t, m, v in [(0.35, 62, 0.2), (0.95, 69, 0.14), (1.75, 74, 0.2), (2.1, 78, 0.
     add(mix, n, t, v)
     add(wet, n, t, v * 0.9)
 # The first link ignites (5.75 s), the bracket appears (6.9 s), the lockup lands (8.85 s).
-for t, m, v in [(5.75, 78, 0.1), (6.9, 71, 0.07), (7.08, 74, 0.07), (7.26, 78, 0.07), (8.85, 73, 0.1), (9.55, 76, 0.08)]:
+# Then the chain folds into the mark (8.5 to 9.3 s): four quick rising notes that land with it.
+for t, m, v in [(5.75, 78, 0.1), (6.9, 71, 0.07), (7.08, 74, 0.07), (7.26, 78, 0.07), (8.58, 69, 0.05), (8.8, 73, 0.06), (9.02, 76, 0.07), (9.27, 81, 0.11)]:
     n = chime(m)
     add(mix, n, t, v)
     add(wet, n, t, v)
 
-# Interface sounds: a tick on every click, a small chime when a tick lights the chain.
-for j, c in enumerate(clicks):
-    t = INTRO + c["t"] / 1000
-    add(mix, tick(), t, 0.05)
-    step = max(n for n, st in step_t.items() if st <= t + 0.01)
-    if step == 2:
-        n = chime(81 if j == 1 else 85, 1.8)
-        add(mix, n, t + 0.16, 0.07)
-        add(wet, n, t + 0.16, 0.08)
-    if step == 5:  # the reported barrier: a lower, plainer tone
+# Interface sounds: a tick on every click, and a chime as each spark reaches the chain.
+ignites = [e for e in events if e["type"] == "ignite"]
+for c in clicks:
+    add(mix, tick(), INTRO + c["t"] / 1000, 0.05)
+for j, e in enumerate(ignites):
+    t = INTRO + e["t"] / 1000 + 0.27
+    if e.get("tone") == "flag":  # the reported barrier: a lower, plainer tone
         n = chime(66, 1.6)
-        add(mix, n, t + 0.14, 0.07)
-        add(wet, n, t + 0.14, 0.06)
-    if step == 6:  # brief copied
-        for d, m in [(0.12, 78), (0.24, 85)]:
-            n = chime(m, 1.6)
-            add(mix, n, t + d, 0.06)
-            add(wet, n, t + d, 0.07)
+        add(mix, n, t, 0.07)
+        add(wet, n, t, 0.06)
+    else:
+        n = chime(81 if j == 0 else 85, 1.8)
+        add(mix, n, t, 0.07)
+        add(wet, n, t, 0.08)
+if clicks:  # the last click copies the brief
+    t = INTRO + clicks[-1]["t"] / 1000
+    for d, m in [(0.12, 78), (0.24, 85)]:
+        n = chime(m, 1.6)
+        add(mix, n, t + d, 0.06)
+        add(wet, n, t + d, 0.07)
 
 # Closing: a slow rising figure that resolves on D.
 for d, m, v in [(0.45, 62, 0.2), (0.45 + BEAT, 66, 0.16), (0.45 + 2 * BEAT, 69, 0.16), (BAR + 0.45, 74, 0.2), (BAR + 0.45 + BEAT, 78, 0.16), (BAR + 0.45 + 2 * BEAT, 81, 0.14), (2 * BAR + 0.4, 86, 0.1)]:

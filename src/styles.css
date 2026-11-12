@@ -1666,3 +1666,9 @@
 .ec-own-btn:active { transform: scale(0.97); }
 .ec-own-btn:focus-visible { outline: 2px solid var(--ec-lamp); outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) { .ec-own-btn { transition: none; } .ec-own-btn:active { transform: none; } }
+/* Spark from a control to the chain link it changed (decorative; see flySpark) */
+.ec-spark { position: fixed; left: 0; top: 0; z-index: 80; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; pointer-events: none; background: #fff3cf; box-shadow: 0 0 12px 3px rgba(242, 198, 109, 0.9), 0 0 30px 9px rgba(242, 198, 109, 0.35); }
+.ec-spark.tail { width: 6px; height: 6px; margin: -3px 0 0 -3px; opacity: 0.6; }
+.ec-spark.flag { background: #ffe1d6; box-shadow: 0 0 12px 3px rgba(239, 143, 116, 0.9), 0 0 30px 9px rgba(239, 143, 116, 0.35); }
+@media (prefers-reduced-motion: reduce) { .ec-spark { display: none; } }
+@media print { .ec-spark { display: none; } }

@@ -48,6 +48,50 @@ function usePrefersReducedMotion() {
  * The homepage Evidence Check. All state is local to this component and is never
  * written to the Studio store, so trying it cannot overwrite a visitor's Studio work.
  */
+/**
+ * A small spark that flies from a control to the chain link it just changed, so cause and
+ * effect read as one gesture even when the two are far apart. Decorative only: skipped
+ * under reduced motion, when the link is off screen, and while the product film is captured.
+ */
+function flySpark(from: HTMLElement, to: HTMLElement | null | undefined, tone: "lamp" | "flag") {
+  if (!to || typeof window === "undefined") return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  if (document.documentElement.dataset["film"]) return;
+  const a = from.getBoundingClientRect();
+  const b = (to.querySelector(".ec-dot") ?? to).getBoundingClientRect();
+  const x0 = a.left + Math.min(22, a.width / 2);
+  const y0 = a.top + a.height / 2;
+  const x1 = b.left + b.width / 2;
+  const y1 = b.top + b.height / 2;
+  if (y1 < 0 || y1 > window.innerHeight || x1 < 0 || x1 > window.innerWidth) return;
+  // A quadratic curve that lifts away from the control before it lands.
+  const cx = x0 + (x1 - x0) * 0.2;
+  const cy = Math.min(y0, y1) - 70;
+  const steps = 14;
+  const path = Array.from({ length: steps + 1 }, (_, i) => {
+    const u = i / steps;
+    const v = 1 - u;
+    const x = v * v * x0 + 2 * v * u * cx + u * u * x1;
+    const y = v * v * y0 + 2 * v * u * cy + u * u * y1;
+    return { transform: `translate(${x}px, ${y}px) scale(${0.55 + 0.65 * Math.sin(Math.PI * u)})` };
+  });
+  // A head and two fainter followers make a short tail.
+  [0, 45, 90].forEach((delay, i) => {
+    const el = document.createElement("span");
+    el.className = `ec-spark ${tone}${i ? " tail" : ""}`;
+    el.setAttribute("aria-hidden", "true");
+    document.body.appendChild(el);
+    const anim = el.animate(path, {
+      duration: 480,
+      delay,
+      easing: "cubic-bezier(0.45, 0, 0.2, 1)",
+      fill: "backwards",
+    });
+    anim.onfinish = () => el.remove();
+    anim.oncancel = () => el.remove();
+  });
+}
+
 export function EvidenceCheck() {
   const [measured, setMeasured] = useState<string[]>(
     PRESETS.find((p) => p.id === "numbers")!.measured,
@@ -72,8 +116,16 @@ export function EvidenceCheck() {
     setValues((v) => ({ ...v, [id]: { ...(v[id] ?? EMPTY_VALUE), ...patch } }));
     setOrigin(originAfterEdit);
   };
-  const toggleMeasure = (id: string) => {
-    setMeasured((m) => (m.includes(id) ? m.filter((x) => x !== id) : [...m, id]));
+  const toggleMeasure = (id: string, from?: HTMLElement) => {
+    const next = measured.includes(id) ? measured.filter((x) => x !== id) : [...measured, id];
+    // A tick that lights a new link sends a spark from the tick to that link.
+    if (from) {
+      const after = chainStates(next);
+      for (const n of CHAIN)
+        if (states[n.id] !== "measured" && after[n.id] === "measured")
+          flySpark(from, nodeRefs.current[n.id], "lamp");
+    }
+    setMeasured(next);
     setOrigin(originAfterEdit);
   };
   // A starting point is a fresh scenario: it replaces the measures and resets the answers.
@@ -204,7 +256,10 @@ export function EvidenceCheck() {
                 why={c.why}
                 links={c.links}
                 value={answers[c.id] ?? "unsure"}
-                onChange={(v) => {
+                onChange={(v, from) => {
+                  // A new "No" sends a spark to each link it marks.
+                  if (v === "no" && answers[c.id] !== "no" && from)
+                    for (const link of c.links) flySpark(from, nodeRefs.current[link], "flag");
                   setAnswers((a) => ({ ...a, [c.id]: v }));
                   setOrigin(originAfterEdit);
                 }}
@@ -451,7 +506,7 @@ function MeasurePicker({
   onToggle,
 }: {
   measured: string[];
-  onToggle: (id: string) => void;
+  onToggle: (id: string, from?: HTMLElement) => void;
 }) {
   return (
     <div>
@@ -471,7 +526,7 @@ function MeasurePicker({
                   type="button"
                   className="ec-chip"
                   aria-pressed={measured.includes(m.id)}
-                  onClick={() => onToggle(m.id)}
+                  onClick={(e) => onToggle(m.id, e.currentTarget)}
                 >
                   <span className="ec-tick" aria-hidden />
                   <span>
@@ -743,7 +798,7 @@ function ConditionCard({
   why: string;
   links: string[];
   value: Answer;
-  onChange: (v: Answer) => void;
+  onChange: (v: Answer, from?: HTMLElement) => void;
 }) {
   const qid = `ec-q-${id}`;
   const opts: { v: Answer; label: string }[] = [
@@ -764,7 +819,7 @@ function ConditionCard({
             type="button"
             data-v={o.v}
             aria-pressed={value === o.v}
-            onClick={() => onChange(o.v)}
+            onClick={(e) => onChange(o.v, e.currentTarget)}
           >
             {o.label}
           </button>

@@ -46,21 +46,30 @@
         overflow: hidden;
         background: var(--void);
       }
-      .glow {
+      /* The only gold light in the film comes from something that is lit: a measured link,
+         the mark, or the gold line. This element is that light falling on the backdrop; its
+         position and strength are set from the thing that is glowing in each scene. */
+      #lamp {
         position: absolute;
-        border-radius: 50%;
-        filter: blur(90px);
+        left: 0;
+        top: 0;
+        width: 1500px;
+        height: 1100px;
+        margin: -550px 0 0 -750px;
+        background: radial-gradient(
+          closest-side,
+          rgba(242, 198, 109, 1),
+          rgba(242, 198, 109, 0.5) 28%,
+          rgba(242, 198, 109, 0.14) 60%,
+          transparent
+        );
         pointer-events: none;
       }
-      #glowA {
-        width: 1100px;
-        height: 800px;
-        background: radial-gradient(closest-side, rgba(242, 198, 109, 0.2), transparent);
-      }
-      #glowB {
-        width: 1200px;
-        height: 900px;
-        background: radial-gradient(closest-side, rgba(147, 180, 204, 0.13), transparent);
+      #grain {
+        position: absolute;
+        inset: 0;
+        opacity: 0.05;
+        pointer-events: none;
       }
       .vignette {
         position: absolute;
@@ -89,7 +98,17 @@
       }
       .gold {
         font-style: italic;
-        background: linear-gradient(100deg, #f8dfa3 0%, #f2c66d 45%, #c9933a 100%);
+        /* Two layers: a narrow highlight that sweeps across once, over the gold itself. */
+        background-image:
+          linear-gradient(100deg, transparent 42%, rgba(255, 251, 235, 0.95) 50%, transparent 58%),
+          linear-gradient(100deg, #f8dfa3 0%, #f2c66d 45%, #c9933a 100%);
+        background-size:
+          260% 100%,
+          100% 100%;
+        background-repeat: no-repeat;
+        background-position:
+          160% 0,
+          0 0;
         -webkit-background-clip: text;
         background-clip: text;
         color: transparent;
@@ -137,6 +156,7 @@
         text-align: center;
       }
       .cn .dot {
+        position: relative;
         width: 96px;
         height: 96px;
         margin: 0 auto;
@@ -168,6 +188,13 @@
         top: 47px;
         height: 0;
         border-top: 2px dotted rgba(158, 167, 174, 0.38);
+        transform-origin: 0 50%;
+      }
+      #burst0 {
+        position: absolute;
+        border-radius: 50%;
+        border: 3px solid var(--lamp);
+        box-shadow: 0 0 30px rgba(242, 198, 109, 0.7);
       }
       #pulse {
         position: absolute;
@@ -231,8 +258,14 @@
         background: #0a0d10;
         box-shadow:
           0 0 0 1.5px rgba(255, 255, 255, 0.1),
-          0 50px 130px -50px rgba(0, 0, 0, 1),
-          0 0 140px -60px rgba(242, 198, 109, 0.4);
+          0 50px 130px -50px rgba(0, 0, 0, 1);
+      }
+      /* The chain strip holds lit links, so it alone carries a little of their light. */
+      #hud {
+        box-shadow:
+          0 0 0 1.5px rgba(255, 255, 255, 0.1),
+          0 40px 110px -50px rgba(0, 0, 0, 1),
+          0 0 120px -50px rgba(242, 198, 109, 0.35);
       }
       .card img.shot {
         position: absolute;
@@ -254,13 +287,35 @@
         border: 3px solid var(--lamp);
         box-shadow: 0 0 24px rgba(242, 198, 109, 0.6);
       }
-      .hudtag {
+      /* Film-level accents drawn over the footage */
+      #focus {
         position: absolute;
-        left: 22px;
-        top: 14px;
-        font-size: 13px;
-        color: var(--lamp);
-        opacity: 0.9;
+        left: 0;
+        top: 0;
+        overflow: visible;
+      }
+      #fx {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+      .spark {
+        position: absolute;
+        left: 0;
+        top: 0;
+        border-radius: 50%;
+      }
+      #sburst {
+        position: absolute;
+        left: 0;
+        top: 0;
+        border-radius: 50%;
+      }
+      #sflash {
+        position: absolute;
+        left: 0;
+        top: 0;
+        border-radius: 50%;
       }
 
       /* Lower band */
@@ -286,10 +341,16 @@
       }
       .ln .t {
         font-size: 62px;
+        line-height: 1.16;
         white-space: nowrap;
+        overflow: hidden;
+        padding-bottom: 6px;
+      }
+      .ln .t .in {
+        display: block;
       }
       .ln .s {
-        margin-top: 10px;
+        margin-top: 0;
         font-size: 27px;
         color: var(--muted);
         white-space: nowrap;
@@ -309,10 +370,20 @@
         border: 1.5px dotted var(--ash);
       }
       #steps b {
+        position: relative;
         display: block;
         width: 34px;
         height: 0;
         border-top: 1.5px dotted rgba(158, 167, 174, 0.4);
+      }
+      #steps b u {
+        position: absolute;
+        left: 0;
+        top: -2px;
+        height: 2px;
+        width: 100%;
+        background: var(--lamp);
+        transform-origin: 0 50%;
       }
       #brand {
         position: absolute;
@@ -362,9 +433,9 @@
   </head>
   <body>
     <div id="film">
-      <div class="glow" id="glowA"></div>
-      <div class="glow" id="glowB"></div>
+      <div id="lamp"></div>
       <div class="vignette"></div>
+      <div id="grain"></div>
 
       <div class="layer center" id="i1">
         <div class="serif a" id="i1a"></div>
@@ -375,7 +446,7 @@
         <div class="serif head" id="i2head"></div>
         <div id="bracketText">Leaders are asking about these.</div>
         <div id="bracket"></div>
-        <div id="chain"><div id="pulse"></div></div>
+        <div id="chain"><div id="burst0"></div><div id="pulse"></div></div>
       </div>
 
       <div class="layer center" id="i3">
@@ -393,6 +464,17 @@
         </div>
         <div class="card" id="main">
           <img class="shot" alt="" />
+          <svg id="focus" width="10" height="10">
+            <rect
+              rx="16"
+              fill="none"
+              stroke="#f2c66d"
+              stroke-width="3.5"
+              pathLength="1"
+              stroke-dasharray="1"
+              stroke-linecap="round"
+            />
+          </svg>
           <div class="ring"></div>
           <svg class="cursor" viewBox="0 0 44 44">
             <path
@@ -406,12 +488,13 @@
         </div>
         <div id="band">
           <div class="mono" id="stepno"></div>
-          <div class="ln" id="lnA"><div class="serif t"></div><div class="s"></div></div>
-          <div class="ln" id="lnB"><div class="serif t"></div><div class="s"></div></div>
+          <div class="ln" id="lnA"><div class="serif t"><span class="in"></span></div><div class="s"></div></div>
+          <div class="ln" id="lnB"><div class="serif t"><span class="in"></span></div><div class="s"></div></div>
           <div id="steps"></div>
           <div id="brand"><span class="mark" id="bandmark"></span>Evidence Studio</div>
           <div class="mono" id="example">Example inputs · illustrative, not real data</div>
         </div>
+        <div id="fx"><div id="sflash"></div><div id="sburst"></div></div>
       </div>
 
       <div class="layer center" id="out">
@@ -434,25 +517,38 @@
       const lerp = (a, b, u) => a + (b - a) * u;
       const inOut = (u) => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2);
       const out = (u) => 1 - Math.pow(1 - u, 3);
-      const outExpo = (u) => (u >= 1 ? 1 : 1 - Math.pow(2, -10 * u));
+      const outQuint = (u) => 1 - Math.pow(1 - u, 5);
+      const back = (u) => 1 + 2.2 * Math.pow(u - 1, 3) + 1.2 * Math.pow(u - 1, 2); // slight overshoot
       const show = (el, o, extra = "") => {
         el.style.opacity = o;
         el.style.visibility = o <= 0.001 ? "hidden" : "visible";
         if (extra !== null) el.style.transform = extra;
       };
+      /** Small repeatable random source, so the film is identical on every render. */
+      function rand(seed) {
+        let a = seed;
+        return () => {
+          a = (a + 0x6d2b79f5) | 0;
+          let t = Math.imul(a ^ (a >>> 15), 1 | a);
+          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
 
-      /* The three-dot mark from the product header, drawn to size. */
+      /* The three-dot mark from the product header: measured, assumed, unknown. */
+      const MARK = { lamp: "#f2c66d", dim: "#a98a4e" };
       function mark(el, size) {
         const d = size;
         el.style.width = d * 3.3 + "px";
         el.style.height = d + "px";
         el.innerHTML = `
-          <span style="position:absolute;left:0;top:0;width:${d}px;height:${d}px;border-radius:50%;background:#f2c66d;box-shadow:0 0 ${d * 0.9}px rgba(242,198,109,.55)"></span>
-          <span style="position:absolute;left:${d * 0.9}px;top:${d * 0.42}px;width:${d * 0.5}px;height:${d * 0.16}px;background:#a98a4e"></span>
-          <span style="position:absolute;left:${d * 1.15}px;top:0;width:${d}px;height:${d}px;border-radius:50%;background:#a98a4e"></span>
+          <span style="position:absolute;left:0;top:0;width:${d}px;height:${d}px;border-radius:50%;background:${MARK.lamp};box-shadow:0 0 ${d * 0.9}px rgba(242,198,109,.55)"></span>
+          <span style="position:absolute;left:${d * 0.9}px;top:${d * 0.42}px;width:${d * 0.5}px;height:${d * 0.16}px;background:${MARK.dim}"></span>
+          <span style="position:absolute;left:${d * 1.15}px;top:0;width:${d}px;height:${d}px;border-radius:50%;background:${MARK.dim}"></span>
           <span style="position:absolute;left:${d * 2.3}px;top:0;width:${d}px;height:${d}px;border-radius:50%;border:${Math.max(1.5, d * 0.09)}px dotted #9ea7ae"></span>`;
       }
-      mark($("#i3mark"), 60);
+      const MARK_D = 60;
+      mark($("#i3mark"), MARK_D);
       mark($("#bandmark"), 15);
       mark($("#outmark"), 24);
 
@@ -466,15 +562,36 @@
       /** Words rise into place one after another. */
       function reveal(ws, t, start, stagger = 110, dur = 620) {
         ws.forEach((w, i) => {
-          const u = out(seg(t, start + i * stagger, start + i * stagger + dur));
-          w.style.opacity = u;
-          w.style.transform = `translateY(${(1 - u) * 46}px)`;
+          const u = outQuint(seg(t, start + i * stagger, start + i * stagger + dur));
+          w.style.opacity = clamp(u * 1.4);
+          w.style.transform = `translateY(${(1 - u) * 54}px)`;
           w.style.filter = u < 1 ? `blur(${(1 - u) * 10}px)` : "none";
         });
+      }
+      /** One pass of light across a gold line. */
+      function shine(el, t, start, dur = 1300) {
+        const u = inOut(seg(t, start, start + dur));
+        el.style.backgroundPosition = `${lerp(160, -60, u)}% 0, 0 0`;
       }
       const i1a = words($("#i1a"), "Training was completed.");
       const i2h = words($("#i2head"), "Completion and satisfaction light only the first link.");
       const outa = words($("#outa"), "Know what you can claim");
+
+      /* Fine static grain, drawn once, so the dark field is not a flat digital black. */
+      (() => {
+        const c = document.createElement("canvas");
+        c.width = c.height = 256;
+        const x = c.getContext("2d");
+        const d = x.createImageData(256, 256);
+        const r = rand(5);
+        for (let i = 0; i < d.data.length; i += 4) {
+          const v = Math.floor(r() * 255);
+          d.data[i] = d.data[i + 1] = d.data[i + 2] = v;
+          d.data[i + 3] = 255;
+        }
+        x.putImageData(d, 0, 0);
+        $("#grain").style.backgroundImage = `url(${c.toDataURL()})`;
+      })();
 
       /* Intro chain */
       const LINKS = [
@@ -487,8 +604,11 @@
         "Business outcome",
       ];
       const chainEl = $("#chain");
-      const CW = 1920 - 360;
+      const CHAIN_X = 180;
+      const CHAIN_Y = 520;
+      const CW = 1920 - CHAIN_X * 2;
       const nodeX = (i) => 110 + (i * (CW - 220)) / 6;
+      const csegs = [];
       const cnodes = LINKS.map((name, i) => {
         if (i) {
           const s = document.createElement("div");
@@ -496,48 +616,73 @@
           s.style.left = nodeX(i - 1) + 56 + "px";
           s.style.width = nodeX(i) - nodeX(i - 1) - 112 + "px";
           chainEl.appendChild(s);
+          csegs.push(s);
         }
         const n = document.createElement("div");
         n.className = "cn";
         n.style.left = nodeX(i) + "px";
-        n.innerHTML = `<div class="dot">0${i + 1}</div><div class="name">${name}</div><div class="state">UNKNOWN</div>`;
+        n.innerHTML = `<div class="dot"><span>0${i + 1}</span></div><div class="name">${name}</div><div class="state">UNKNOWN</div>`;
         chainEl.appendChild(n);
         return n;
       });
-      $("#bracket").style.left = 180 + nodeX(4) - 100 + "px";
+      $("#bracket").style.left = CHAIN_X + nodeX(4) - 100 + "px";
       $("#bracket").style.width = nodeX(6) - nodeX(4) + 200 + "px";
-      $("#bracketText").style.left = 180 + nodeX(4) - 240 + "px";
+      $("#bracketText").style.left = CHAIN_X + nodeX(4) - 240 + "px";
       $("#bracketText").style.width = nodeX(6) - nodeX(4) + 480 + "px";
 
+      /* Lower band */
       const stepsEl = $("#steps");
       const STEPS = 6;
       for (let i = 0; i < STEPS; i++) {
-        if (i) stepsEl.appendChild(document.createElement("b"));
+        if (i) {
+          const b = document.createElement("b");
+          b.appendChild(document.createElement("u"));
+          stepsEl.appendChild(b);
+        }
         stepsEl.appendChild(document.createElement("i"));
       }
       const stepDots = [...stepsEl.querySelectorAll("i")];
+      const stepBars = [...stepsEl.querySelectorAll("u")];
+
+      /* Spark: a small comet that flies from a click to the chain link it changed. */
+      const fx = $("#fx");
+      const TAIL = 30;
+      const sparks = Array.from({ length: TAIL }, () => {
+        const el = document.createElement("div");
+        el.className = "spark";
+        fx.appendChild(el);
+        return el;
+      });
+      const TONE = { lamp: "242,198,109", flag: "239,143,116" };
 
       /* ------------------------------- Timeline ------------------------------- */
       let TL = null;
       let SRC = "";
+      let markAt = [0, 0]; // center of the first dot of the lockup mark, in film pixels
       const INTRO = 10900; // ms before footage time 0
       const OUTRO = 7200;
       const AREA = { x: 120, y: 44, w: 1680, h: 838 };
       const GAP = 16;
+      const HUD_H = 270;
+      const DRIFT = 0.026; // how far the camera eases in while it holds a shot
 
       window.setup = async (timeline, src) => {
         TL = timeline;
         SRC = src;
         TL.dur = (TL.total * 1000) / TL.fps;
-        TL.cams = { main: [] };
+        TL.cams = [];
         TL.lines = [];
         TL.huds = [];
         TL.clicks = [];
+        TL.ignites = [];
+        TL.focuses = [];
         for (const e of TL.events) {
-          if (e.type === "cam") TL.cams.main.push(e);
+          if (e.type === "cam") TL.cams.push(e);
           if (e.type === "line") TL.lines.push(e);
           if (e.type === "hud") TL.huds.push(e);
           if (e.type === "click") TL.clicks.push(e);
+          if (e.type === "ignite") TL.ignites.push(e);
+          if (e.type === "focus") TL.focuses.push(e);
         }
         await document.fonts.ready;
         await Promise.all(
@@ -549,29 +694,42 @@
             "400 20px 'IBM Plex Mono'",
           ].map((f) => document.fonts.load(f)),
         );
+        const r = $("#i3mark").getBoundingClientRect();
+        markAt = [r.left + MARK_D / 2, r.top + MARK_D / 2];
         return { total: Math.round(((INTRO + TL.dur + OUTRO) / 1000) * TL.fps), footageStart: INTRO };
       };
 
+      const rectOf = (e) => ({ x: e.x, y: e.y, w: e.w, h: e.h });
+      /** A held shot eases in slightly, so the picture is never completely still. */
+      function drifted(v, p) {
+        const k = 1 / (1 + DRIFT * p);
+        return { x: v.x + (v.w * (1 - k)) / 2, y: v.y + (v.h * (1 - k)) / 2, w: v.w * k, h: v.h * k };
+      }
       /** Camera view rectangle at footage time ft, following the recorded moves. */
       function camAt(list, ft) {
         if (!list.length) return { x: 0, y: 0, w: TL.w, h: TL.h };
-        let cur = list[0];
-        cur = { x: cur.x, y: cur.y, w: cur.w, h: cur.h };
+        let cur = rectOf(list[0]);
+        let hold = list[0].t + (list[0].ms || 0);
         for (let i = 1; i < list.length; i++) {
           const e = list[i];
-          if (ft <= e.t) break;
+          if (ft <= e.t) return drifted(cur, clamp((ft - hold) / Math.max(1, e.t - hold)));
+          const from = drifted(cur, 1);
           const u = e.ms ? inOut(clamp((ft - e.t) / e.ms)) : 1;
-          // Zoom eases on a log scale so it feels even; position follows.
-          const k = Math.exp(lerp(Math.log(cur.w), Math.log(e.w), u));
-          const kh = Math.exp(lerp(Math.log(cur.h), Math.log(e.h), u));
-          cur = {
-            x: lerp(cur.x + cur.w / 2, e.x + e.w / 2, u) - k / 2,
-            y: lerp(cur.y + cur.h / 2, e.y + e.h / 2, u) - kh / 2,
-            w: k,
-            h: kh,
-          };
+          if (u < 1) {
+            // Zoom eases on a log scale so it feels even; position follows.
+            const w = Math.exp(lerp(Math.log(from.w), Math.log(e.w), u));
+            const h = Math.exp(lerp(Math.log(from.h), Math.log(e.h), u));
+            return {
+              x: lerp(from.x + from.w / 2, e.x + e.w / 2, u) - w / 2,
+              y: lerp(from.y + from.h / 2, e.y + e.h / 2, u) - h / 2,
+              w,
+              h,
+            };
+          }
+          cur = rectOf(e);
+          hold = e.t + (e.ms || 0);
         }
-        return cur;
+        return drifted(cur, clamp((ft - hold) / Math.max(1, TL.dur - hold)));
       }
       /** Fit a view into a pane: contain the target, cover the pane, stay inside the footage. */
       function fit(view, pw, ph) {
@@ -613,7 +771,7 @@
         const key = e ? e.n + e.text : "";
         if (el.dataset.key === key) return;
         el.dataset.key = key;
-        el.querySelector(".t").textContent = e ? e.text : "";
+        el.querySelector(".in").textContent = e ? e.text : "";
         el.querySelector(".s").textContent = e ? e.sub : "";
       }
 
@@ -621,77 +779,123 @@
         const t = (frame * 1000) / TL.fps;
         const ft = t - INTRO; // footage time
         const END = INTRO + TL.dur;
-
-        // Backdrop glows drift slowly.
         const g = t / 1000;
-        $("#glowA").style.transform = `translate(${-220 + Math.sin(g * 0.21) * 90}px, ${-260 + Math.cos(g * 0.17) * 60}px)`;
-        $("#glowB").style.transform = `translate(${1050 + Math.cos(g * 0.19) * 110}px, ${420 + Math.sin(g * 0.23) * 70}px)`;
+
+        // Where the light is coming from in this frame, and how strong it is.
+        const lamp = { x: 960, y: 600, o: 0 };
 
         /* Intro 1: the brand line (0 to 4.5 s) */
-        const o1 = 1 - seg(t, 4100, 4600);
-        show($("#i1"), o1, `scale(${1 + seg(t, 0, 4600) * 0.035})`);
+        const o1 = 1 - seg(t, 4100, 4550);
+        show($("#i1"), o1, `scale(${1 + seg(t, 0, 4600) * 0.04})`);
         if (o1 > 0) {
-          reveal(i1a, t, 350, 150, 700);
-          const u = out(seg(t, 1750, 2700));
+          reveal(i1a, t, 350, 150, 760);
+          const u = outQuint(seg(t, 1750, 2800));
           const b = $("#i1b");
-          b.style.opacity = u;
-          b.style.transform = `translateY(${(1 - u) * 40}px)`;
-          b.style.filter = `blur(${(1 - u) * 12}px) drop-shadow(0 0 ${40 * u}px rgba(242,198,109,${0.32 * u}))`;
+          b.style.opacity = clamp(u * 1.3);
+          b.style.transform = `translateY(${(1 - u) * 44}px)`;
+          b.style.filter = `blur(${(1 - u) * 12}px) drop-shadow(0 0 ${44 * u}px rgba(242,198,109,${0.34 * u}))`;
+          shine(b, t, 2500, 1400);
+          Object.assign(lamp, { x: 960, y: 640, o: 0.1 * u * o1 }); // the gold line lights the field
         }
 
-        /* Intro 2: the chain idea (4.5 to 8.9 s) */
-        const o2 = Math.min(seg(t, 4500, 4900), 1 - seg(t, 8500, 8950));
+        /* Intro 2: the chain idea (4.5 to 9.3 s). It ends by folding into the logo. */
+        const oText = Math.min(seg(t, 4500, 4900), 1 - seg(t, 8250, 8560)); // headline and bracket
+        const k = inOut(seg(t, 8500, 9280)); // the fold
+        const o2 = t >= 4500 && t < 9300 ? 1 : 0;
         show($("#i2"), o2, "");
-        if (o2 > 0) {
-          reveal(i2h, t, 4700, 70, 560);
+        if (o2) {
+          $("#i2head").style.opacity = oText;
+          reveal(i2h, t, 4700, 70, 600);
+          const labels = 1 - seg(t, 8300, 8600);
+          // The lit link: fill, glow and a ring that leaves it.
+          const lit = out(seg(t, 5750, 6350));
           cnodes.forEach((n, i) => {
-            const u = out(seg(t, 4800 + i * 80, 5350 + i * 80));
-            n.style.opacity = u;
-            n.style.transform = `translateY(${(1 - u) * 26}px)`;
+            const pop = seg(t, 4800 + i * 85, 5400 + i * 85);
+            const dot = n.querySelector(".dot");
+            const num = dot.firstChild;
+            // Where this link ends up in the mark: links 3 to 7 gather into the open third dot.
+            const slot = Math.min(i, 2);
+            const tx = (markAt[0] + [0, 1.15, 2.3][slot] * MARK_D - (CHAIN_X + nodeX(i))) * k;
+            const ty = (markAt[1] - (CHAIN_Y + 48)) * k;
+            n.style.transform = `translate(${tx}px, ${ty}px)`;
+            if (i === 0) Object.assign(lamp, { x: CHAIN_X + nodeX(0) + tx, y: CHAIN_Y + 48 + ty, o: 0.15 * lit });
+            n.style.opacity = clamp(pop * 1.6) * (i > 2 ? 1 - seg(k, 0.55, 0.95) : 1);
+            const sc = lerp(0.55 + 0.45 * back(pop), 1, pop) * lerp(1, MARK_D / 96, k);
+            const bump = i === 0 ? 1 + Math.sin(Math.PI * seg(t, 5750, 6250)) * 0.14 : 1;
+            dot.style.transform = `scale(${sc * bump})`;
+            num.style.opacity = 1 - seg(k, 0, 0.5);
+            n.querySelector(".name").style.opacity = labels;
+            n.querySelector(".state").style.opacity = labels;
+            if (i === 0) {
+              dot.style.background = `rgba(242,198,109,${lit})`;
+              dot.style.borderColor = lit > 0.02 ? `rgba(242,198,109,${0.4 + 0.6 * lit})` : "";
+              dot.style.borderStyle = lit > 0.5 ? "solid" : "dotted";
+              dot.style.color = lit > 0.5 ? "#1a1408" : "";
+              dot.style.boxShadow = `0 0 ${70 * lit}px rgba(242,198,109,${0.6 * lit}), 0 0 0 ${10 * lit * (1 - k)}px rgba(242,198,109,${0.14 * lit})`;
+              n.querySelector(".name").style.color = lit > 0.5 ? "#ece7dc" : "";
+              const st = n.querySelector(".state");
+              st.textContent = lit > 0.5 ? "MEASURED" : "UNKNOWN";
+              st.style.color = lit > 0.5 ? "#f2c66d" : "";
+            } else if (i === 1) {
+              // The second link becomes the mark's dimmer, "assumed" dot.
+              dot.style.background = k > 0 ? `rgba(169,138,78,${k})` : "";
+              dot.style.borderColor = k > 0 ? `rgba(169,138,78,${0.4 + 0.6 * k})` : "";
+            } else if (i >= 4) {
+              const h = out(seg(t, 7000 + (i - 4) * 90, 7500 + (i - 4) * 90)) * (1 - seg(t, 8250, 8600));
+              dot.style.borderColor = `rgba(${lerp(105, 242, h)},${lerp(115, 198, h)},${lerp(124, 109, h)},1)`;
+              dot.style.color = h > 0.5 ? "#f2c66d" : "";
+              n.querySelector(".name").style.color = h > 0.5 ? "#ece7dc" : "";
+            }
           });
-          chainEl.querySelectorAll(".cseg").forEach((s, i) => (s.style.opacity = seg(t, 5000 + i * 80, 5500 + i * 80)));
-          // The first link ignites.
-          const k = out(seg(t, 5750, 6350));
-          const d = cnodes[0].querySelector(".dot");
-          d.style.background = `rgba(242,198,109,${k})`;
-          d.style.borderColor = k > 0.02 ? `rgba(242,198,109,${0.4 + 0.6 * k})` : "";
-          d.style.borderStyle = k > 0.5 ? "solid" : "dotted";
-          d.style.color = k > 0.5 ? "#1a1408" : "";
-          d.style.boxShadow = `0 0 ${70 * k}px rgba(242,198,109,${0.6 * k}), 0 0 0 ${10 * k}px rgba(242,198,109,${0.14 * k})`;
-          d.style.transform = `scale(${1 + Math.sin(Math.PI * seg(t, 5750, 6250)) * 0.12})`;
-          cnodes[0].querySelector(".name").style.color = k > 0.5 ? "#ece7dc" : "";
-          const st = cnodes[0].querySelector(".state");
-          st.textContent = k > 0.5 ? "MEASURED" : "UNKNOWN";
-          st.style.color = k > 0.5 ? "#f2c66d" : "";
+          csegs.forEach((s2, i) => {
+            const d = outQuint(seg(t, 5050 + i * 85, 5600 + i * 85));
+            s2.style.transform = `scaleX(${d})`;
+            s2.style.opacity = labels;
+          });
+          const bu = seg(t, 5800, 6700);
+          const b0 = $("#burst0");
+          const br0 = 48 + out(bu) * 110;
+          b0.style.width = b0.style.height = br0 * 2 + "px";
+          b0.style.left = nodeX(0) - br0 + "px";
+          b0.style.top = 48 - br0 + "px";
+          b0.style.opacity = bu > 0 && bu < 1 ? (1 - bu) * 0.8 : 0;
           // A pulse leaves the first link and dies out before the second.
           const p = seg(t, 6250, 7350);
           const pu = $("#pulse");
           pu.style.left = nodeX(0) + 30 + out(p) * (nodeX(1) - nodeX(0) - 150) + "px";
           pu.style.opacity = Math.sin(Math.PI * p) * 0.9;
           // The links leaders ask about.
-          const br = out(seg(t, 6900, 7500));
-          show($("#bracket"), br, `scaleX(${0.6 + 0.4 * br})`);
-          show($("#bracketText"), br, `translateY(${(1 - br) * 18}px)`);
-          [4, 5, 6].forEach((i, j) => {
-            const h = out(seg(t, 7000 + j * 90, 7500 + j * 90));
-            const dd = cnodes[i].querySelector(".dot");
-            dd.style.borderColor = `rgba(${lerp(105, 242, h)},${lerp(115, 198, h)},${lerp(124, 109, h)},1)`;
-            dd.style.color = h > 0.5 ? "#f2c66d" : "";
-            cnodes[i].querySelector(".name").style.color = h > 0.5 ? "#ece7dc" : "";
-          });
+          const brU = outQuint(seg(t, 6900, 7600));
+          show($("#bracket"), brU * oText, `scaleX(${0.5 + 0.5 * brU})`);
+          show($("#bracketText"), brU * oText, `translateY(${(1 - brU) * 18}px)`);
         }
 
-        /* Intro 3: the lockup (8.8 to 10.9 s) */
-        const u3 = out(seg(t, 8850, 9500));
-        const o3 = Math.min(u3, 1 - seg(t, 10450, 10850));
-        show($("#i3"), o3, `translateY(${(1 - u3) * 30}px) scale(${1 + seg(t, 8850, 10850) * 0.03})`);
+        /* Intro 3: the lockup (9.2 to 10.9 s). The mark arrives from the chain. */
+        const o3 = t >= 9200 ? 1 - seg(t, 10480, 10860) : 0;
+        show($("#i3"), o3, "");
+        if (o3 > 0) {
+          $("#i3mark").style.opacity = seg(t, 9200, 9300);
+          Object.assign(lamp, { x: markAt[0], y: markAt[1], o: 0.15 * o3 });
+          const nu = outQuint(seg(t, 9280, 10050));
+          const name = $("#i3 .name");
+          name.style.clipPath = `inset(-10% ${(1 - nu) * 100}% -10% 0)`;
+          name.style.transform = `translateX(${(1 - nu) * -26}px)`;
+          const su = out(seg(t, 9600, 10200));
+          show($("#i3 .sub"), su, `translateY(${(1 - su) * 18}px)`);
+          const pu2 = out(seg(t, 9800, 10350));
+          show($("#i3 .pill"), pu2, `translateY(${(1 - pu2) * 14}px)`);
+        }
 
         /* Footage */
-        const sIn = out(seg(t, INTRO - 250, INTRO + 750));
-        const sOut = seg(t, END - 150, END + 550);
-        const oS = Math.min(sIn, 1 - sOut);
+        const sIn = outQuint(seg(t, INTRO - 250, INTRO + 950));
+        const sOut = inOut(seg(t, END - 150, END + 600));
+        const oS = Math.min(clamp(sIn * 1.5), 1 - sOut);
         const stage = $("#stage");
-        show(stage, oS, `translateY(${(1 - sIn) * 70}px) scale(${1 - inOut(sOut) * 0.04})`);
+        show(
+          stage,
+          oS,
+          `perspective(2600px) translateY(${(1 - sIn) * 90 - sOut * 30}px) rotateX(${(1 - sIn) * 9 - sOut * 5}deg) scale(${0.93 + 0.07 * sIn - sOut * 0.05})`,
+        );
         if (oS > 0) {
           const f = clamp(Math.round((ft / 1000) * TL.fps), 0, TL.total - 1);
           await setFrame(f);
@@ -700,29 +904,35 @@
           // The strip follows the chain wherever it sits on the page in this frame.
           const cb = TL.frames[f].c || [560, 140, 660, 124];
           const hv = { x: cb[0] - 14, y: cb[1] - 12, w: cb[2] + 28, h: 160 };
-          const hudH = 270;
-          const hudW = Math.min(AREA.w, (hudH * hv.w) / hv.h);
+          const hudW = Math.min(AREA.w, (HUD_H * hv.w) / hv.h);
+          const hudX = AREA.x + (AREA.w - hudW) / 2;
 
           const hud = $("#hud");
-          hud.style.left = AREA.x + (AREA.w - hudW) / 2 + "px";
+          hud.style.left = hudX + "px";
           hud.style.top = AREA.y + "px";
           hud.style.width = hudW + "px";
-          hud.style.height = hudH + "px";
-          show(hud, h, `translateY(${(1 - h) * -34}px)`);
-          const hf = fit(hv, hudW, hudH);
+          hud.style.height = HUD_H + "px";
+          show(hud, h, `translateY(${(1 - h) * -34}px) scale(${0.96 + 0.04 * h})`);
+          const hf = fit(hv, hudW, HUD_H);
+          // The first link is always lit in the product section; its light falls behind the strip.
+          Object.assign(lamp, {
+            x: hudX + (cb[0] + cb[2] / 14 - hf.x) * hf.s,
+            y: AREA.y + (cb[1] + 26 - hf.y) * hf.s,
+            o: 0.1 * h * oS,
+          });
           const hi = hud.querySelector("img");
           hi.style.width = TL.w * hf.s + "px";
           hi.style.left = -hf.x * hf.s + "px";
           hi.style.top = -hf.y * hf.s + "px";
 
           const main = $("#main");
-          const my = AREA.y + h * (hudH + GAP);
-          const mh = AREA.h - h * (hudH + GAP);
+          const my = AREA.y + h * (HUD_H + GAP);
+          const mh = AREA.h - h * (HUD_H + GAP);
           main.style.left = AREA.x + "px";
           main.style.top = my + "px";
           main.style.width = AREA.w + "px";
           main.style.height = mh + "px";
-          const mf = fit(camAt(TL.cams.main, fft), AREA.w, mh);
+          const mf = fit(camAt(TL.cams, fft), AREA.w, mh);
           const mi = main.querySelector("img");
           mi.style.width = TL.w * mf.s + "px";
           mi.style.left = -mf.x * mf.s + "px";
@@ -735,10 +945,10 @@
           cur.style.top = (c.y - mf.y) * mf.s + "px";
           let press = 0;
           let ring = null;
-          for (const k of TL.clicks) {
-            const dt = fft - k.t;
+          for (const kx of TL.clicks) {
+            const dt = fft - kx.t;
             if (dt >= 0 && dt < 520) {
-              ring = { ...k, u: dt / 520 };
+              ring = { ...kx, u: dt / 520 };
               press = Math.sin(Math.PI * clamp(dt / 260));
             }
           }
@@ -753,7 +963,76 @@
             rg.style.opacity = (1 - ring.u) * 0.9;
           } else rg.style.display = "none";
 
-          // Lower band: the current line, with the previous one leaving.
+          // A frame that draws itself around the thing to read.
+          const fo = $("#focus");
+          let fcs = null;
+          for (const e of TL.focuses) if (fft >= e.t && fft < e.t + e.ms) fcs = e;
+          if (fcs) {
+            const dt = fft - fcs.t;
+            const rect = fo.firstElementChild;
+            fo.style.display = "block";
+            fo.style.left = (fcs.x - mf.x) * mf.s + "px";
+            fo.style.top = (fcs.y - mf.y) * mf.s + "px";
+            fo.setAttribute("width", fcs.w * mf.s);
+            fo.setAttribute("height", fcs.h * mf.s);
+            rect.setAttribute("x", 2);
+            rect.setAttribute("y", 2);
+            rect.setAttribute("width", Math.max(1, fcs.w * mf.s - 4));
+            rect.setAttribute("height", Math.max(1, fcs.h * mf.s - 4));
+            rect.setAttribute("stroke-dashoffset", 1 - outQuint(seg(dt, 0, 900)));
+            fo.style.opacity = 1 - seg(dt, fcs.ms - 380, fcs.ms);
+            fo.style.filter = "drop-shadow(0 0 10px rgba(242,198,109,.55))";
+          } else fo.style.display = "none";
+
+          // Spark: from the click, up to the chain link it just changed.
+          let sp = null;
+          for (const e of TL.ignites) if (fft >= e.t && fft < e.t + 1100) sp = e;
+          const burst = $("#sburst");
+          const flash = $("#sflash");
+          if (sp && h > 0.5) {
+            const dt = fft - sp.t;
+            const tone = TONE[sp.tone] || TONE.lamp;
+            const x0 = AREA.x + (sp.x - mf.x) * mf.s;
+            const y0 = my + (sp.y - mf.y) * mf.s;
+            const x2 = hudX + (cb[0] + (cb[2] * (sp.i + 0.5)) / 7 - hf.x) * hf.s;
+            const y2 = AREA.y + (cb[1] + 26 - hf.y) * hf.s;
+            // Rise from the click, then curve across into the link.
+            const x1 = x0 - 20;
+            const y1 = y2 + 70;
+            const head = inOut(seg(dt, 10, 300));
+            sparks.forEach((el, j) => {
+              const u = head - j * 0.0105;
+              if (dt > 420 || u <= 0 || u > 1 || head >= 1) return (el.style.opacity = 0);
+              const a = 1 - u;
+              const x = a * a * x0 + 2 * a * u * x1 + u * u * x2;
+              const y = a * a * y0 + 2 * a * u * y1 + u * u * y2;
+              const size = Math.max(2, 13 - j * 0.38) * (0.65 + 0.35 * Math.sin(Math.PI * u));
+              el.style.width = el.style.height = size + "px";
+              el.style.transform = `translate(${x - size / 2}px, ${y - size / 2}px)`;
+              el.style.background = j === 0 ? "#fff8e4" : `rgb(${tone})`;
+              el.style.boxShadow = j < 6 ? `0 0 ${20 - j * 2}px rgba(${tone},.9)` : "none";
+              el.style.opacity = Math.pow(1 - j / TAIL, 1.5) * 0.95;
+            });
+            const bu = seg(dt, 280, 1000);
+            const r = 30 + outQuint(bu) * 78;
+            burst.style.width = burst.style.height = r * 2 + "px";
+            burst.style.transform = `translate(${x2 - r}px, ${y2 - r}px)`;
+            burst.style.border = `3px solid rgba(${tone},1)`;
+            burst.style.boxShadow = `0 0 26px rgba(${tone},.7)`;
+            burst.style.opacity = bu > 0 && bu < 1 ? (1 - bu) * 0.9 : 0;
+            const fl = seg(dt, 260, 760);
+            const fr = 150;
+            flash.style.width = flash.style.height = fr * 2 + "px";
+            flash.style.transform = `translate(${x2 - fr}px, ${y2 - fr}px)`;
+            flash.style.background = `radial-gradient(closest-side, rgba(${tone},.5), transparent)`;
+            flash.style.opacity = fl > 0 && fl < 1 ? Math.sin(Math.PI * fl) * 0.8 : 0;
+          } else {
+            sparks.forEach((el) => (el.style.opacity = 0));
+            burst.style.opacity = 0;
+            flash.style.opacity = 0;
+          }
+
+          // Lower band: the new line rises from behind a mask as the previous one leaves.
           let idx = -1;
           TL.lines.forEach((l, i) => {
             if (fft >= l.t) idx = i;
@@ -763,39 +1042,59 @@
           const since = curL ? fft - curL.t : 0;
           setLine(lnA, curL);
           setLine(lnB, prevL);
-          const inU = out(seg(since, 180, 760));
-          show(lnA, curL ? inU : 0, `translateY(${(1 - inU) * 26}px)`);
-          const outU = seg(since, 0, 260);
-          show(lnB, prevL ? 1 - outU : 0, `translateY(${-outU * 18}px)`);
+          const inU = outQuint(seg(since, 200, 950));
+          lnA.style.visibility = curL ? "visible" : "hidden";
+          lnA.querySelector(".in").style.transform = `translateY(${(1 - inU) * 105}%)`;
+          const subU = out(seg(since, 520, 1150));
+          lnA.querySelector(".s").style.opacity = subU;
+          lnA.querySelector(".s").style.transform = `translateY(${(1 - subU) * 12}px)`;
+          const outU = inOut(seg(since, 0, 300));
+          lnB.style.visibility = prevL && outU < 1 ? "visible" : "hidden";
+          lnB.querySelector(".in").style.transform = `translateY(${-outU * 105}%)`;
+          lnB.querySelector(".s").style.opacity = 1 - seg(since, 0, 180);
           $("#stepno").textContent = curL ? `Step 0${curL.n} of 0${STEPS}` : "";
-          $("#stepno").style.opacity = curL ? inU : 0;
+          $("#stepno").style.opacity = curL ? clamp(inU * 1.5) : 0;
           stepDots.forEach((d, i) => {
             const on = curL && i < curL.n;
-            const fresh = curL && i === curL.n - 1 ? inU : 1;
+            const fresh = curL && i === curL.n - 1 ? out(seg(since, 250, 800)) : 1;
             d.style.background = on ? `rgba(242,198,109,${fresh})` : "transparent";
             d.style.borderStyle = on ? "solid" : "dotted";
             d.style.borderColor = on ? "#f2c66d" : "";
             d.style.boxShadow = on ? `0 0 ${14 * fresh}px rgba(242,198,109,.7)` : "none";
+            const popU = curL && i === curL.n - 1 ? seg(since, 250, 800) : 1;
+            d.style.transform = `scale(${1 + Math.sin(Math.PI * popU) * 0.55})`;
+          });
+          stepBars.forEach((b, i) => {
+            // The bar between dot i and dot i + 1 fills as that next step begins.
+            const full = curL && i < curL.n - 2;
+            const now = curL && i === curL.n - 2;
+            b.style.transform = `scaleX(${full ? 1 : now ? outQuint(seg(since, 0, 600)) : 0})`;
           });
         }
 
         /* Outro */
         const oO = seg(t, END + 350, END + 900) * (1 - seg(t, END + OUTRO - 500, END + OUTRO - 50));
-        show($("#out"), oO, `scale(${1 + seg(t, END + 350, END + OUTRO) * 0.03})`);
+        show($("#out"), oO, `scale(${1 + seg(t, END + 350, END + OUTRO) * 0.035})`);
         if (oO > 0) {
-          reveal(outa, t, END + 450, 120, 650);
-          const u = out(seg(t, END + 1250, END + 2100));
+          reveal(outa, t, END + 450, 120, 700);
+          const u = outQuint(seg(t, END + 1250, END + 2250));
           const b = $("#outb");
-          b.style.opacity = u;
-          b.style.transform = `translateY(${(1 - u) * 36}px)`;
-          b.style.filter = `blur(${(1 - u) * 10}px) drop-shadow(0 0 ${40 * u}px rgba(242,198,109,${0.3 * u}))`;
-          const m = out(seg(t, END + 2300, END + 3000));
+          b.style.opacity = clamp(u * 1.3);
+          b.style.transform = `translateY(${(1 - u) * 40}px)`;
+          b.style.filter = `blur(${(1 - u) * 10}px) drop-shadow(0 0 ${42 * u}px rgba(242,198,109,${0.32 * u}))`;
+          shine(b, t, END + 2000, 1400);
+          Object.assign(lamp, { x: 960, y: 640, o: 0.1 * u * oO });
+          const m = out(seg(t, END + 2500, END + 3200));
           for (const sel of ["#out .lock", "#out .meta", "#out .fine"]) {
             const el = $(sel);
             el.style.opacity = m;
             if (sel !== "#out .fine") el.style.transform = `translateY(${(1 - m) * 20}px)`;
           }
         }
+
+        const lampEl = $("#lamp");
+        lampEl.style.transform = `translate(${lamp.x}px, ${lamp.y}px)`;
+        lampEl.style.opacity = lamp.o;
       };
     </script>
   </body>

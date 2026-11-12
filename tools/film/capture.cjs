@@ -46,6 +46,8 @@ const DT = 1000 / FPS;
   );
   await page.waitForTimeout(1200);
   await page.addStyleTag({ content: "html{scroll-behavior:auto!important} *{cursor:none!important}" });
+  // The film draws its own sparks, so the product's are switched off for the capture.
+  await page.evaluate(() => (document.documentElement.dataset.film = "1"));
   await page.clock.pauseAt(new Date("2026-11-12T10:05:00"));
   await page.evaluate(() => {
     const seen = new WeakMap();
@@ -82,16 +84,21 @@ const DT = 1000 / FPS;
       acc -= whole;
       await page.clock.runFor(whole);
       // Advance the animations and note where the chain is, so the film can keep it in view.
-      const chain = await page.evaluate((dt) => {
+      const { chain, sx, sy } = await page.evaluate((dt) => {
         window.__advance(dt);
         const r = document.querySelector(".ec-chain")?.getBoundingClientRect();
-        return r ? [r.x, r.y, r.width, r.height].map((v) => Math.round(v * 10) / 10) : null;
+        return {
+          chain: r ? [r.x, r.y, r.width, r.height].map((v) => Math.round(v * 10) / 10) : null,
+          sx: window.scrollX,
+          sy: window.scrollY,
+        };
       }, DT);
       const { data } = await cdp.send("Page.captureScreenshot", {
         format: "jpeg",
         quality: 93,
-        // Without an explicit clip and scale, the capture comes back at 1x.
-        clip: { x: 0, y: 0, width: W, height: H, scale: DSF },
+        // Without an explicit clip and scale, the capture comes back at 1x. The clip is in
+        // page coordinates, so it has to follow the scroll position.
+        clip: { x: sx, y: sy, width: W, height: H, scale: DSF },
       });
       fs.writeFileSync(
         path.join(framesDir, `f${String(frame).padStart(5, "0")}.jpg`),
@@ -196,6 +203,13 @@ const DT = 1000 / FPS;
     });
   }
   const line = (n, text, sub = "") => ev("line", { n, text, sub });
+  /** A click just changed chain link `i`: the film draws a spark from the cursor to that link. */
+  const ignite = (i, tone = "lamp") => ev("ignite", { i, tone, x: cur.x, y: cur.y });
+  /** Ask the film to draw a frame around something for `ms` milliseconds. */
+  async function focus(target, ms = 2400, pad = 8) {
+    const b = await box(target);
+    ev("focus", { ms, x: b.x - pad, y: b.y - pad, w: b.width + pad * 2, h: b.height + pad * 2 });
+  }
   const hud = (on) => ev("hud", { on });
 
   // The film's main pane is about 2:1; these are the matching views of the page.
@@ -240,11 +254,13 @@ const DT = 1000 / FPS;
   await wait(500);
   await move(chip("Knowledge"), 800, [0.3, 0.55]);
   await wait(220);
+  ignite(2);
   await click();
   await wait(1500);
   await cam("main", await closeUp(chip("Behavior"), -16), { pad: 0, ms: 800 });
   await move(chip("Behavior"), 750, [0.3, 0.55]);
   await wait(220);
+  ignite(4);
   await click();
   await wait(1900);
 
@@ -252,7 +268,9 @@ const DT = 1000 / FPS;
   line(3, "See how far an honest claim can reach.", "Open any link to see what it can’t prove yet.");
   hud(false);
   await cam("main", ".ec-stage", { pad: 16, ms: 1100 });
-  await wait(1900);
+  await wait(1000);
+  await focus(".ec-reach", 1900, 6);
+  await wait(900);
   await move(node(3), 900, [0.5, 0.3]);
   await wait(220);
   await click();
@@ -300,6 +318,7 @@ const DT = 1000 / FPS;
   const no = manager.locator('button[data-v="no"]');
   await move(no, 900);
   await wait(220);
+  ignite(4, "flag");
   await click();
   await wait(2500);
 
@@ -317,6 +336,7 @@ const DT = 1000 / FPS;
     const r = await box(".ec-results");
     await cam("main", { x: 36, y: r.y - 150, width: 780, height: 780 / PANE }, { pad: 0, ms: 1200 });
     await move(".ec-results li", 1000, [0.5, 0.75]);
+    await focus(".ec-results", 2500, 6);
     await wait(2600);
   }
   const copy = page.getByRole("button", { name: /Copy brief|Copied/ });
