@@ -280,13 +280,14 @@ function SampleBrief() {
 }
 
 const VIDEO_STEPS = [
-  "Start from what your report already shows. All inputs in the video are examples.",
-  "The chain lights up only where something was measured.",
-  "In this example, a business metric is tracked, but nothing selected links it to the training.",
-  "Open any link to see what it can’t establish and a suggested next step.",
-  "Tick what you actually measured, such as a skill check or observed use on the job.",
-  "Check whether the workplace is a barrier. A “No” on manager support marks a reported barrier to verify.",
-  "Leave with a brief your leaders can act on, and copy it with its example label.",
+  "Opening: “Training was completed. Did work change?” Completion and satisfaction light only the first link of the evidence chain, while leaders ask about the later links. All inputs in the film are examples.",
+  "Start from the report you already have. Choosing “Completion + satisfaction survey” lights only the first link.",
+  "Tick what you actually measured. Adding a knowledge check and observed behavior lights Learning and Transfer.",
+  "See how far an honest claim can reach, and open any link to see what it can’t prove yet.",
+  "Have the numbers? Add them. The example types 78 and 64 for a knowledge check.",
+  "Check the workplace. A “No” on manager support marks a barrier to verify before you blame the training.",
+  "Leave with a brief your leaders can act on, with your numbers quoted back and their limits stated, then copy it with its example label.",
+  "Closing: “Know what you can claim before someone asks.” Evidence Studio is free while it’s a prototype.",
 ];
 
 function VideoDemo() {
@@ -302,40 +303,39 @@ function VideoDemo() {
         {playing ? (
           <video
             ref={videoRef}
-            src="/demo/evidence-check-demo.mp4"
-            poster="/demo/poster.webp"
+            src="/demo/evidence-studio-film.mp4"
+            poster="/demo/film-poster.webp"
             controls
             autoPlay
             playsInline
             tabIndex={0}
-            aria-label="Silent walkthrough of the Evidence Check with captions you can turn on or off. A transcript follows the video."
+            aria-label="Product film: a one-minute walkthrough of the Evidence Check with music and on-screen text. Captions are available, and a transcript follows the video."
             aria-describedby="l-video-transcript"
           >
             <track
               kind="captions"
-              src="/demo/evidence-check-demo.vtt"
+              src="/demo/evidence-studio-film.vtt"
               srcLang="en"
               label="English"
-              default
             />
           </video>
         ) : (
           <button type="button" className="l-video-poster" onClick={() => setPlaying(true)}>
-            <img src="/demo/poster.webp" alt="" loading="lazy" />
+            <img src="/demo/film-poster.webp" alt="" loading="lazy" />
             <span className="l-play" aria-hidden>
               <svg viewBox="0 0 24 24" width="28" height="28">
                 <path d="M8 5v14l11-7z" fill="currentColor" />
               </svg>
             </span>
             <span className="l-video-label">
-              <b>Watch the walkthrough</b>
-              <span>About 45 seconds · silent, with captions · example inputs</span>
+              <b>Watch the one-minute film</b>
+              <span>Music and on-screen text · captions available · example inputs</span>
             </span>
           </button>
         )}
       </div>
       <details className="l-transcript" id="l-video-transcript">
-        <summary>Read the walkthrough as text</summary>
+        <summary>Read the film as text</summary>
         <ol>
           {VIDEO_STEPS.map((t) => (
             <li key={t}>{t}</li>

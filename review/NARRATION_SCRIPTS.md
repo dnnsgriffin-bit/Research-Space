@@ -1,6 +1,6 @@
 # Evidence Studio: narration scripts
 
-Two scripts, one for each video. Both are written for Dennis Griffin’s own voice: first person, plain, unhurried.
+Three scripts. Script 3 is for the current product film; Scripts 1 and 2 were written for earlier cuts and are kept for reference. Both are written for Dennis Griffin’s own voice: first person, plain, unhurried.
 
 **Revised after the November 5 review.** The wording now matches the corrected brief and chain: measures are “measured” or “tracked,” not proof of results; a reported barrier is something to verify; and every example is labeled. Both scripts are trimmed to about 140 words per minute so they fit the current cuts with room to breathe.
 
@@ -15,6 +15,8 @@ If you’d rather record at your own pace, record first and I’ll re-time the v
 ---
 
 ## Script 1: The product demo (about 49 seconds)
+
+> **Retired.** This cut showed the earlier single-column tool and has been replaced by the product film (Script 3). The video file is in the repository history.
 
 **Video:** `public/demo/evidence-check-demo.mp4` (the real tool, captioned, example inputs throughout)
 **Audience:** L&D practitioners trying the tool for the first time
@@ -97,3 +99,47 @@ If you’d rather record at your own pace, record first and I’ll re-time the v
 - Say a reported barrier is something to verify, and that weak support “can limit” use. Avoid absolutes like “more training won’t fix it.”
 - Say “prototype” or “free while it’s a prototype,” never “launching” or “available for teams.”
 - Say “research-based rules,” never “AI” or “predicts.” The tool does not predict outcomes or calculate ROI.
+
+---
+
+## Script 3: The product film (about 67 seconds)
+
+**Video:** `review/video/evidence-studio-film-1080p60.mp4` (generated from the real tool; example inputs throughout)
+**Audience:** L&D practitioners, executives and designers seeing the tool for the first time
+**Tone:** calm, plain, a little warm. The film already carries its story in on-screen lines and music, so the voice is optional. If you record one, the music should come down under it; tell me and I’ll rebalance the mix.
+**Length:** about 140 words (about 125 words per minute, with room to breathe)
+
+| Time | On screen | Narration |
+|---|---|---|
+| 0:00–0:04 | “Training was completed. Did work change?” | Training was completed. But did work change? |
+| 0:04–0:09 | The seven-link chain; only the first link lights | Completion and satisfaction only light the first link. Leaders are asking about the ones further along. |
+| 0:09–0:11 | Evidence Studio name | This is Evidence Studio. |
+| 0:11–0:16 | Step 1: choosing a starting point | Start from the report you already have. |
+| 0:16–0:23 | Step 2: ticking a knowledge check and observed behavior | Tick what you actually measured. The chain lights only where something was observed. |
+| 0:23–0:32 | Step 3: the claim reach, then the inspector | See how far an honest claim can reach, and open any link to see what it can’t prove yet. |
+| 0:32–0:39 | Step 4: typing 78 and 64 | If you have the numbers, add them. |
+| 0:39–0:44 | Step 5: “No” on manager support | Check the workplace. A “no” marks a barrier to verify before you blame the training. |
+| 0:44–1:00 | Step 6: the brief, then “Copy brief” | You leave with a one-page brief: what you can say, what you can’t say yet, and what to measure next. Your numbers are quoted back, with their limits. |
+| 1:00–1:07 | “Know what you can claim before someone asks.” | Know what you can claim before someone asks. It’s free while it’s a prototype. |
+
+**Plain text to read:**
+
+> Training was completed. But did work change?
+>
+> Completion and satisfaction only light the first link. Leaders are asking about the ones further along.
+>
+> This is Evidence Studio.
+>
+> Start from the report you already have.
+>
+> Tick what you actually measured. The chain lights only where something was observed.
+>
+> See how far an honest claim can reach, and open any link to see what it can’t prove yet.
+>
+> If you have the numbers, add them.
+>
+> Check the workplace. A “no” marks a barrier to verify before you blame the training.
+>
+> You leave with a one-page brief: what you can say, what you can’t say yet, and what to measure next. Your numbers are quoted back, with their limits.
+>
+> Know what you can claim before someone asks. It’s free while it’s a prototype.

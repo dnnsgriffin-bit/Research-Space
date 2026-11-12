@@ -1855,7 +1855,7 @@ body:has(.product-shell) {
   overflow: hidden;
   border: 1px solid var(--ec-line-2);
   background: #000;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 16 / 9;
   box-shadow:
     0 60px 140px -60px rgba(0, 0, 0, 1),
     0 0 100px -40px rgba(242, 198, 109, 0.25);
@@ -1880,20 +1880,21 @@ body:has(.product-shell) {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 50% 50%, rgba(10, 13, 16, 0.2), rgba(10, 13, 16, 0.7));
-  transition: background 0.4s;
+  /* Darken only the foot of the poster, where the play control and its label sit. */
+  background: linear-gradient(180deg, rgba(10, 13, 16, 0) 45%, rgba(10, 13, 16, 0.82));
+  transition: opacity 0.4s;
 }
 .l-video-poster:hover::after {
-  background: radial-gradient(circle at 50% 50%, rgba(10, 13, 16, 0.05), rgba(10, 13, 16, 0.55));
+  opacity: 0.8;
 }
 .l-play {
   position: absolute;
   z-index: 2;
-  left: 50%;
-  top: 50%;
-  width: 88px;
-  height: 88px;
-  margin: -44px 0 0 -44px;
+  /* Bottom left, beside its label, so the poster artwork stays unobstructed. */
+  left: 28px;
+  bottom: 24px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   display: grid;
   place-items: center;
@@ -1901,8 +1902,8 @@ body:has(.product-shell) {
   color: #15191d;
   padding-left: 4px;
   box-shadow:
-    0 0 0 12px rgba(242, 198, 109, 0.18),
-    0 20px 50px -10px rgba(242, 198, 109, 0.6);
+    0 0 0 8px rgba(242, 198, 109, 0.18),
+    0 16px 40px -10px rgba(242, 198, 109, 0.6);
   transition:
     transform 0.35s var(--ec-ease),
     box-shadow 0.35s;
@@ -1910,14 +1911,15 @@ body:has(.product-shell) {
 .l-video-poster:hover .l-play {
   transform: scale(1.08);
   box-shadow:
-    0 0 0 20px rgba(242, 198, 109, 0.12),
-    0 24px 60px -10px rgba(242, 198, 109, 0.7);
+    0 0 0 14px rgba(242, 198, 109, 0.12),
+    0 20px 50px -10px rgba(242, 198, 109, 0.7);
 }
 .l-video-label {
   position: absolute;
   z-index: 2;
-  left: 28px;
-  bottom: 24px;
+  left: 112px;
+  right: 24px;
+  bottom: 30px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -2450,12 +2452,31 @@ body:has(.product-shell) {
     grid-template-columns: 1fr;
   }
   .l-video {
-    aspect-ratio: 4 / 3;
+    /* The film is 16:9; keep the whole frame on phones too. */
+    aspect-ratio: 16 / 9;
   }
   .l-play {
-    width: 68px;
-    height: 68px;
-    margin: -34px 0 0 -34px;
+    left: 12px;
+    bottom: 10px;
+    width: 40px;
+    height: 40px;
+    box-shadow: 0 0 0 5px rgba(242, 198, 109, 0.18);
+  }
+  .l-play svg {
+    width: 20px;
+    height: 20px;
+  }
+  .l-video-label {
+    left: 64px;
+    right: 12px;
+    bottom: 18px;
+  }
+  .l-video-label b {
+    font-size: 1.05rem;
+  }
+  /* The small poster has no room for the second line; the film and its transcript carry it. */
+  .l-video-label span {
+    display: none;
   }
 }
 @media (prefers-reduced-motion: reduce) {

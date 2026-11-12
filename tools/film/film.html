@@ -871,7 +871,7 @@
         }
 
         /* Intro 3: the lockup (9.2 to 10.9 s). The mark arrives from the chain. */
-        const o3 = t >= 9200 ? 1 - seg(t, 10480, 10860) : 0;
+        const o3 = t >= 9200 ? 1 - seg(t, 10280, 10620) : 0; // gone before the product arrives
         show($("#i3"), o3, "");
         if (o3 > 0) {
           $("#i3mark").style.opacity = seg(t, 9200, 9300);
