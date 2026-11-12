@@ -308,9 +308,17 @@ function VideoDemo() {
             autoPlay
             playsInline
             tabIndex={0}
-            aria-label="Silent walkthrough of the Evidence Check with on-screen captions. A transcript follows the video."
+            aria-label="Silent walkthrough of the Evidence Check with captions you can turn on or off. A transcript follows the video."
             aria-describedby="l-video-transcript"
-          />
+          >
+            <track
+              kind="captions"
+              src="/demo/evidence-check-demo.vtt"
+              srcLang="en"
+              label="English"
+              default
+            />
+          </video>
         ) : (
           <button type="button" className="l-video-poster" onClick={() => setPlaying(true)}>
             <img src="/demo/poster.webp" alt="" loading="lazy" />
@@ -321,7 +329,7 @@ function VideoDemo() {
             </span>
             <span className="l-video-label">
               <b>Watch the walkthrough</b>
-              <span>About 45 seconds · silent, captions on screen · example inputs</span>
+              <span>About 45 seconds · silent, with captions · example inputs</span>
             </span>
           </button>
         )}
@@ -418,7 +426,6 @@ export function Landing() {
 
       {/* 3 · Guided demo */}
       <section id="how" className="l-wrap l-sec" aria-labelledby="l-how">
-        <p className="l-eyebrow">How it works</p>
         <h2 id="l-how" className="l-h2">
           Five moves. About two minutes.
           <br />
@@ -572,7 +579,6 @@ export function Landing() {
 
       {/* 10 · Pricing */}
       <section id="pricing" className="l-wrap l-sec" aria-labelledby="l-price">
-        <p className="l-eyebrow">Pricing</p>
         <h2 id="l-price" className="l-h2">
           Free while it’s a prototype.
         </h2>
@@ -616,7 +622,6 @@ export function Landing() {
       {/* 11 · FAQ */}
       <section className="l-wrap l-sec l-faq" aria-labelledby="l-faq">
         <div>
-          <p className="l-eyebrow">Questions</p>
           <h2 id="l-faq" className="l-h2">
             Straight answers.
           </h2>

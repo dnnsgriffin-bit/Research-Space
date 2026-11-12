@@ -15,6 +15,10 @@ import {
   claimReach,
   linkLabel,
   originAfterEdit,
+  EMPTY_VALUE,
+  enteredResults,
+  toNumber,
+  type MeasureValue,
   provenanceLabel,
   reachMessage,
   type Answer,
@@ -58,7 +62,16 @@ export function EvidenceCheck() {
   const states = useMemo(() => chainStates(measured), [measured]);
   const barriers = useMemo(() => barriersByLink(answers), [answers]);
   const reach = useMemo(() => claimReach(states), [states]);
-  const brief = useMemo(() => buildCheckBrief(measured, answers), [measured, answers]);
+  // Optional numbers typed in for ticked measures. Kept in memory only.
+  const [values, setValues] = useState<Record<string, MeasureValue>>({});
+  const brief = useMemo(
+    () => buildCheckBrief(measured, answers, values),
+    [measured, answers, values],
+  );
+  const setValue = (id: string, patch: Partial<MeasureValue>) => {
+    setValues((v) => ({ ...v, [id]: { ...(v[id] ?? EMPTY_VALUE), ...patch } }));
+    setOrigin(originAfterEdit);
+  };
   const toggleMeasure = (id: string) => {
     setMeasured((m) => (m.includes(id) ? m.filter((x) => x !== id) : [...m, id]));
     setOrigin(originAfterEdit);
@@ -68,6 +81,7 @@ export function EvidenceCheck() {
     const p = PRESETS.find((x) => x.id === id)!;
     setMeasured([...p.measured]);
     setAnswers(DEFAULT_ANSWERS);
+    setValues({});
     setOrigin(id === "blank" ? { kind: "own" } : { kind: "example", presetId: id });
   };
 
@@ -165,6 +179,7 @@ export function EvidenceCheck() {
             rough cross-reference.
           </p>
           <MeasurePicker measured={measured} onToggle={toggleMeasure} />
+          <ValueEntry measured={measured} values={values} onChange={setValue} />
         </section>
 
         <section className="ec-card ec-bench-conds" aria-labelledby="ec-cond-title">
@@ -467,6 +482,93 @@ function MeasurePicker({
   );
 }
 
+/** Optional numbers for the ticked measures. The brief quotes them back with their limits. */
+function ValueEntry({
+  measured,
+  values,
+  onChange,
+}: {
+  measured: string[];
+  values: Record<string, MeasureValue>;
+  onChange: (id: string, patch: Partial<MeasureValue>) => void;
+}) {
+  const items = MEASURES.filter((m) => measured.includes(m.id));
+  const filled = enteredResults(measured, values).length;
+  return (
+    <details className="ec-values">
+      <summary>
+        <span className="ec-values-t">Have the numbers? Add them</span>
+        <span className="ec-values-n">
+          {filled ? `${filled} of ${items.length} entered` : "Optional"}
+        </span>
+      </summary>
+      {items.length === 0 ? (
+        <p className="ec-hint">Tick a measure above to add its result.</p>
+      ) : (
+        <>
+          <p className="ec-hint">
+            Type a result and, if you have one, something to compare it with. The brief quotes your
+            numbers back and says what the comparison can and can’t show. Nothing leaves your
+            browser.
+          </p>
+          <ul className="ec-vlist">
+            {items.map((m) => {
+              const v = values[m.id] ?? EMPTY_VALUE;
+              return (
+                <li key={m.id} className="ec-vrow">
+                  <fieldset>
+                    <legend>{m.label}</legend>
+                    <label>
+                      <span>Result</span>
+                      <input
+                        inputMode="decimal"
+                        placeholder="78"
+                        value={v.now}
+                        aria-invalid={v.now.trim() !== "" && toNumber(v.now) === null}
+                        onChange={(e) => onChange(m.id, { now: e.target.value })}
+                      />
+                    </label>
+                    <label>
+                      <span>Compared with</span>
+                      <input
+                        inputMode="decimal"
+                        placeholder="64"
+                        value={v.ref}
+                        aria-invalid={v.ref.trim() !== "" && toNumber(v.ref) === null}
+                        onChange={(e) => onChange(m.id, { ref: e.target.value })}
+                      />
+                    </label>
+                    <label>
+                      <span>That number is</span>
+                      <select
+                        value={v.refKind}
+                        onChange={(e) =>
+                          onChange(m.id, { refKind: e.target.value as MeasureValue["refKind"] })
+                        }
+                      >
+                        <option value="before">Before the program</option>
+                        <option value="group">A comparison group</option>
+                      </select>
+                    </label>
+                    <label className="ec-vunit">
+                      <span>Unit</span>
+                      <input
+                        maxLength={8}
+                        value={v.unit}
+                        onChange={(e) => onChange(m.id, { unit: e.target.value })}
+                      />
+                    </label>
+                  </fieldset>
+                </li>
+              );
+            })}
+          </ul>
+        </>
+      )}
+    </details>
+  );
+}
+
 function Inspector({
   ref,
   id,
@@ -718,6 +820,12 @@ function Brief({
         <section>
           <h4>You can say</h4>
           {brief.canSay.length ? <List items={brief.canSay} /> : <p>Nothing yet.</p>}
+          {brief.results.length > 0 && (
+            <div className="ec-results">
+              <h5>Results as you entered them</h5>
+              <List items={brief.results.map((r) => r.text)} />
+            </div>
+          )}
           {brief.canSay.length > 0 && <p className="ec-rnote">{brief.resultsNote}</p>}
         </section>
         <section className="no">
@@ -768,8 +876,8 @@ function Brief({
         />
       )}
       <p className="ec-fine">
-        Rule-based suggestions. They describe which measures exist and what they can support; they
-        don’t report results, predict impact or calculate ROI.
+        Rule-based suggestions. They describe which measures exist and what they can support, and
+        quote any numbers as entered. They don’t verify results, predict impact or calculate ROI.
       </p>
     </article>
   );

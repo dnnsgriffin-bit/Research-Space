@@ -241,12 +241,95 @@ export function originAfterEdit(origin: InputOrigin): InputOrigin {
   return origin.kind === "example" ? { kind: "edited-example", presetId: origin.presetId } : origin;
 }
 
+/* ------------------------------ Entered values ----------------------------- */
+
+/**
+ * Optional numbers the visitor types in for a ticked measure. They are quoted back
+ * as entered and never judged: the rules state a difference, not an improvement,
+ * and never a cause.
+ */
+export type MeasureValue = {
+  /** The result for people who took part. */
+  now: string;
+  /** A reference value to compare with. */
+  ref: string;
+  /** What the reference is: the same people before the program, or a group that didn't take part. */
+  refKind: "before" | "group";
+  /** Short unit shown after each number, such as "%". */
+  unit: string;
+};
+
+export const EMPTY_VALUE: MeasureValue = { now: "", ref: "", refKind: "before", unit: "%" };
+
+export const toNumber = (raw: string): number | null => {
+  const t = raw.trim().replace(/,/g, "");
+  if (!t || !/^-?\d*\.?\d+$/.test(t)) return null;
+  const n = Number(t);
+  return Number.isFinite(n) ? n : null;
+};
+const fmt = (n: number, unit: string) => {
+  const v = String(Math.round(n * 100) / 100);
+  const u = unit.trim();
+  return u === "%" ? `${v}%` : u ? `${v} ${u}` : v;
+};
+
+export type EnteredResult = {
+  measureId: string;
+  label: string;
+  /** True when a reference value was entered alongside the result. */
+  compared: boolean;
+  text: string;
+};
+
+/** One plain sentence per measure with a usable number. Measures without one are skipped. */
+export function enteredResults(
+  measured: string[],
+  values: Record<string, MeasureValue> = {},
+): EnteredResult[] {
+  const out: EnteredResult[] = [];
+  for (const m of MEASURES) {
+    if (!measured.includes(m.id)) continue;
+    const v = values[m.id];
+    if (!v) continue;
+    const now = toNumber(v.now);
+    if (now === null) continue;
+    const ref = toNumber(v.ref);
+    if (ref === null) {
+      out.push({
+        measureId: m.id,
+        label: m.label,
+        compared: false,
+        text: `${m.label}: ${fmt(now, v.unit)}. No comparison entered, so this is a level, not a change.`,
+      });
+      continue;
+    }
+    const diff = Math.round((now - ref) * 100) / 100;
+    const unit = v.unit.trim() === "%" ? "points" : v.unit.trim();
+    const gap =
+      diff === 0
+        ? "no difference"
+        : `${fmt(Math.abs(diff), unit === "points" ? "" : unit)}${unit === "points" ? " points" : ""} ${diff > 0 ? "higher" : "lower"}`;
+    out.push({
+      measureId: m.id,
+      label: m.label,
+      compared: true,
+      text:
+        v.refKind === "before"
+          ? `${m.label}: ${fmt(now, v.unit)} after, ${fmt(ref, v.unit)} before the program (${gap}). A before-and-after difference; other things may have changed in the same period.`
+          : `${m.label}: ${fmt(now, v.unit)} for people who took part, ${fmt(ref, v.unit)} for a group that didn’t (${gap}). A difference between groups; it holds only if the groups were alike to begin with.`,
+    });
+  }
+  return out;
+}
+
 /* --------------------------------- Brief --------------------------------- */
 
 export type CheckBrief = {
   headline: string;
   decision: string;
   canSay: string[];
+  /** Numbers the visitor entered, quoted back with their limits. Empty when none were entered. */
+  results: EnteredResult[];
   /** Reminder that selections are measures, not results. */
   resultsNote: string;
   cannotSay: string[];
@@ -267,7 +350,15 @@ const ADDRESSES: Record<string, string> = {
  * The decision brief. Selections say which measures exist; they carry no results,
  * baselines or comparisons. Every sentence is worded so it stays true when quoted alone.
  */
-export function buildCheckBrief(measured: string[], answers: Record<string, Answer>): CheckBrief {
+export function buildCheckBrief(
+  measured: string[],
+  answers: Record<string, Answer>,
+  values: Record<string, MeasureValue> = {},
+): CheckBrief {
+  const results = enteredResults(measured, values);
+  const tierOf = (id: string) => MEASURES.find((m) => m.id === id)?.tier;
+  const comparedIn = (...tiers: string[]) =>
+    results.some((r) => r.compared && tiers.includes(tierOf(r.measureId) ?? ""));
   const st = chainStates(measured);
   const learningM = st["learning"] === "measured";
   const transferM = st["transfer"] === "measured";
@@ -292,18 +383,24 @@ export function buildCheckBrief(measured: string[], answers: Record<string, Answ
 
   const cannotSay: string[] = [];
   cannotSay.push(
-    learningM
-      ? "Whether knowledge or skill changed. That needs scores compared with a baseline."
-      : "That people learned the skill.",
+    learningM && comparedIn("Learning")
+      ? "That the difference in knowledge or skill is lasting, or larger than normal variation. One comparison can’t show that."
+      : learningM
+        ? "Whether knowledge or skill changed. That needs scores compared with a baseline."
+        : "That people learned the skill.",
   );
   cannotSay.push(
-    transferM
-      ? "Whether on-the-job behavior changed. That needs a before-and-after or comparison group."
-      : "That people use it on the job.",
+    transferM && comparedIn("Transfer")
+      ? "That the difference in workplace use is lasting, or larger than normal variation. One comparison can’t show that."
+      : transferM
+        ? "Whether on-the-job behavior changed. That needs a before-and-after or comparison group."
+        : "That people use it on the job.",
   );
   if (outM || perfM)
     cannotSay.push(
-      "Whether the metric moved, or why. Tracking a metric doesn’t show its direction or the program’s contribution.",
+      comparedIn("Performance", "Outcome")
+        ? "Why the metric differs. The comparison you entered shows a difference, not the program’s contribution."
+        : "Whether the metric moved, or why. Tracking a metric doesn’t show its direction or the program’s contribution.",
     );
   else cannotSay.push("That the quality of work improved, or any ROI or business impact.");
   cannotSay.push(
@@ -394,10 +491,21 @@ export function buildCheckBrief(measured: string[], answers: Record<string, Answ
     decision =
       "Collect results with a baseline or comparison group, and weigh other explanations, before crediting the program.";
 
-  const resultsNote =
-    "These confirm which measures exist, not their results. To report a result, add the values and compare them with a baseline or a group that didn’t take part.";
+  const resultsNote = results.length
+    ? "Numbers are quoted as you entered them. Evidence Studio hasn’t checked them, and a difference is not proof the program caused it."
+    : "These confirm which measures exist, not their results. To report a result, add the values and compare them with a baseline or a group that didn’t take part.";
 
-  return { headline, decision, canSay, resultsNote, cannotSay, nextEvidence, question, answer };
+  return {
+    headline,
+    decision,
+    canSay,
+    results,
+    resultsNote,
+    cannotSay,
+    nextEvidence,
+    question,
+    answer,
+  };
 }
 
 /** The chain as one line of text, for copied and downloaded briefs. */
@@ -423,6 +531,9 @@ export function briefAsText(b: CheckBrief, provenance: string, chain?: string): 
     "",
     "What we can say:",
     ...b.canSay.map((x) => `- ${x}`),
+    ...(b.results.length
+      ? ["", "Results as entered (not verified):", ...b.results.map((x) => `- ${x.text}`)]
+      : []),
     `(${b.resultsNote})`,
     "",
     "What we can't say yet:",
@@ -438,7 +549,7 @@ export function briefAsText(b: CheckBrief, provenance: string, chain?: string): 
     b.question,
     b.answer,
     "",
-    "Generated by Evidence Studio, a prototype. It describes which measures exist; it does not report results, predict impact or calculate ROI. Practitioner judgment applies.",
+    "Generated by Evidence Studio, a prototype. It describes which measures exist and quotes any numbers as entered; it does not verify results, predict impact or calculate ROI. Practitioner judgment applies.",
   ].join("\n");
 }
 

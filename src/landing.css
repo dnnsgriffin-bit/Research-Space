@@ -2929,3 +2929,6 @@ body:has(.product-shell) {
   border-radius: 12px;
   background: var(--ec-flag-soft);
 }
+
+/* Captions: large enough to read on a phone, over the small burned-in label */
+.l-video video::cue { font-family: "IBM Plex Sans", system-ui, sans-serif; font-size: clamp(13px, 2.1vw, 22px); line-height: 1.35; color: #f6f1e7; background: rgba(8, 11, 16, 0.92); }

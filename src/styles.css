@@ -1635,3 +1635,26 @@
 .ec-finding cite a:hover { color: var(--ec-lamp); }
 .ec-preset.reset { border-style: dashed; }
 .ec-preset-sep { width: 1px; align-self: stretch; margin: 4px 4px; background: var(--ec-line); }
+
+/* Optional result entry under the measures */
+.ec-values { margin-top: 18px; border-top: 1px solid var(--ec-line); padding-top: 14px; }
+.ec-values > summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; cursor: pointer; list-style: none; color: var(--ec-paper); font-weight: 600; }
+.ec-values > summary::-webkit-details-marker { display: none; }
+.ec-values > summary::before { content: "+"; flex: none; width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--ec-lamp); color: var(--ec-lamp); display: grid; place-items: center; font-weight: 400; line-height: 1; }
+.ec-values[open] > summary::before { content: "–"; }
+.ec-values-t { flex: 1; }
+.ec-values-n { font-size: 0.78rem; font-weight: 400; color: var(--ec-muted); font-family: "IBM Plex Mono", ui-monospace, monospace; letter-spacing: 0.04em; }
+.ec-values > summary:focus-visible { outline: 2px solid var(--ec-lamp); outline-offset: 3px; border-radius: 6px; }
+.ec-vlist { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 10px; }
+.ec-vrow fieldset { margin: 0; padding: 12px 14px 14px; border: 1px solid var(--ec-line); border-radius: 12px; background: var(--ec-raise); display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; min-width: 0; }
+.ec-vrow legend { padding: 0 6px; font-size: 0.9rem; font-weight: 600; color: var(--ec-paper); }
+.ec-vrow label { display: grid; gap: 4px; min-width: 0; }
+.ec-vrow label > span { font-size: 0.78rem; color: var(--ec-muted); }
+.ec-vrow input, .ec-vrow select { width: 100%; min-height: 44px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--ec-line); background: rgba(0, 0, 0, 0.25); color: var(--ec-paper); font: inherit; font-size: 1rem; font-variant-numeric: tabular-nums; transition: border-color 0.2s var(--ec-ease), box-shadow 0.2s var(--ec-ease); }
+.ec-vrow select option { color: #111; }
+.ec-vrow input::placeholder { color: var(--ec-muted); opacity: 0.55; }
+.ec-vrow input:focus-visible, .ec-vrow select:focus-visible { outline: none; border-color: var(--ec-lamp); box-shadow: 0 0 0 3px rgba(242, 198, 109, 0.22); }
+.ec-results { margin-top: 12px; padding: 10px 12px; border: 1px solid rgba(0, 0, 0, 0.14); border-radius: 8px; background: rgba(255, 255, 255, 0.45); }
+.ec-results h5 { margin: 0 0 6px; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600; color: #4a5258; }
+@media (prefers-reduced-motion: reduce) { .ec-vrow input, .ec-vrow select { transition: none; } }
+.ec-vrow input[aria-invalid="true"] { border-color: #e58a7a; box-shadow: 0 0 0 3px rgba(229, 138, 122, 0.2); }
