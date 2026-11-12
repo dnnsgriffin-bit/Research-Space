@@ -901,7 +901,7 @@ export function recommendPilot(snap: Snapshot): PilotAdvice {
       ranked.push(
         make(
           "prepost",
-          "A skill gap is plausible but unmeasured. Pre/post measurement establishes whether capability changes at all, which is the cheapest useful step.",
+          "A skill gap is plausible but unmeasured. Pre/post measurement establishes whether capability changes at all, which makes it a useful first step.",
         ),
       );
     if (capability && !behavior)

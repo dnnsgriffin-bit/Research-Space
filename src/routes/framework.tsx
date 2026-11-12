@@ -45,7 +45,7 @@ function FrameworkPage() {
           A chain is only as strong as the link you never measured.
         </h1>
         <p className="measure mt-7 text-[17px] leading-relaxed text-foreground/80">
-          Most learning programs are evaluated at the two ends of the chain that are cheapest to
+          Most learning programs are evaluated at the two ends of the chain that are easiest to
           observe: what was delivered, and how people felt about it. The links in between carry the
           actual argument.
         </p>

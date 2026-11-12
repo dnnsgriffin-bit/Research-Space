@@ -179,7 +179,13 @@ export function EvidenceCheck() {
             rough cross-reference.
           </p>
           <MeasurePicker measured={measured} onToggle={toggleMeasure} />
-          <ValueEntry measured={measured} values={values} onChange={setValue} />
+          <ValueEntry
+            measured={measured}
+            values={values}
+            onChange={setValue}
+            isExample={origin.kind !== "own"}
+            onOwn={() => setOrigin({ kind: "own" })}
+          />
         </section>
 
         <section className="ec-card ec-bench-conds" aria-labelledby="ec-cond-title">
@@ -487,10 +493,16 @@ function ValueEntry({
   measured,
   values,
   onChange,
+  isExample,
+  onOwn,
 }: {
   measured: string[];
   values: Record<string, MeasureValue>;
   onChange: (id: string, patch: Partial<MeasureValue>) => void;
+  /** True while the inputs still carry an example label. */
+  isExample: boolean;
+  /** The visitor confirms the selections and numbers are their own. */
+  onOwn: () => void;
 }) {
   const items = MEASURES.filter((m) => measured.includes(m.id));
   const filled = enteredResults(measured, values).length;
@@ -563,6 +575,21 @@ function ValueEntry({
               );
             })}
           </ul>
+          {filled > 0 && isExample && (
+            <p className="ec-own">
+              <span>
+                You started from an example, so the brief will label these inputs as illustrative.
+              </span>
+              <button type="button" className="ec-own-btn" onClick={onOwn}>
+                These are my real numbers
+              </button>
+            </p>
+          )}
+          {filled > 0 && !isExample && (
+            <p className="ec-own done" role="status">
+              The brief will label these as your own selections.
+            </p>
+          )}
         </>
       )}
     </details>

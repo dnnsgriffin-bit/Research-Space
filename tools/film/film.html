@@ -1,0 +1,802 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Evidence Studio product film</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
+    />
+    <style>
+      /* Pass 2 of the product film. Every style on this page is set from one function of time
+         (render), so any frame can be drawn on its own. No CSS animations or transitions. */
+      :root {
+        --void: #07090c;
+        --panel: #11161b;
+        --paper: #ece7dc;
+        --muted: #9ea7ae;
+        --ash: #69737c;
+        --lamp: #f2c66d;
+        --flag: #ef8f74;
+        --display: "Instrument Serif", Georgia, serif;
+        --body: "IBM Plex Sans", system-ui, sans-serif;
+        --mono: "IBM Plex Mono", ui-monospace, monospace;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--void);
+        color: var(--paper);
+        font-family: var(--body);
+        -webkit-font-smoothing: antialiased;
+      }
+      #film {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--void);
+      }
+      .glow {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(90px);
+        pointer-events: none;
+      }
+      #glowA {
+        width: 1100px;
+        height: 800px;
+        background: radial-gradient(closest-side, rgba(242, 198, 109, 0.2), transparent);
+      }
+      #glowB {
+        width: 1200px;
+        height: 900px;
+        background: radial-gradient(closest-side, rgba(147, 180, 204, 0.13), transparent);
+      }
+      .vignette {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse at 50% 45%, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+        pointer-events: none;
+      }
+      .layer {
+        position: absolute;
+        inset: 0;
+      }
+      .center {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+
+      /* Type */
+      .serif {
+        font-family: var(--display);
+        font-weight: 400;
+        letter-spacing: -0.012em;
+        line-height: 1.02;
+      }
+      .gold {
+        font-style: italic;
+        background: linear-gradient(100deg, #f8dfa3 0%, #f2c66d 45%, #c9933a 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        padding: 0 0.08em 0.12em;
+      }
+      .mono {
+        font-family: var(--mono);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+      .word {
+        display: inline-block;
+        white-space: pre;
+      }
+
+      /* Intro: brand line */
+      #i1 .a {
+        font-size: 172px;
+      }
+      #i1 .b {
+        font-size: 190px;
+        margin-top: 6px;
+      }
+      /* Intro: the chain idea */
+      #i2 .head {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 196px;
+        text-align: center;
+        font-size: 84px;
+      }
+      #chain {
+        position: absolute;
+        left: 180px;
+        right: 180px;
+        top: 520px;
+        height: 240px;
+      }
+      .cn {
+        position: absolute;
+        top: 0;
+        width: 220px;
+        margin-left: -110px;
+        text-align: center;
+      }
+      .cn .dot {
+        width: 96px;
+        height: 96px;
+        margin: 0 auto;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font-family: var(--mono);
+        font-size: 26px;
+        border: 2px dotted var(--ash);
+        color: var(--ash);
+        background: #0c1014;
+      }
+      .cn .name {
+        margin-top: 22px;
+        font-size: 25px;
+        font-weight: 500;
+        color: var(--muted);
+        line-height: 1.2;
+      }
+      .cn .state {
+        margin-top: 8px;
+        font-family: var(--mono);
+        font-size: 15px;
+        letter-spacing: 0.16em;
+        color: var(--ash);
+      }
+      .cseg {
+        position: absolute;
+        top: 47px;
+        height: 0;
+        border-top: 2px dotted rgba(158, 167, 174, 0.38);
+      }
+      #pulse {
+        position: absolute;
+        top: 44px;
+        height: 8px;
+        width: 150px;
+        border-radius: 8px;
+        background: linear-gradient(90deg, transparent, var(--lamp), transparent);
+        filter: blur(1px);
+      }
+      #bracket {
+        position: absolute;
+        top: 410px;
+        height: 34px;
+        border: 2px solid var(--lamp);
+        border-bottom: 0;
+        border-radius: 14px 14px 0 0;
+      }
+      #bracketText {
+        position: absolute;
+        top: 338px;
+        text-align: center;
+        font-size: 44px;
+        font-family: var(--display);
+        font-style: italic;
+        color: var(--lamp);
+      }
+      /* Lockup */
+      .lockup {
+        display: flex;
+        align-items: center;
+        gap: 30px;
+      }
+      .mark {
+        position: relative;
+        display: inline-block;
+      }
+      #i3 .name {
+        font-size: 150px;
+      }
+      #i3 .sub {
+        margin-top: 30px;
+        font-size: 40px;
+        color: var(--muted);
+      }
+      .pill {
+        display: inline-block;
+        margin-top: 44px;
+        padding: 10px 22px;
+        border: 1.5px solid rgba(242, 198, 109, 0.6);
+        border-radius: 999px;
+        color: var(--lamp);
+        font-size: 19px;
+      }
+
+      /* Footage cards */
+      .card {
+        position: absolute;
+        overflow: hidden;
+        border-radius: 24px;
+        background: #0a0d10;
+        box-shadow:
+          0 0 0 1.5px rgba(255, 255, 255, 0.1),
+          0 50px 130px -50px rgba(0, 0, 0, 1),
+          0 0 140px -60px rgba(242, 198, 109, 0.4);
+      }
+      .card img.shot {
+        position: absolute;
+        max-width: none;
+        display: block;
+        transform-origin: 0 0;
+      }
+      .cursor {
+        position: absolute;
+        width: 44px;
+        height: 44px;
+        margin: -4px 0 0 -6px;
+        transform-origin: 8px 6px;
+        filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.55));
+      }
+      .ring {
+        position: absolute;
+        border-radius: 50%;
+        border: 3px solid var(--lamp);
+        box-shadow: 0 0 24px rgba(242, 198, 109, 0.6);
+      }
+      .hudtag {
+        position: absolute;
+        left: 22px;
+        top: 14px;
+        font-size: 13px;
+        color: var(--lamp);
+        opacity: 0.9;
+      }
+
+      /* Lower band */
+      #band {
+        position: absolute;
+        left: 120px;
+        right: 120px;
+        top: 902px;
+        height: 150px;
+      }
+      #stepno {
+        position: absolute;
+        left: 0;
+        top: 0;
+        font-size: 17px;
+        color: var(--lamp);
+      }
+      .ln {
+        position: absolute;
+        left: 0;
+        top: 28px;
+        width: 1300px;
+      }
+      .ln .t {
+        font-size: 62px;
+        white-space: nowrap;
+      }
+      .ln .s {
+        margin-top: 10px;
+        font-size: 27px;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+      #steps {
+        position: absolute;
+        right: 0;
+        top: 6px;
+        display: flex;
+        align-items: center;
+      }
+      #steps i {
+        display: block;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        border: 1.5px dotted var(--ash);
+      }
+      #steps b {
+        display: block;
+        width: 34px;
+        height: 0;
+        border-top: 1.5px dotted rgba(158, 167, 174, 0.4);
+      }
+      #brand {
+        position: absolute;
+        right: 0;
+        top: 52px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-family: var(--display);
+        font-size: 32px;
+      }
+      #example {
+        position: absolute;
+        right: 0;
+        top: 108px;
+        font-size: 16px;
+        color: var(--muted);
+      }
+
+      /* Outro */
+      #out .a {
+        font-size: 150px;
+      }
+      #out .b {
+        font-size: 166px;
+        margin-top: 4px;
+      }
+      #out .lock {
+        margin-top: 70px;
+        font-size: 54px;
+      }
+      #out .meta {
+        margin-top: 22px;
+        font-size: 30px;
+        color: var(--muted);
+      }
+      #out .fine {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 54px;
+        text-align: center;
+        font-size: 17px;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="film">
+      <div class="glow" id="glowA"></div>
+      <div class="glow" id="glowB"></div>
+      <div class="vignette"></div>
+
+      <div class="layer center" id="i1">
+        <div class="serif a" id="i1a"></div>
+        <div class="serif b gold" id="i1b">Did work change?</div>
+      </div>
+
+      <div class="layer" id="i2">
+        <div class="serif head" id="i2head"></div>
+        <div id="bracketText">Leaders are asking about these.</div>
+        <div id="bracket"></div>
+        <div id="chain"><div id="pulse"></div></div>
+      </div>
+
+      <div class="layer center" id="i3">
+        <div class="lockup">
+          <span class="mark" id="i3mark"></span>
+          <span class="serif name">Evidence Studio</span>
+        </div>
+        <div class="sub">A two-minute evidence check for learning teams</div>
+        <div class="pill mono">Prototype</div>
+      </div>
+
+      <div class="layer" id="stage">
+        <div class="card" id="hud">
+          <img class="shot" alt="" />
+        </div>
+        <div class="card" id="main">
+          <img class="shot" alt="" />
+          <div class="ring"></div>
+          <svg class="cursor" viewBox="0 0 44 44">
+            <path
+              d="M8 6 L8 33 L15.2 26.4 L20.2 37.6 L25 35.4 L20 24.4 L30 24.4 Z"
+              fill="#fff"
+              stroke="#0a0d10"
+              stroke-width="2.2"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
+        <div id="band">
+          <div class="mono" id="stepno"></div>
+          <div class="ln" id="lnA"><div class="serif t"></div><div class="s"></div></div>
+          <div class="ln" id="lnB"><div class="serif t"></div><div class="s"></div></div>
+          <div id="steps"></div>
+          <div id="brand"><span class="mark" id="bandmark"></span>Evidence Studio</div>
+          <div class="mono" id="example">Example inputs · illustrative, not real data</div>
+        </div>
+      </div>
+
+      <div class="layer center" id="out">
+        <div class="serif a" id="outa"></div>
+        <div class="serif b gold" id="outb">before someone asks.</div>
+        <div class="lockup lock serif"><span class="mark" id="outmark"></span>Evidence Studio</div>
+        <div class="meta">Free while it’s a prototype · DennisRGriffin.com</div>
+        <div class="fine mono">
+          A prototype by Dennis Griffin, Ed.D. · Example inputs shown · Rule-based guidance that
+          does not predict impact or calculate ROI
+        </div>
+      </div>
+
+    </div>
+
+    <script>
+      const $ = (s) => document.querySelector(s);
+      const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+      const seg = (t, a, b) => clamp((t - a) / (b - a));
+      const lerp = (a, b, u) => a + (b - a) * u;
+      const inOut = (u) => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2);
+      const out = (u) => 1 - Math.pow(1 - u, 3);
+      const outExpo = (u) => (u >= 1 ? 1 : 1 - Math.pow(2, -10 * u));
+      const show = (el, o, extra = "") => {
+        el.style.opacity = o;
+        el.style.visibility = o <= 0.001 ? "hidden" : "visible";
+        if (extra !== null) el.style.transform = extra;
+      };
+
+      /* The three-dot mark from the product header, drawn to size. */
+      function mark(el, size) {
+        const d = size;
+        el.style.width = d * 3.3 + "px";
+        el.style.height = d + "px";
+        el.innerHTML = `
+          <span style="position:absolute;left:0;top:0;width:${d}px;height:${d}px;border-radius:50%;background:#f2c66d;box-shadow:0 0 ${d * 0.9}px rgba(242,198,109,.55)"></span>
+          <span style="position:absolute;left:${d * 0.9}px;top:${d * 0.42}px;width:${d * 0.5}px;height:${d * 0.16}px;background:#a98a4e"></span>
+          <span style="position:absolute;left:${d * 1.15}px;top:0;width:${d}px;height:${d}px;border-radius:50%;background:#a98a4e"></span>
+          <span style="position:absolute;left:${d * 2.3}px;top:0;width:${d}px;height:${d}px;border-radius:50%;border:${Math.max(1.5, d * 0.09)}px dotted #9ea7ae"></span>`;
+      }
+      mark($("#i3mark"), 60);
+      mark($("#bandmark"), 15);
+      mark($("#outmark"), 24);
+
+      function words(el, text) {
+        el.innerHTML = text
+          .split(" ")
+          .map((w, i, a) => `<span class="word">${w}${i < a.length - 1 ? " " : ""}</span>`)
+          .join("");
+        return [...el.children];
+      }
+      /** Words rise into place one after another. */
+      function reveal(ws, t, start, stagger = 110, dur = 620) {
+        ws.forEach((w, i) => {
+          const u = out(seg(t, start + i * stagger, start + i * stagger + dur));
+          w.style.opacity = u;
+          w.style.transform = `translateY(${(1 - u) * 46}px)`;
+          w.style.filter = u < 1 ? `blur(${(1 - u) * 10}px)` : "none";
+        });
+      }
+      const i1a = words($("#i1a"), "Training was completed.");
+      const i2h = words($("#i2head"), "Completion and satisfaction light only the first link.");
+      const outa = words($("#outa"), "Know what you can claim");
+
+      /* Intro chain */
+      const LINKS = [
+        "Intervention",
+        "Mechanism",
+        "Learning",
+        "Opportunity to apply",
+        "Transfer",
+        "Performance",
+        "Business outcome",
+      ];
+      const chainEl = $("#chain");
+      const CW = 1920 - 360;
+      const nodeX = (i) => 110 + (i * (CW - 220)) / 6;
+      const cnodes = LINKS.map((name, i) => {
+        if (i) {
+          const s = document.createElement("div");
+          s.className = "cseg";
+          s.style.left = nodeX(i - 1) + 56 + "px";
+          s.style.width = nodeX(i) - nodeX(i - 1) - 112 + "px";
+          chainEl.appendChild(s);
+        }
+        const n = document.createElement("div");
+        n.className = "cn";
+        n.style.left = nodeX(i) + "px";
+        n.innerHTML = `<div class="dot">0${i + 1}</div><div class="name">${name}</div><div class="state">UNKNOWN</div>`;
+        chainEl.appendChild(n);
+        return n;
+      });
+      $("#bracket").style.left = 180 + nodeX(4) - 100 + "px";
+      $("#bracket").style.width = nodeX(6) - nodeX(4) + 200 + "px";
+      $("#bracketText").style.left = 180 + nodeX(4) - 240 + "px";
+      $("#bracketText").style.width = nodeX(6) - nodeX(4) + 480 + "px";
+
+      const stepsEl = $("#steps");
+      const STEPS = 6;
+      for (let i = 0; i < STEPS; i++) {
+        if (i) stepsEl.appendChild(document.createElement("b"));
+        stepsEl.appendChild(document.createElement("i"));
+      }
+      const stepDots = [...stepsEl.querySelectorAll("i")];
+
+      /* ------------------------------- Timeline ------------------------------- */
+      let TL = null;
+      let SRC = "";
+      const INTRO = 10900; // ms before footage time 0
+      const OUTRO = 7200;
+      const AREA = { x: 120, y: 44, w: 1680, h: 838 };
+      const GAP = 16;
+
+      window.setup = async (timeline, src) => {
+        TL = timeline;
+        SRC = src;
+        TL.dur = (TL.total * 1000) / TL.fps;
+        TL.cams = { main: [] };
+        TL.lines = [];
+        TL.huds = [];
+        TL.clicks = [];
+        for (const e of TL.events) {
+          if (e.type === "cam") TL.cams.main.push(e);
+          if (e.type === "line") TL.lines.push(e);
+          if (e.type === "hud") TL.huds.push(e);
+          if (e.type === "click") TL.clicks.push(e);
+        }
+        await document.fonts.ready;
+        await Promise.all(
+          [
+            "400 60px 'Instrument Serif'",
+            "italic 400 60px 'Instrument Serif'",
+            "400 20px 'IBM Plex Sans'",
+            "500 20px 'IBM Plex Sans'",
+            "400 20px 'IBM Plex Mono'",
+          ].map((f) => document.fonts.load(f)),
+        );
+        return { total: Math.round(((INTRO + TL.dur + OUTRO) / 1000) * TL.fps), footageStart: INTRO };
+      };
+
+      /** Camera view rectangle at footage time ft, following the recorded moves. */
+      function camAt(list, ft) {
+        if (!list.length) return { x: 0, y: 0, w: TL.w, h: TL.h };
+        let cur = list[0];
+        cur = { x: cur.x, y: cur.y, w: cur.w, h: cur.h };
+        for (let i = 1; i < list.length; i++) {
+          const e = list[i];
+          if (ft <= e.t) break;
+          const u = e.ms ? inOut(clamp((ft - e.t) / e.ms)) : 1;
+          // Zoom eases on a log scale so it feels even; position follows.
+          const k = Math.exp(lerp(Math.log(cur.w), Math.log(e.w), u));
+          const kh = Math.exp(lerp(Math.log(cur.h), Math.log(e.h), u));
+          cur = {
+            x: lerp(cur.x + cur.w / 2, e.x + e.w / 2, u) - k / 2,
+            y: lerp(cur.y + cur.h / 2, e.y + e.h / 2, u) - kh / 2,
+            w: k,
+            h: kh,
+          };
+        }
+        return cur;
+      }
+      /** Fit a view into a pane: contain the target, cover the pane, stay inside the footage. */
+      function fit(view, pw, ph) {
+        let s = Math.min(pw / view.w, ph / view.h);
+        s = Math.max(s, pw / TL.w, ph / TL.h);
+        const vw = pw / s;
+        const vh = ph / s;
+        const x = clamp(view.x + view.w / 2 - vw / 2, 0, TL.w - vw);
+        const y = clamp(view.y + view.h / 2 - vh / 2, 0, TL.h - vh);
+        return { s, x, y };
+      }
+      function hudAt(ft) {
+        let v = 0;
+        for (const e of TL.huds) {
+          if (ft < e.t) break;
+          const u = inOut(clamp((ft - e.t) / 800));
+          v = lerp(v, e.on ? 1 : 0, u);
+        }
+        return v;
+      }
+
+      const imgs = [...document.querySelectorAll("img.shot")];
+      let lastSrc = "";
+      async function setFrame(i) {
+        const src = `${SRC}/f${String(i).padStart(5, "0")}.jpg`;
+        if (src === lastSrc) return;
+        lastSrc = src;
+        await Promise.all(
+          imgs.map((im) => {
+            im.src = src;
+            return im.decode();
+          }),
+        );
+      }
+
+      const lnA = $("#lnA");
+      const lnB = $("#lnB");
+      function setLine(el, e) {
+        const key = e ? e.n + e.text : "";
+        if (el.dataset.key === key) return;
+        el.dataset.key = key;
+        el.querySelector(".t").textContent = e ? e.text : "";
+        el.querySelector(".s").textContent = e ? e.sub : "";
+      }
+
+      window.render = async (frame) => {
+        const t = (frame * 1000) / TL.fps;
+        const ft = t - INTRO; // footage time
+        const END = INTRO + TL.dur;
+
+        // Backdrop glows drift slowly.
+        const g = t / 1000;
+        $("#glowA").style.transform = `translate(${-220 + Math.sin(g * 0.21) * 90}px, ${-260 + Math.cos(g * 0.17) * 60}px)`;
+        $("#glowB").style.transform = `translate(${1050 + Math.cos(g * 0.19) * 110}px, ${420 + Math.sin(g * 0.23) * 70}px)`;
+
+        /* Intro 1: the brand line (0 to 4.5 s) */
+        const o1 = 1 - seg(t, 4100, 4600);
+        show($("#i1"), o1, `scale(${1 + seg(t, 0, 4600) * 0.035})`);
+        if (o1 > 0) {
+          reveal(i1a, t, 350, 150, 700);
+          const u = out(seg(t, 1750, 2700));
+          const b = $("#i1b");
+          b.style.opacity = u;
+          b.style.transform = `translateY(${(1 - u) * 40}px)`;
+          b.style.filter = `blur(${(1 - u) * 12}px) drop-shadow(0 0 ${40 * u}px rgba(242,198,109,${0.32 * u}))`;
+        }
+
+        /* Intro 2: the chain idea (4.5 to 8.9 s) */
+        const o2 = Math.min(seg(t, 4500, 4900), 1 - seg(t, 8500, 8950));
+        show($("#i2"), o2, "");
+        if (o2 > 0) {
+          reveal(i2h, t, 4700, 70, 560);
+          cnodes.forEach((n, i) => {
+            const u = out(seg(t, 4800 + i * 80, 5350 + i * 80));
+            n.style.opacity = u;
+            n.style.transform = `translateY(${(1 - u) * 26}px)`;
+          });
+          chainEl.querySelectorAll(".cseg").forEach((s, i) => (s.style.opacity = seg(t, 5000 + i * 80, 5500 + i * 80)));
+          // The first link ignites.
+          const k = out(seg(t, 5750, 6350));
+          const d = cnodes[0].querySelector(".dot");
+          d.style.background = `rgba(242,198,109,${k})`;
+          d.style.borderColor = k > 0.02 ? `rgba(242,198,109,${0.4 + 0.6 * k})` : "";
+          d.style.borderStyle = k > 0.5 ? "solid" : "dotted";
+          d.style.color = k > 0.5 ? "#1a1408" : "";
+          d.style.boxShadow = `0 0 ${70 * k}px rgba(242,198,109,${0.6 * k}), 0 0 0 ${10 * k}px rgba(242,198,109,${0.14 * k})`;
+          d.style.transform = `scale(${1 + Math.sin(Math.PI * seg(t, 5750, 6250)) * 0.12})`;
+          cnodes[0].querySelector(".name").style.color = k > 0.5 ? "#ece7dc" : "";
+          const st = cnodes[0].querySelector(".state");
+          st.textContent = k > 0.5 ? "MEASURED" : "UNKNOWN";
+          st.style.color = k > 0.5 ? "#f2c66d" : "";
+          // A pulse leaves the first link and dies out before the second.
+          const p = seg(t, 6250, 7350);
+          const pu = $("#pulse");
+          pu.style.left = nodeX(0) + 30 + out(p) * (nodeX(1) - nodeX(0) - 150) + "px";
+          pu.style.opacity = Math.sin(Math.PI * p) * 0.9;
+          // The links leaders ask about.
+          const br = out(seg(t, 6900, 7500));
+          show($("#bracket"), br, `scaleX(${0.6 + 0.4 * br})`);
+          show($("#bracketText"), br, `translateY(${(1 - br) * 18}px)`);
+          [4, 5, 6].forEach((i, j) => {
+            const h = out(seg(t, 7000 + j * 90, 7500 + j * 90));
+            const dd = cnodes[i].querySelector(".dot");
+            dd.style.borderColor = `rgba(${lerp(105, 242, h)},${lerp(115, 198, h)},${lerp(124, 109, h)},1)`;
+            dd.style.color = h > 0.5 ? "#f2c66d" : "";
+            cnodes[i].querySelector(".name").style.color = h > 0.5 ? "#ece7dc" : "";
+          });
+        }
+
+        /* Intro 3: the lockup (8.8 to 10.9 s) */
+        const u3 = out(seg(t, 8850, 9500));
+        const o3 = Math.min(u3, 1 - seg(t, 10450, 10850));
+        show($("#i3"), o3, `translateY(${(1 - u3) * 30}px) scale(${1 + seg(t, 8850, 10850) * 0.03})`);
+
+        /* Footage */
+        const sIn = out(seg(t, INTRO - 250, INTRO + 750));
+        const sOut = seg(t, END - 150, END + 550);
+        const oS = Math.min(sIn, 1 - sOut);
+        const stage = $("#stage");
+        show(stage, oS, `translateY(${(1 - sIn) * 70}px) scale(${1 - inOut(sOut) * 0.04})`);
+        if (oS > 0) {
+          const f = clamp(Math.round((ft / 1000) * TL.fps), 0, TL.total - 1);
+          await setFrame(f);
+          const fft = clamp(ft, 0, TL.dur);
+          const h = hudAt(fft);
+          // The strip follows the chain wherever it sits on the page in this frame.
+          const cb = TL.frames[f].c || [560, 140, 660, 124];
+          const hv = { x: cb[0] - 14, y: cb[1] - 12, w: cb[2] + 28, h: 160 };
+          const hudH = 270;
+          const hudW = Math.min(AREA.w, (hudH * hv.w) / hv.h);
+
+          const hud = $("#hud");
+          hud.style.left = AREA.x + (AREA.w - hudW) / 2 + "px";
+          hud.style.top = AREA.y + "px";
+          hud.style.width = hudW + "px";
+          hud.style.height = hudH + "px";
+          show(hud, h, `translateY(${(1 - h) * -34}px)`);
+          const hf = fit(hv, hudW, hudH);
+          const hi = hud.querySelector("img");
+          hi.style.width = TL.w * hf.s + "px";
+          hi.style.left = -hf.x * hf.s + "px";
+          hi.style.top = -hf.y * hf.s + "px";
+
+          const main = $("#main");
+          const my = AREA.y + h * (hudH + GAP);
+          const mh = AREA.h - h * (hudH + GAP);
+          main.style.left = AREA.x + "px";
+          main.style.top = my + "px";
+          main.style.width = AREA.w + "px";
+          main.style.height = mh + "px";
+          const mf = fit(camAt(TL.cams.main, fft), AREA.w, mh);
+          const mi = main.querySelector("img");
+          mi.style.width = TL.w * mf.s + "px";
+          mi.style.left = -mf.x * mf.s + "px";
+          mi.style.top = -mf.y * mf.s + "px";
+
+          // Cursor and click ring.
+          const c = TL.frames[f];
+          const cur = main.querySelector(".cursor");
+          cur.style.left = (c.x - mf.x) * mf.s + "px";
+          cur.style.top = (c.y - mf.y) * mf.s + "px";
+          let press = 0;
+          let ring = null;
+          for (const k of TL.clicks) {
+            const dt = fft - k.t;
+            if (dt >= 0 && dt < 520) {
+              ring = { ...k, u: dt / 520 };
+              press = Math.sin(Math.PI * clamp(dt / 260));
+            }
+          }
+          cur.style.transform = `scale(${1 - 0.16 * press})`;
+          const rg = main.querySelector(".ring");
+          if (ring) {
+            const r = 10 + out(ring.u) * 46;
+            rg.style.display = "block";
+            rg.style.width = rg.style.height = r * 2 + "px";
+            rg.style.left = (ring.x - mf.x) * mf.s - r + "px";
+            rg.style.top = (ring.y - mf.y) * mf.s - r + "px";
+            rg.style.opacity = (1 - ring.u) * 0.9;
+          } else rg.style.display = "none";
+
+          // Lower band: the current line, with the previous one leaving.
+          let idx = -1;
+          TL.lines.forEach((l, i) => {
+            if (fft >= l.t) idx = i;
+          });
+          const curL = idx >= 0 ? TL.lines[idx] : null;
+          const prevL = idx > 0 ? TL.lines[idx - 1] : null;
+          const since = curL ? fft - curL.t : 0;
+          setLine(lnA, curL);
+          setLine(lnB, prevL);
+          const inU = out(seg(since, 180, 760));
+          show(lnA, curL ? inU : 0, `translateY(${(1 - inU) * 26}px)`);
+          const outU = seg(since, 0, 260);
+          show(lnB, prevL ? 1 - outU : 0, `translateY(${-outU * 18}px)`);
+          $("#stepno").textContent = curL ? `Step 0${curL.n} of 0${STEPS}` : "";
+          $("#stepno").style.opacity = curL ? inU : 0;
+          stepDots.forEach((d, i) => {
+            const on = curL && i < curL.n;
+            const fresh = curL && i === curL.n - 1 ? inU : 1;
+            d.style.background = on ? `rgba(242,198,109,${fresh})` : "transparent";
+            d.style.borderStyle = on ? "solid" : "dotted";
+            d.style.borderColor = on ? "#f2c66d" : "";
+            d.style.boxShadow = on ? `0 0 ${14 * fresh}px rgba(242,198,109,.7)` : "none";
+          });
+        }
+
+        /* Outro */
+        const oO = seg(t, END + 350, END + 900) * (1 - seg(t, END + OUTRO - 500, END + OUTRO - 50));
+        show($("#out"), oO, `scale(${1 + seg(t, END + 350, END + OUTRO) * 0.03})`);
+        if (oO > 0) {
+          reveal(outa, t, END + 450, 120, 650);
+          const u = out(seg(t, END + 1250, END + 2100));
+          const b = $("#outb");
+          b.style.opacity = u;
+          b.style.transform = `translateY(${(1 - u) * 36}px)`;
+          b.style.filter = `blur(${(1 - u) * 10}px) drop-shadow(0 0 ${40 * u}px rgba(242,198,109,${0.3 * u}))`;
+          const m = out(seg(t, END + 2300, END + 3000));
+          for (const sel of ["#out .lock", "#out .meta", "#out .fine"]) {
+            const el = $(sel);
+            el.style.opacity = m;
+            if (sel !== "#out .fine") el.style.transform = `translateY(${(1 - m) * 20}px)`;
+          }
+        }
+      };
+    </script>
+  </body>
+</html>

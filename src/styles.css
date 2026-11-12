@@ -1658,3 +1658,11 @@
 .ec-results h5 { margin: 0 0 6px; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600; color: #4a5258; }
 @media (prefers-reduced-motion: reduce) { .ec-vrow input, .ec-vrow select { transition: none; } }
 .ec-vrow input[aria-invalid="true"] { border-color: #e58a7a; box-shadow: 0 0 0 3px rgba(229, 138, 122, 0.2); }
+.ec-own { margin-top: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; font-size: 0.86rem; color: var(--ec-muted); }
+.ec-own > span { flex: 1 1 220px; }
+.ec-own.done { color: var(--ec-lamp); }
+.ec-own-btn { min-height: 44px; padding: 8px 16px; border-radius: 999px; border: 1px solid var(--ec-lamp); background: var(--ec-lamp-soft); color: var(--ec-paper); font: inherit; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: background 0.2s var(--ec-ease), transform 0.15s var(--ec-ease); }
+.ec-own-btn:hover { background: rgba(242, 198, 109, 0.26); }
+.ec-own-btn:active { transform: scale(0.97); }
+.ec-own-btn:focus-visible { outline: 2px solid var(--ec-lamp); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .ec-own-btn { transition: none; } .ec-own-btn:active { transform: none; } }
