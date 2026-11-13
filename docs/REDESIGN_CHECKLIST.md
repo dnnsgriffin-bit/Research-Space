@@ -45,6 +45,8 @@ Before starting Phase 1, check the git log: some of it may already be done (for 
 
 ## Phase 2: Signature moments (design judgment)
 
+> **Model check on entry (Opus 5.5 required).** Before step 9, tell the user: "Phase 2 needs Opus 5.5. Please confirm the model picker is set to Opus 5.5 before I continue." If you are not running on Opus 5.5, stop here and wait. Do not begin step 9 on Sonnet.
+
 Goal: add the few things that are distinctive, each tied to data or state, borrowing one element per reference (framework section 9). Do these only after Phase 1 is done.
 
 - [ ] **9. Warm the void.** Test moving the dark surface from `#0a0d10` toward a warmer value (for example `#0d0c0b`). Compare screenshots side by side; decide, then update the token. (Section 9, open question)
