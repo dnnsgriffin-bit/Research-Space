@@ -83,15 +83,25 @@ Yes: gold, and it is a strong one. It is also the "measured" color, which is the
 
 Today: one good easing (`cubic-bezier(.22,1,.36,1)`, 79 uses), but 18 plain `ease` and durations spread from 180 ms to 1.1 s, and 9 `transition: all` rules.
 
-| Token | Value | Use |
-|---|---|---|
-| `--ease` | `cubic-bezier(.22,1,.36,1)` | Everything |
-| `--dur-fast` | 150 to 180 ms | Hover, press |
-| `--dur-base` | 250 ms | State changes, reveals |
-| `--dur-slow` | 600 to 900 ms | Chain lighting, page-level reveals |
-| Signature | The spark from a tick to the link it lights | The one motion that is yours. Keep it rare. |
+| Token | Value | Use | Checked against |
+|---|---|---|---|
+| `--ease` | `cubic-bezier(.22,1,.36,1)` | Hover, press, reveals: anything that arrives and settles | Already the site's main curve. Clinia's reveal curve (`.16,1,.3,1`) is nearly identical, so keep it. |
+| `--ease-swap` | `cubic-bezier(.7,0,.3,1)` | A state that changes in place: a link turning measured, a step switching | Harvey uses this one curve almost everywhere, at 300 ms. |
+| `--dur-fast` | 150 ms | Hover, press, focus | Hebbia 120 to 150 ms, Linear 100 ms |
+| `--dur-base` | 300 ms | State changes | Harvey 300 ms |
+| `--dur-slow` | 600 to 800 ms | Chain lighting, the brief appearing, page-level reveals | Clinia 800 ms |
+| Signature | The spark from a tick to the link it lights | The one motion that is yours. Keep it rare. | |
 
-Rules: animate transform and opacity (and color where meaning changes), never `all`; always honor reduced motion.
+Rules: animate transform and opacity (and color where meaning changes), never `all`; nothing overshoots or bounces (no spring or back easing); no smooth-scroll libraries; always honor reduced motion by replacing movement with an instant change or a short fade.
+
+Motion vocabulary to build with, all tied to data:
+
+- Numbers that count up when a value becomes measured.
+- Lines that draw from a flat baseline when a metric appears.
+- A card that expands into a full view, for the brief being laid on the table.
+- A print reveal for the decision brief (see the receipt animations on 60fps: Run Receipt, Platen).
+
+Never: text scramble, shimmer, spotlight, border trails, magnetic buttons, tilt, custom cursors, particle fields, marquees, confetti. Glow is allowed only as the "measured" state of a link, never as atmosphere.
 
 ## 7. Hard no's for this site
 
@@ -115,3 +125,53 @@ Accept a reference if it shares at least three of these five. Fewer than three i
 Categories that tend to fit: editorial data journalism and visual essays; research and archive sites; quiet analytics and finance tools; instrument-style product pages; museum and library sites. Categories to skip: neon developer-tool SaaS, aurora-gradient AI landing pages, agency sites built on heavy scroll animation.
 
 In galleries, search tags such as: editorial, serif, dark mode, data visualization, archive, minimal, monochrome.
+
+## 9. Reference direction (decided November 13, 2026)
+
+Thirteen sites were scored on the five criteria above plus two more: executive credibility, and how small a change each would be from today's site (0 to 2 each, 14 total). The five finalists were reviewed top to bottom; the rest only at the top of the page.
+
+| Site | Score | Role |
+|---|---|---|
+| Hebbia (hebbia.com) | 12 | **Anchor** |
+| Clinia (clinia.com) | 10 | Borrow the signature section |
+| Harvey (harvey.ai) | 10 | Borrow the proof section |
+| Elicit (elicit.com) | 7 | Borrow the paper pages |
+| GreenLock, Stripe Press | 7 | Not used |
+| Spectup, Wishbone Advisory, Wafer, Anduril | 5 | Not used |
+| Linear, Delta Cafés | 4 | Linear for timing only |
+
+### Anchor: Hebbia
+
+The closest match to "evidence under a lamp": a finance-executive audience, warm lamp-lit photography of people reading documents, a product grid with a Source Documents column next to every answer, and an almost entirely warm black and ivory palette.
+
+Take:
+
+- **Emphasis by dimming, not by color.** In a quote, the payoff phrase drops to lower contrast. This keeps gold free to mean "measured".
+- **Visible sources.** Every claim sits next to the document it came from: our evidence chain, made visible.
+- **Proof as type.** Big serif numbers with small mono labels under them.
+- **Light from the subject.** Imagery is lit from inside the scene, like a desk lamp, never by haze.
+
+Leave: the bento marquee loops and floating cards, which are motion for its own sake.
+
+Open question: Hebbia's black is warm (`#0E0B0B`). Ours (`#0a0d10`) leans slightly blue, which section 8 says to avoid. Warming the void a few steps (for example toward `#0d0c0b`) is worth testing before anything else changes.
+
+### Borrowed, one element each
+
+| From | Take | Use it for |
+|---|---|---|
+| Clinia | Raw records that come together into a readable document as you scroll; one accent phrase in the headline | The evidence-chain section only: the signature moment |
+| Harvey | Large serif stats on dark; large serif quotes from named people; ivory and dark sections that still read as one brand | The proof section, and the move from the dark room to the paper brief |
+| Elicit | Ivory paper, serif with mono labels, citation cards | The Studio, Framework and About pages |
+
+Clinia is not the anchor. Its opening is the best single moment found, but further down it becomes a developer tool (code blocks, a developer-experience section, a badge grid), and our audience is executives.
+
+### Rejected, and why
+
+- **Delta Cafés** (Awwwards site of the day): right warmth, wrong motion. 675 ms transitions, 1.5 s reveals, overshoot curves, smooth-scroll hijacking.
+- **Linear:** good timing, but cool blue-black and Inter.
+- **Mercury:** photo hero and a blue accent.
+- **Kinetic Film** (Scenario): far too energetic for the site (174 BPM, 8.5 cuts every 10 s). A possible fit for a launch film only.
+
+### Not reviewed
+
+Mobbin (needs a paid plan, and blocks automated browsers). Godly, now recent.design, shows only a few sites per category without an account, mostly agencies. 60fps shows six shots per filter without an account, and videos were seen as still frames only.
