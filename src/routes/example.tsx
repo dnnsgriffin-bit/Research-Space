@@ -15,7 +15,8 @@ import { ScenarioPreview } from "@/components/studio/ScenarioPreview";
 import { EvidenceChain } from "@/components/studio/EvidenceChain";
 import { NORTHSTAR_PROVENANCE } from "@/lib/chain-provenance";
 import { EvidenceLabel } from "@/components/studio/EvidenceLabel";
-import { Section, StageRibbon, NextStage } from "@/components/site/SiteChrome";
+import { Section, NextStage } from "@/components/site/SiteChrome";
+import { Orientation } from "@/components/site/Orientation";
 import { useStudio } from "@/lib/studio-store";
 
 export const Route = createFileRoute("/example")({
@@ -83,7 +84,28 @@ function ExamplePage() {
 
   return (
     <div className="pb-8">
-      <StageRibbon stage="example" />
+      <Orientation
+        current="example"
+        kicker="Worked example · fictional · nothing to fill in"
+        title="One program, followed from a reassuring report to a decision leaders can defend."
+        steps={[
+          <>
+            Read top to bottom, or jump between the four stages: <b>Diagnose</b>, <b>Design</b>,{" "}
+            <b>Test</b> and <b>Decide</b>.
+          </>,
+          "Select any link in the evidence chain to see what the evidence can and can’t support.",
+          <>
+            To try this on your own program, choose <b>Open in Studio</b> and edit the case.
+          </>,
+        ]}
+      >
+        <p>
+          Northstar Services is a made-up company. Its new-manager coaching program shows high
+          completion, yet leaders still hear that coaching quality varies. This page shows how the
+          Evidence Studio method works through that case, stage by stage. It is the long version of
+          what the two-minute Evidence Check does.
+        </p>
+      </Orientation>
 
       <Section className="pt-9 sm:pt-12">
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(290px,0.72fr)] lg:items-end lg:gap-14">
@@ -93,9 +115,9 @@ function ExamplePage() {
               Northstar Services: the completion question
             </h1>
             <p className="measure mt-5 text-[1.07rem] leading-relaxed text-foreground/85">
-              New managers attended a coaching program. Completion looked reassuring. Leaders
-              still heard that coaching quality varied. Before commissioning more training, what
-              does the evidence actually say?
+              New managers attended a coaching program. Completion looked reassuring. Leaders still
+              heard that coaching quality varied. Before commissioning more training, what does the
+              evidence actually say?
             </p>
             <p className="mt-4 border-l-2 border-l-[var(--state-assumed)] bg-[var(--tint-assumed)] px-4 py-3 text-[14.5px] leading-relaxed text-foreground/85">
               <strong className="font-semibold">

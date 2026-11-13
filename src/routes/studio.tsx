@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { STEPS, useStudio } from "@/lib/studio-store";
+import { Orientation } from "@/components/site/Orientation";
 import { StepContext } from "@/components/studio/steps/StepContext";
 import { StepIntervention } from "@/components/studio/steps/StepIntervention";
 import { StepSandbox } from "@/components/studio/steps/StepSandbox";
@@ -68,6 +69,34 @@ function StudioPage() {
 
   return (
     <div className="pb-8">
+      <Orientation
+        current="studio"
+        foldable
+        foldLabel="How the Studio works"
+        kicker="Studio · your own program · nothing leaves your browser"
+        title="The next step after the Evidence Check: plan what to test, then build a fuller brief."
+        steps={[
+          <>
+            Work through the four stages in order: <b>Diagnose</b>, <b>Design</b>, <b>Test</b> and{" "}
+            <b>Decide</b>. You can go back to any stage.
+          </>,
+          <>
+            Not sure what to type? Choose <b>Prefill worked example</b> and edit it.
+          </>,
+          "Leave with a decision brief: what you can claim, what you can’t yet, and the next test.",
+        ]}
+      >
+        <p>
+          The Evidence Check shows how far your evidence reaches. The Studio takes one decision
+          further: who has to act differently, what you would change, how you would test it, and
+          what leaders can decide now.
+        </p>
+        <p className="mt-3 text-[14px] text-muted-foreground">
+          Your inputs stay in this tab only and are not saved. Copy or download your brief before
+          you close it.
+        </p>
+      </Orientation>
+
       {/* Compact working header — the work itself starts immediately below */}
       <div className="studio-working-header border-b border-border bg-[var(--tint-navy)]">
         <div className="mx-auto flex max-w-[84rem] flex-wrap items-center justify-between gap-x-6 gap-y-3 px-5 py-3 sm:px-8">
