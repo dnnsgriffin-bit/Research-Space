@@ -2,7 +2,7 @@
  * Evidence Studio product pages: landing (/) and Evidence Check (/check).
  *
  * Color psychology, applied with restraint:
- *   ink (#0a0d10)  authority and focus; lets light carry meaning
+ *   ink (#0d0c0a, warm)  authority and focus; lets light carry meaning
  *   gold           observed evidence, insight; used only for "measured" and primary actions
  *   sky            assumptions; calm and provisional
  *   coral          barriers and limits; a caution that informs without alarming
@@ -12,27 +12,32 @@
 
 .product-shell,
 .ec {
-  --ec-void: #0a0d10;
-  --ec-panel: #11161b;
-  --ec-raise: #182028;
+  --ec-void: #0d0c0a;
+  --ec-panel: #161411;
+  --ec-raise: #201d19;
   --ec-line: rgba(255, 255, 255, 0.09);
   --ec-line-2: rgba(255, 255, 255, 0.16);
   --ec-paper: #eee8dc;
-  --ec-muted: #9ea7ae;
+  --ec-muted: #a59f96;
   --ec-lamp: #f2c66d;
   --ec-lamp-deep: #d9a441;
   --ec-lamp-soft: rgba(242, 198, 109, 0.14);
   --ec-haze: #93b4cc;
   --ec-haze-soft: rgba(147, 180, 204, 0.12);
-  --ec-ash: #69737c;
+  --ec-ash: #78726a;
   /* Text on unknown links: the dotted ring stays ash, the number must stay readable (>= 4.5:1). */
-  --ec-ash-text: #8b949c;
+  --ec-ash-text: #958e85;
   --ec-flag: #ef8f74;
   --ec-flag-soft: rgba(239, 143, 116, 0.13);
   --ec-display: "Instrument Serif", "Iowan Old Style", Georgia, serif;
   --ec-body: "IBM Plex Sans", "Source Sans 3", system-ui, sans-serif;
   --ec-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
   --ec-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  /* In-place state change (a link turning measured, a chip toggling). See docs/DESIGN_FRAMEWORK.md, section 6. */
+  --ec-ease-swap: cubic-bezier(0.7, 0, 0.3, 1);
+  --ec-dur-fast: 150ms;
+  --ec-dur-base: 300ms;
+  --ec-dur-slow: 600ms;
 }
 .product-shell {
   background: var(--ec-void);
@@ -57,7 +62,7 @@
   border-bottom: 1px solid transparent;
 }
 .ph.is-scrolled {
-  background: rgba(10, 13, 16, 0.72);
+  background: rgba(13, 12, 10, 0.72);
   backdrop-filter: blur(14px) saturate(1.3);
   border-bottom-color: var(--ec-line);
 }
@@ -177,7 +182,7 @@
     flex-direction: column;
     gap: 4px;
     padding: 8px max(20px, 2rem) 22px;
-    background: rgba(10, 13, 16, 0.96);
+    background: rgba(13, 12, 10, 0.96);
     backdrop-filter: blur(14px);
     border-bottom: 1px solid var(--ec-line);
   }
@@ -269,7 +274,7 @@
 /* ---------- Landing base ---------- */
 /* The dark product pages own the page background (no ivory flash on overscroll). */
 body:has(.product-shell) {
-  background: var(--ec-void, #0a0d10);
+  background: var(--ec-void, #0d0c0a);
 }
 .l p,
 .ec p {
@@ -568,7 +573,7 @@ body:has(.product-shell) {
   position: absolute;
   inset: 1px;
   border-radius: 21px;
-  background: #0e1317;
+  background: #12100e;
 }
 .hc-top {
   display: flex;
@@ -1053,7 +1058,7 @@ body:has(.product-shell) {
   border-radius: 16px;
   overflow: hidden;
   border: 1px solid var(--ec-line-2);
-  background: #0c1014;
+  background: #100e0c;
   box-shadow:
     0 40px 100px -40px rgba(0, 0, 0, 0.95),
     0 0 0 1px rgba(255, 255, 255, 0.02) inset;
@@ -1064,7 +1069,7 @@ body:has(.product-shell) {
   gap: 7px;
   padding: 10px 14px;
   border-bottom: 1px solid var(--ec-line);
-  background: #141a20;
+  background: #1a1714;
 }
 .gd-chrome > i {
   width: 10px;
@@ -1111,7 +1116,7 @@ body:has(.product-shell) {
   transform-origin: 0 0;
   font-family: var(--ec-body);
   color: var(--ec-paper);
-  background: #0c1014;
+  background: #100e0c;
 }
 .gd-canvas > * {
   position: absolute;
@@ -1159,9 +1164,13 @@ body:has(.product-shell) {
   font-family: var(--ec-mono);
   font-size: 12px;
   color: var(--ec-ash);
-  background: #0c1014;
+  background: #100e0c;
   border: 2px dotted var(--ec-ash);
-  transition: all 0.5s var(--ec-ease);
+  transition:
+    background-color 0.5s var(--ec-ease-swap),
+    border-color 0.5s var(--ec-ease-swap),
+    color 0.5s var(--ec-ease-swap),
+    box-shadow 0.5s var(--ec-ease-swap);
 }
 .gd-link.measured .gd-node {
   background: var(--ec-lamp);
@@ -1261,7 +1270,7 @@ body:has(.product-shell) {
 .gd-panel {
   border: 1px solid var(--ec-line);
   border-radius: 14px;
-  background: #11171c;
+  background: #171512;
   padding: 18px 22px;
   transition:
     border-color 0.4s,
@@ -1318,9 +1327,11 @@ body:has(.product-shell) {
   padding: 0 14px;
   border-radius: 999px;
   border: 1px solid var(--ec-line-2);
-  background: #182028;
+  background: #201d19;
   font-size: 14px;
-  transition: all 0.3s var(--ec-ease);
+  transition:
+    background-color var(--ec-dur-base) var(--ec-ease-swap),
+    border-color var(--ec-dur-base) var(--ec-ease-swap);
 }
 .gd-chip i {
   flex: none;
@@ -1328,7 +1339,10 @@ body:has(.product-shell) {
   height: 14px;
   border-radius: 50%;
   border: 1.5px solid var(--ec-muted);
-  transition: all 0.3s var(--ec-ease);
+  transition:
+    background-color var(--ec-dur-base) var(--ec-ease-swap),
+    border-color var(--ec-dur-base) var(--ec-ease-swap),
+    box-shadow var(--ec-dur-base) var(--ec-ease-swap);
 }
 .gd-chip small {
   display: block;
@@ -1376,7 +1390,9 @@ body:has(.product-shell) {
 .gd-legend {
   opacity: 0;
   transform: translateY(8px);
-  transition: all 0.6s var(--ec-ease);
+  transition:
+    opacity var(--ec-dur-slow) var(--ec-ease),
+    transform var(--ec-dur-slow) var(--ec-ease);
 }
 .gd-warn.in,
 .gd-legend.in {
@@ -1416,7 +1432,9 @@ body:has(.product-shell) {
 .gd-insp {
   opacity: 0;
   transform: translateY(18px);
-  transition: all 0.55s var(--ec-ease);
+  transition:
+    opacity var(--ec-dur-slow) var(--ec-ease),
+    transform var(--ec-dur-slow) var(--ec-ease);
 }
 .gd-insp.in {
   opacity: 1;
@@ -1473,7 +1491,7 @@ body:has(.product-shell) {
 }
 .gd-cond.no {
   border-color: rgba(239, 143, 116, 0.6);
-  background: linear-gradient(rgba(239, 143, 116, 0.12), rgba(239, 143, 116, 0.12)), #11171c;
+  background: linear-gradient(rgba(239, 143, 116, 0.12), rgba(239, 143, 116, 0.12)), #171512;
 }
 .gd-q {
   font-size: 17px;
@@ -1494,13 +1512,15 @@ body:has(.product-shell) {
   place-items: center;
   font-size: 14px;
   color: var(--ec-muted);
-  transition: all 0.3s;
+  transition:
+    background-color var(--ec-dur-base) var(--ec-ease-swap),
+    color var(--ec-dur-base) var(--ec-ease-swap);
 }
 .gd-seg3 span + span {
   border-left: 1px solid var(--ec-line-2);
 }
 .gd-seg3 span.on {
-  background: #1d262e;
+  background: #25211c;
   color: var(--ec-paper);
 }
 .gd-seg3 span.on.no {
@@ -1515,7 +1535,9 @@ body:has(.product-shell) {
   color: var(--ec-flag);
   opacity: 0;
   transform: translateY(8px);
-  transition: all 0.6s var(--ec-ease);
+  transition:
+    opacity var(--ec-dur-slow) var(--ec-ease),
+    transform var(--ec-dur-slow) var(--ec-ease);
 }
 .gd-barrier-note.in {
   opacity: 1;
@@ -1618,7 +1640,9 @@ body:has(.product-shell) {
   overflow: hidden;
   opacity: 0;
   transform: translateY(40px) scale(0.97);
-  transition: all 0.6s var(--ec-ease);
+  transition:
+    opacity var(--ec-dur-slow) var(--ec-ease),
+    transform var(--ec-dur-slow) var(--ec-ease);
 }
 .gd-mail.in {
   opacity: 1;
@@ -1885,7 +1909,7 @@ body:has(.product-shell) {
   position: absolute;
   inset: 0;
   /* Darken only the foot of the poster, where the play control and its label sit. */
-  background: linear-gradient(180deg, rgba(10, 13, 16, 0) 45%, rgba(10, 13, 16, 0.82));
+  background: linear-gradient(180deg, rgba(13, 12, 10, 0) 45%, rgba(13, 12, 10, 0.82));
   transition: opacity 0.4s;
 }
 .l-video-poster:hover::after {
@@ -2175,7 +2199,7 @@ body:has(.product-shell) {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 60%, rgba(10, 13, 16, 0.55));
+  background: linear-gradient(180deg, transparent 60%, rgba(13, 12, 10, 0.55));
   pointer-events: none;
 }
 .l-portrait img {

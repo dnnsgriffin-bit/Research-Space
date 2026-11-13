@@ -482,23 +482,28 @@
  * Dark "light table": gold = measured, sky = assumed, grey = unknown, coral = barrier.
  * ======================================================================== */
 .ec {
-  --ec-void: #0a0d10;
-  --ec-panel: #11161b;
-  --ec-raise: #1b232a;
+  --ec-void: #0d0c0a;
+  --ec-panel: #161411;
+  --ec-raise: #221f1b;
   --ec-line: rgba(255, 255, 255, 0.1);
   --ec-paper: #ece7dc;
-  --ec-muted: #9ea7ae;
+  --ec-muted: #a59f96;
   --ec-lamp: #f2c66d;
   --ec-lamp-soft: rgba(242, 198, 109, 0.16);
   --ec-haze: #93b4cc;
   --ec-haze-soft: rgba(147, 180, 204, 0.12);
-  --ec-ash: #69737c;
+  --ec-ash: #78726a;
   --ec-flag: #ef8f74;
   --ec-flag-soft: rgba(239, 143, 116, 0.14);
   --ec-display: "Instrument Serif", "Iowan Old Style", Georgia, serif;
   --ec-body: "IBM Plex Sans", "Source Sans 3", system-ui, sans-serif;
   --ec-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
   --ec-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  /* In-place state change. See docs/DESIGN_FRAMEWORK.md, section 6. */
+  --ec-ease-swap: cubic-bezier(0.7, 0, 0.3, 1);
+  --ec-dur-fast: 150ms;
+  --ec-dur-base: 300ms;
+  --ec-dur-slow: 600ms;
   background: var(--ec-void);
   color: var(--ec-paper);
   font-family: var(--ec-body);
@@ -777,7 +782,7 @@
   font-size: 0.8rem;
   background: var(--ec-void);
   border: 2px dotted var(--ec-ash);
-  color: var(--ec-ash-text, #8b949c);
+  color: var(--ec-ash-text, #958e85);
   transition:
     background 0.4s var(--ec-ease),
     box-shadow 0.4s var(--ec-ease),
@@ -1050,7 +1055,10 @@
   height: 14px;
   border-radius: 50%;
   border: 1.5px solid var(--ec-muted);
-  transition: all 0.25s var(--ec-ease);
+  transition:
+    background-color var(--ec-dur-base) var(--ec-ease-swap),
+    border-color var(--ec-dur-base) var(--ec-ease-swap),
+    box-shadow var(--ec-dur-base) var(--ec-ease-swap);
 }
 .ec-chip[aria-pressed="true"] {
   background: var(--ec-lamp-soft);
