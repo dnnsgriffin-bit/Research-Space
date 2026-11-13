@@ -93,6 +93,8 @@ function flySpark(from: HTMLElement, to: HTMLElement | null | undefined, tone: "
   });
 }
 
+const START_HINT_KEY = "evidence-studio:check-start-hint";
+
 export function EvidenceCheck() {
   const [measured, setMeasured] = useState<string[]>(
     PRESETS.find((p) => p.id === "numbers")!.measured,
@@ -101,6 +103,23 @@ export function EvidenceCheck() {
   // Where the inputs came from, tracked separately from what they happen to match.
   const [origin, setOrigin] = useState<InputOrigin>({ kind: "example", presetId: "numbers" });
   const [selected, setSelected] = useState<string | null>(null);
+  // One-time "start here" note for first visits; gone after the first change or "Got it".
+  const [showStartHint, setShowStartHint] = useState(false);
+  useEffect(() => {
+    try {
+      if (window.localStorage.getItem(START_HINT_KEY) !== "done") setShowStartHint(true);
+    } catch {
+      setShowStartHint(true); // no storage: show it for this visit only
+    }
+  }, []);
+  const doneStartHint = () => {
+    setShowStartHint(false);
+    try {
+      window.localStorage.setItem(START_HINT_KEY, "done");
+    } catch {
+      /* storage blocked: it simply shows again next visit */
+    }
+  };
   const inspectorRef = useRef<HTMLElement>(null);
   const nodeRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
@@ -137,6 +156,7 @@ export function EvidenceCheck() {
     }
     setMeasured(next);
     setOrigin(originAfterEdit);
+    doneStartHint();
   };
   // A starting point is a fresh scenario: it replaces the measures and resets the answers.
   const pickPreset = (id: string) => {
@@ -146,6 +166,7 @@ export function EvidenceCheck() {
     setValues({});
     setValuesConfirmed(false);
     setOrigin(id === "blank" ? { kind: "own" } : { kind: "example", presetId: id });
+    doneStartHint();
   };
 
   const select = (id: string) => {
@@ -237,6 +258,18 @@ export function EvidenceCheck() {
         </div>
 
         <section className="ec-card ec-bench-measures" aria-labelledby="ec-measures-title">
+          {showStartHint && (
+            <div className="ec-start" role="note" aria-label="Start here">
+              <p className="ec-start-k">Start here</p>
+              <p>
+                The ticks below are an example. Change them to match the data you actually have, or
+                pick a starting point above. The chain and the brief update as you go.
+              </p>
+              <button type="button" className="ec-start-ok" onClick={doneStartHint}>
+                Got it
+              </button>
+            </div>
+          )}
           <p className="ec-label">Step 1</p>
           <h2 id="ec-measures-title">What did you measure?</h2>
           <p className="ec-hint">

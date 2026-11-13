@@ -1683,3 +1683,67 @@
 .ec-spark.flag { background: #ffe1d6; box-shadow: 0 0 12px 3px rgba(239, 143, 116, 0.9), 0 0 30px 9px rgba(239, 143, 116, 0.35); }
 @media (prefers-reduced-motion: reduce) { .ec-spark { display: none; } }
 @media print { .ec-spark { display: none; } }
+
+/* One-time "start here" note on the Evidence Check (first visit only).
+ * A quiet instrument note: hairline, paper text, no gold, no pulse. */
+.ec-start {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px 16px;
+  align-items: start;
+  margin-bottom: 18px;
+  padding: 14px 16px;
+  border: 1px solid var(--ec-line-2);
+  border-radius: var(--r-field);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--ec-paper);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+.ec-start p {
+  grid-column: 1;
+}
+.ec-start-k {
+  font-family: var(--ec-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ec-paper);
+}
+.ec-start-ok {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
+  min-height: 40px;
+  padding: 6px 14px;
+  border: 1px solid var(--ec-line-2);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ec-paper);
+  font: inherit;
+  font-size: 0.85rem;
+  transition: background var(--dur-fast) var(--ease);
+}
+.ec-start-ok:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ec-start {
+    animation: ec-start-in var(--dur-slow) var(--ease) both;
+  }
+}
+@keyframes ec-start-in {
+  from {
+    opacity: 0;
+  }
+}
+@media (max-width: 520px) {
+  .ec-start {
+    grid-template-columns: 1fr;
+  }
+  .ec-start-ok {
+    grid-column: 1;
+    grid-row: auto;
+    justify-self: start;
+  }
+}
