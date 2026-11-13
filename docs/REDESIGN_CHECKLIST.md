@@ -31,6 +31,16 @@ Goal: the dark product pages and the ivory Studio pages read as one product. Che
 
 **Phase 1 exit check:** click landing, check, studio, example, framework, about in order. Nothing should feel like a different product. Write a short before/after note in Notes.
 
+### STOP: model switch gate
+
+When steps 1 to 8 are ticked and the exit check is written up, **stop working. Do not start step 9.** Commit, then tell the user, in these words or close to them:
+
+> Phase 1 is done. Switch the model to Opus 5.5 in the model picker, then start Phase 2 (steps 9 to 15) of docs/REDESIGN_CHECKLIST.md.
+
+If you are running on Sonnet and reach step 9 for any reason, treat it as this same gate. The reverse also holds: a session on Opus should not redo Phase 1 steps that are already ticked.
+
+Before starting Phase 1, check the git log: some of it may already be done (for example `Warm the dark palette and apply the framework's motion rules` touches steps 7 and 9). Tick what is genuinely done, verify it against the step text, and do only the rest.
+
 ---
 
 ## Phase 2: Signature moments (design judgment)
