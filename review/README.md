@@ -9,6 +9,7 @@ This page collects everything a reviewer needs. All links on it are public.
 |---|---|
 | **Response to the Nov 5 review (findings, fixes, matrix, rescore)** | [REVIEW_RESPONSE.md](REVIEW_RESPONSE.md) |
 | Reviewer prompt (copy into ChatGPT, Argon and others) | [REVIEW_PROMPT.md](REVIEW_PROMPT.md) |
+| **Hiring-panel review prompt** (seven personas; Claude, ChatGPT, Gemini, Copilot) | [PANEL_REVIEW_PROMPT.md](PANEL_REVIEW_PROMPT.md) |
 | Scoring rubric | [RUBRIC.md](RUBRIC.md) |
 | Narration scripts for the videos | [NARRATION_SCRIPTS.md](NARRATION_SCRIPTS.md) |
 | **Product film** (about 67 s, 1080p, music, on-screen text, example inputs) | [evidence-studio-film-1080p60.mp4](https://github.com/dnnsgriffin-bit/research-space/raw/evidence-check-redesign/review/video/evidence-studio-film-1080p60.mp4) · [captions (.srt)](video/evidence-studio-film.srt) · [YouTube notes](YOUTUBE.md) · [how it is made](../tools/film/README.md) |
