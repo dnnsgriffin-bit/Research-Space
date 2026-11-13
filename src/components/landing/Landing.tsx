@@ -193,6 +193,10 @@ function Claim({ claim, truth, i }: { claim: string; truth: string; i: number })
       className={`l-claim ${inView ? "in" : ""}`}
       style={{ "--d": `${i * 180}ms` } as React.CSSProperties}
     >
+      {/* Visible from the first frame, so the claim is never read without its status. */}
+      <p className="l-claim-tag">
+        <span aria-hidden>×</span> Not supported by this evidence
+      </p>
       <p className="l-claim-x">
         <span className="l-strike">{claim}</span>
         <span className="sr-only"> (not supported by this evidence)</span>

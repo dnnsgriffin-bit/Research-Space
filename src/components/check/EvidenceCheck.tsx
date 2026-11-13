@@ -112,8 +112,17 @@ export function EvidenceCheck() {
     () => buildCheckBrief(measured, answers, values),
     [measured, answers, values],
   );
+  // Confirming typed numbers vouches for those numbers only. The selections keep their own
+  // provenance (example or own), so example-derived measures stay labeled as examples.
+  const [valuesConfirmed, setValuesConfirmed] = useState(false);
+  const typed = useMemo(() => enteredResults(measured, values), [measured, values]);
+  const provenance = provenanceLabel(
+    origin,
+    typed.length ? { labels: typed.map((r) => r.label), confirmed: valuesConfirmed } : undefined,
+  );
   const setValue = (id: string, patch: Partial<MeasureValue>) => {
     setValues((v) => ({ ...v, [id]: { ...(v[id] ?? EMPTY_VALUE), ...patch } }));
+    setValuesConfirmed(false); // a changed number needs confirming again
     setOrigin(originAfterEdit);
   };
   const toggleMeasure = (id: string, from?: HTMLElement) => {
@@ -134,6 +143,7 @@ export function EvidenceCheck() {
     setMeasured([...p.measured]);
     setAnswers(DEFAULT_ANSWERS);
     setValues({});
+    setValuesConfirmed(false);
     setOrigin(id === "blank" ? { kind: "own" } : { kind: "example", presetId: id });
   };
 
@@ -220,6 +230,7 @@ export function EvidenceCheck() {
             onClose={close}
             brief={brief}
             origin={origin}
+            provenance={provenance}
           />
         </div>
 
@@ -236,7 +247,8 @@ export function EvidenceCheck() {
             values={values}
             onChange={setValue}
             isExample={origin.kind !== "own"}
-            onOwn={() => setOrigin({ kind: "own" })}
+            confirmed={valuesConfirmed}
+            onConfirm={() => setValuesConfirmed(true)}
           />
         </section>
 
@@ -272,7 +284,13 @@ export function EvidenceCheck() {
       <section className="ec-wrap ec-section ec-brief-section" aria-labelledby="ec-brief-title">
         <span className="ec-label">Step 3</span>
         <h2 id="ec-brief-title">The claim you can defend today</h2>
-        <Brief brief={brief} origin={origin} states={states} barriers={barriers} />
+        <Brief
+          brief={brief}
+          origin={origin}
+          provenance={provenance}
+          states={states}
+          barriers={barriers}
+        />
       </section>
     </div>
   );
@@ -549,15 +567,17 @@ function ValueEntry({
   values,
   onChange,
   isExample,
-  onOwn,
+  confirmed,
+  onConfirm,
 }: {
   measured: string[];
   values: Record<string, MeasureValue>;
   onChange: (id: string, patch: Partial<MeasureValue>) => void;
-  /** True while the inputs still carry an example label. */
+  /** True while the selections carry an example label. */
   isExample: boolean;
-  /** The visitor confirms the selections and numbers are their own. */
-  onOwn: () => void;
+  /** The visitor has confirmed the typed numbers (and only those) as their own. */
+  confirmed: boolean;
+  onConfirm: () => void;
 }) {
   const items = MEASURES.filter((m) => measured.includes(m.id));
   const filled = enteredResults(measured, values).length;
@@ -630,19 +650,27 @@ function ValueEntry({
               );
             })}
           </ul>
-          {filled > 0 && isExample && (
+          {filled > 0 && isExample && !confirmed && (
             <p className="ec-own">
               <span>
-                You started from an example, so the brief will label these inputs as illustrative.
+                You started from an example. Confirming marks only these numbers as yours; the
+                example selections stay labeled as examples. For a brief with all your own
+                selections, start from Blank slate.
               </span>
-              <button type="button" className="ec-own-btn" onClick={onOwn}>
+              <button type="button" className="ec-own-btn" onClick={onConfirm}>
                 These are my real numbers
               </button>
             </p>
           )}
+          {filled > 0 && isExample && confirmed && (
+            <p className="ec-own done" role="status">
+              The brief marks these numbers as entered and confirmed by you. The example selections
+              stay labeled as examples.
+            </p>
+          )}
           {filled > 0 && !isExample && (
             <p className="ec-own done" role="status">
-              The brief will label these as your own selections.
+              These numbers are part of your own run, and the brief says so.
             </p>
           )}
         </>
@@ -659,6 +687,7 @@ function Inspector({
   onClose,
   brief,
   origin,
+  provenance,
 }: {
   ref: React.Ref<HTMLElement>;
   id: string | null;
@@ -667,6 +696,7 @@ function Inspector({
   onClose: () => void;
   brief: CheckBrief;
   origin: InputOrigin;
+  provenance: string;
 }) {
   const node = id ? CHAIN.find((n) => n.id === id) : null;
   const d = id ? GENERIC_PROVENANCE[id] : undefined;
@@ -679,7 +709,7 @@ function Inspector({
       tabIndex={-1}
     >
       {!node || !d ? (
-        <LiveBrief brief={brief} origin={origin} />
+        <LiveBrief brief={brief} origin={origin} provenance={provenance} />
       ) : (
         <div key={node.id} className="ec-enter">
           <div className="ec-insp-head">
@@ -733,7 +763,15 @@ function Inspector({
 }
 
 /** A compact, always-current view of the brief, shown while no link is open. */
-function LiveBrief({ brief, origin }: { brief: CheckBrief; origin: InputOrigin }) {
+function LiveBrief({
+  brief,
+  origin,
+  provenance,
+}: {
+  brief: CheckBrief;
+  origin: InputOrigin;
+  provenance: string;
+}) {
   const next = brief.nextEvidence[0];
   return (
     <div className="ec-live">
@@ -741,9 +779,7 @@ function LiveBrief({ brief, origin }: { brief: CheckBrief; origin: InputOrigin }
         <p className="ec-label">Live brief · updates as you go</p>
         <p className="ec-live-hint">Select a link in the chain to inspect it.</p>
       </div>
-      <p className={`ec-live-prov ${origin.kind === "own" ? "own" : ""}`}>
-        {provenanceLabel(origin)}
-      </p>
+      <p className={`ec-live-prov ${origin.kind === "own" ? "own" : ""}`}>{provenance}</p>
       <p key={brief.headline} className="ec-live-h ec-swap">
         {brief.headline}
       </p>
@@ -833,15 +869,16 @@ function ConditionCard({
 function Brief({
   brief,
   origin,
+  provenance,
   states,
   barriers,
 }: {
   brief: ReturnType<typeof buildCheckBrief>;
   origin: InputOrigin;
+  provenance: string;
   states: Record<string, ChainState>;
   barriers: Record<string, string[]>;
 }) {
-  const provenance = provenanceLabel(origin);
   const chain = chainLine(states, barriers);
   // Set on the client only, so the printed date never causes a hydration mismatch.
   const [today, setToday] = useState("");

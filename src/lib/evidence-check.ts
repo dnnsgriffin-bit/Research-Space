@@ -228,12 +228,29 @@ export type InputOrigin =
   | { kind: "edited-example"; presetId: string }
   | { kind: "own" };
 
-export function provenanceLabel(origin: InputOrigin): string {
-  if (origin.kind === "own") return "Your own selections.";
+/** Typed values in the run, and whether the visitor has confirmed them as their own. */
+export type ValuesProvenance = { labels: string[]; confirmed: boolean };
+
+/**
+ * Where the inputs came from. The selections and the typed values are tracked on their own:
+ * confirming typed numbers says those numbers are real. It does not turn example-derived
+ * selections into records the visitor actually has.
+ */
+export function provenanceLabel(origin: InputOrigin, values?: ValuesProvenance): string {
+  const typed = values?.labels.length ? listPhrase(values.labels) : "";
+  if (origin.kind === "own")
+    return typed
+      ? `Your own selections, with values you entered (${typed}).`
+      : "Your own selections.";
   const label = PRESETS.find((p) => p.id === origin.presetId)?.label ?? "example";
-  return origin.kind === "example"
-    ? `Example inputs: ${label}. Illustrative, not real data.`
-    : `Example inputs (${label}), edited. Illustrative, not real data.`;
+  const exampleSelections =
+    origin.kind === "example"
+      ? `Example inputs: ${label}. Illustrative, not real data.`
+      : `Example inputs (${label}), edited. Illustrative, not real data.`;
+  if (!typed) return exampleSelections;
+  return values?.confirmed
+    ? `Mixed inputs. The selections are example inputs (${label}${origin.kind === "edited-example" ? ", edited" : ""}), illustrative and not real data. The values for ${typed} were entered and confirmed by you.`
+    : `${exampleSelections} Includes values typed into this example (${typed}), not confirmed as real.`;
 }
 
 /** Editing an example keeps its example status; own selections stay your own. */
@@ -402,7 +419,7 @@ export function buildCheckBrief(
         ? "Why the metric differs. The comparison you entered shows a difference, not the program’s contribution."
         : "Whether the metric moved, or why. Tracking a metric doesn’t show its direction or the program’s contribution.",
     );
-  else cannotSay.push("That the quality of work improved, or any ROI or business impact.");
+  else cannotSay.push("That the quality of work changed, or any ROI or business impact.");
   cannotSay.push(
     "That the program caused any change. That needs a comparison design and a look at other explanations.",
   );
@@ -472,7 +489,16 @@ export function buildCheckBrief(
       "Workplace use was recorded. What was learned, and whether anything changed, is still open.";
   else if (learningM)
     headline = "Knowledge or skill was assessed. Whether work changed is still unknown.";
-  else headline = "You can report participation and reactions. You can’t yet say anything changed.";
+  else {
+    // Name only the categories that were actually selected.
+    const reported: string[] = [];
+    if (measured.includes("attendance") || measured.includes("completion"))
+      reported.push("participation");
+    if (measured.includes("satisfaction")) reported.push("reactions");
+    if (measured.includes("confidence")) reported.push("self-rated confidence");
+    if (st["opportunity"] === "measured") reported.push("chances to apply the skill");
+    headline = `You can report ${listPhrase(reported)}. You can’t yet say anything changed.`;
+  }
 
   let decision: string;
   if (no.length)
@@ -480,7 +506,7 @@ export function buildCheckBrief(
       "Verify the reported barrier with managers and a few participants before deciding to scale, redesign or stop the program.";
   else if (!learningM && !transferM)
     decision =
-      "Hold off on scaling. A small check of learning and workplace use would show whether the program is doing its job. Time the workplace check for when people have had real chances to use the skill.";
+      "Hold off on scaling. First gather evidence on learning and workplace use, such as a short skill check and a sample of observed work. Small checks can show what the program supports and where the gaps are; they won’t settle whether it works. Time the workplace check for when people have had real chances to use the skill.";
   else if (!transferM)
     decision =
       "Check workplace use before scaling, once people have had real chances to apply the skill.";
@@ -530,11 +556,11 @@ export function briefAsText(b: CheckBrief, provenance: string, chain?: string): 
     `Suggested next decision: ${b.decision}`,
     "",
     "What we can say:",
-    ...b.canSay.map((x) => `- ${x}`),
+    ...(b.canSay.length ? b.canSay.map((x) => `- ${x}`) : ["- Nothing yet."]),
     ...(b.results.length
       ? ["", "Results as entered (not verified):", ...b.results.map((x) => `- ${x.text}`)]
       : []),
-    `(${b.resultsNote})`,
+    ...(b.canSay.length ? [`(${b.resultsNote})`] : []),
     "",
     "What we can't say yet:",
     ...b.cannotSay.map((x) => `- ${x}`),

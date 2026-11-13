@@ -879,6 +879,14 @@ body:has(.product-shell) {
   flex-direction: column;
   gap: 22px;
 }
+.l-claim-tag {
+  margin: 0 0 -8px;
+  font-family: var(--ec-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ec-flag);
+}
 .l-claim-x {
   font-family: var(--ec-display);
   font-size: clamp(1.6rem, 2.4vw, 2rem);
@@ -910,21 +918,20 @@ body:has(.product-shell) {
   color: var(--ec-lamp);
 }
 @media (prefers-reduced-motion: no-preference) {
+  /* The claim is already muted and labeled before the strike arrives; the strike only
+     reinforces it. */
   .l-claim:not(.in) .l-strike {
     background-size: 0% 2.5px;
-    color: var(--ec-paper);
   }
   .l-claim.in .l-strike {
     transition-delay: calc(var(--d) + 250ms);
   }
+  /* The correction is fully legible from the first frame; it only settles into place. */
   .l-claim .l-claim-ok {
-    transition:
-      opacity 0.7s var(--ec-ease),
-      transform 0.7s var(--ec-ease);
+    transition: transform 0.7s var(--ec-ease);
     transition-delay: calc(var(--d) + 900ms);
   }
   .l-claim:not(.in) .l-claim-ok {
-    opacity: 0.2;
     transform: translateY(8px);
   }
 }
