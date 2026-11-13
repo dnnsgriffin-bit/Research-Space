@@ -49,13 +49,13 @@ Before starting Phase 1, check the git log: some of it may already be done (for 
 
 Goal: add the few things that are distinctive, each tied to data or state, borrowing one element per reference (framework section 9). Do these only after Phase 1 is done.
 
-- [ ] **9. Warm the void.** Test moving the dark surface from `#0a0d10` toward a warmer value (for example `#0d0c0b`). Compare screenshots side by side; decide, then update the token. (Section 9, open question)
-- [ ] **10. Emphasis by dimming.** In quotes and headlines, drop the payoff phrase to lower contrast instead of coloring it, so gold stays reserved for "measured". (Hebbia, section 9)
-- [ ] **11. Proof as type.** Add big serif numbers with small mono labels beneath for the proof section; large serif quotes from named people only if real ones exist. Do not invent quotes or impact/ROI claims. (Hebbia and Harvey, sections 7, 9)
-- [ ] **12. Evidence-chain signature.** In the evidence-chain section only: raw records that come together into a readable document as you scroll, with one accent phrase in the headline. Motion limited to transform and opacity. (Clinia, section 9)
+- [x] **9. Warm the void.** Test moving the dark surface from `#0a0d10` toward a warmer value (for example `#0d0c0b`). Compare screenshots side by side; decide, then update the token. (Section 9, open question)
+- [x] **10. Emphasis by dimming.** In quotes and headlines, drop the payoff phrase to lower contrast instead of coloring it, so gold stays reserved for "measured". (Hebbia, section 9)
+- [x] **11. Proof as type.** Add big serif numbers with small mono labels beneath for the proof section; large serif quotes from named people only if real ones exist. Do not invent quotes or impact/ROI claims. (Hebbia and Harvey, sections 7, 9)
+- [x] **12. Evidence-chain signature.** In the evidence-chain section only: raw records that come together into a readable document as you scroll, with one accent phrase in the headline. Motion limited to transform and opacity. (Clinia, section 9)
 - [ ] **13. Dark room to paper.** Make the move from the dark page to the ivory decision brief read as one brand: a card that expands into the full view, then a print reveal for the brief. (Harvey, section 6 vocabulary)
 - [ ] **14. Data motion.** Numbers that count up when a value becomes measured; lines that draw from a flat baseline when a metric appears; the spark from a tick to the link it lights, kept rare. Extend line styles (dotted, dashed, solid) to charts, legends and any film. (Sections 5, 6)
-- [ ] **15. Final audit.** Run through section 7 (hard no's) and section 6 rules line by line against the finished site. Check contrast, reduced motion, phone width, and that no glow appears except on measured links. List anything left undone in Notes.
+- [x] **15. Final audit.** Run through section 7 (hard no's) and section 6 rules line by line against the finished site. Check contrast, reduced motion, phone width, and that no glow appears except on measured links. List anything left undone in Notes.
 
 ---
 
@@ -80,3 +80,23 @@ Goal: add the few things that are distinctive, each tied to data or state, borro
 - `.hc-dot.playing` uses a green (`#7fd1a0`) glow that pulses. It is a fifth hue; decide in step 15.
 - The Studio accent (`--teal`, forest) is still in use for links, focus rings and the primary button. The framework says "do not add a fifth hue", so Phase 2 should decide whether it becomes navy or ochre.
 - Step 9 (warm the void) was already done by the earlier commit `50ca139`; Phase 2 only needs to compare and confirm it.
+
+**Phase 2 (done on Opus 5.5, November 13, 2026).**
+
+How it was checked: Vite cannot resolve packages inside the OneDrive folder (bare imports such as `react` return nothing from Vite 8's resolver there; the same file outside OneDrive resolves). So the project was mirrored to a temp folder and the existing `preview/` harness was run from it (`npx vite --config preview/vite.config.ts`). Every result below was seen in that preview, at desktop width and, where noted, at 375 px. Reduced motion was checked in code only (every new animation sits inside `prefers-reduced-motion: no-preference`, and the count-up reads the same query), not by emulating it.
+
+- **Step 9, warm void.** Already `#0d0c0a` from commit `50ca139`; confirmed in the preview against the ivory pages. Nothing changed.
+- **Step 10, dimming.** `.l h2 em` (the second line of every landing headline) was gold; it is now muted italic, matching the `.dim` pattern section 2 already used. Gold stays on the hero brand line and on measured results (`.hc-reach em`, `.gd-head em`, `.ec-big em`). The About quote's gold rule is now a hairline.
+- **Step 11, proof as type.** The strip under the hero is now four Instrument Serif figures with mono labels: 7 links, 4 Kirkpatrick levels, about 2 min, 0 sign-ups. Each is a fact the page already states. The research and author credits moved to one caption line. Two columns on phones.
+- **Step 12, signature.** On the sample brief (section 4): the brief's seven parts arrive as loose records, offset left and right, and settle into the document in reading order, 110 ms apart. Placed on the brief rather than the guided demo, because the demo already carries the chain lighting and scroll choreography.
+- **Step 13, dark room to paper (partly done).** Done: the brief now prints onto the table (drops 32 px and fades in) before its records settle. The 3D tilt it used before (`rotateX/Y/Z`, straightening on hover) is removed, since tilt is on the framework's never list. Not done: "a card that expands into a full view". It needs a decision on which card opens into which view, so it is left for the next pass.
+- **Step 14, data motion (partly done).** Added `src/hooks/use-count-up.tsx`: the "N of 7 links observed" count and the "You can say / can't say yet" counts on `/check` now count to their new value (ease-out, 600 ms, screen readers get the final value only). Confirmed in the preview: ticking Knowledge moves 2 to 3. Already present and kept: segments drawing from zero (`ec-seg-in`) and the spark from a tick to its link (`ec-travel`, `gd-pulse`). Not done: extending dotted, dashed and solid line styles to charts and the film (the brief legend already uses them).
+- **Step 15, audit.** Fixed: the endless `ec-drift` haze behind the chain is removed (the still light that follows the lit link stays); the green pulsing status dot is now neutral with no glow; `.l-eyebrow` labels and the `.l-notes` number rings are muted instead of gold; unused `l-aurora` and `l-breathe` keyframes deleted. Kept, by rule: gold on the hero line, measured states, the primary button, the "Suggested next decision" label and its marker. Checked at 375 px: the guided demo plays every step on phones, including the step 5 email to the VP.
+
+**Still open after Phase 2.**
+
+- Step 13's expanding card, and step 14's line styles in charts and the film.
+- The Studio accent `--teal` (forest) remains a fifth hue for links, focus rings and buttons on the paper pages. Changing it touches about 115 uses, so it needs your decision: navy (quiet) or ochre (on-brand, but then gold carries two meanings on paper).
+- Still gold and worth a second look: the "us" column header in the comparison table (`.l-table thead .us`) and the featured pricing note (`.l-plan.featured .l-plan-note`).
+- On phones, at step 5 of the guided demo, a sliver of the brief shows at the left edge behind the email window.
+- The Lovable build itself was not run (the local install cannot run it from OneDrive), only the `preview/` harness, which renders the same components and CSS.
