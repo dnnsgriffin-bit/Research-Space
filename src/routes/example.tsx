@@ -97,7 +97,7 @@ function ExamplePage() {
               still heard that coaching quality varied. Before commissioning more training, what
               does the evidence actually say?
             </p>
-            <p className="mt-4 border-l-2 border-l-[var(--state-assumed)] bg-[var(--tint-clay)] px-4 py-3 text-[14.5px] leading-relaxed text-foreground/85">
+            <p className="mt-4 border-l-2 border-l-[var(--state-assumed)] bg-[var(--tint-assumed)] px-4 py-3 text-[14.5px] leading-relaxed text-foreground/85">
               <strong className="font-semibold">
                 Fictional worked example — all organizations, observations and results are
                 illustrative.
@@ -318,7 +318,7 @@ function ExamplePage() {
                   <span className="label-xs mr-3 text-[var(--navy)]">Next experiment</span>
                   {DEMO_PILOT.nextExperiment}
                 </p>
-                <p className="mt-4 border-l-2 border-l-[var(--state-assumed)] bg-[var(--tint-clay)] px-4 py-3 text-[13.5px] leading-relaxed text-foreground/85">
+                <p className="mt-4 border-l-2 border-l-[var(--state-assumed)] bg-[var(--tint-assumed)] px-4 py-3 text-[13.5px] leading-relaxed text-foreground/85">
                   The comparison design and sample sizes in this example are illustrative. They are
                   not a guarantee of sufficient evidence, and nothing here establishes return on
                   investment.

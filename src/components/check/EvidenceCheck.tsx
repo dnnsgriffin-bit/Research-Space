@@ -174,6 +174,7 @@ export function EvidenceCheck() {
 
   return (
     <div className="ec">
+      <div className="l-grain" aria-hidden />
       <header className="ec-wrap ec-hero">
         <p className="ec-label">Evidence Check · for corporate learning &amp; L&amp;D leaders</p>
         <h1 className="ec-title">

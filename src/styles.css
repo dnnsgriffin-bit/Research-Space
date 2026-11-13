@@ -14,8 +14,9 @@
  */
 
 @theme inline {
-  --font-sans: "Source Sans 3", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-display: "DM Serif Display", ui-serif, Georgia, serif;
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Instrument Serif", "Iowan Old Style", ui-serif, Georgia, serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
   --radius-sm: calc(var(--radius) - 1px);
   --radius-md: var(--radius);
   --radius-lg: calc(var(--radius) + 2px);
@@ -77,8 +78,24 @@
 :root {
   --site-header-height: 69px;
   --radius: 2px;
-  --ease-expo: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Radius family (framework section 5): 2px on paper, 12px on dark panels, 8px for fields, pills for buttons only. */
+  --r-paper: 2px;
+  --r-panel: 12px;
+  --r-field: 8px;
+
+  /* Motion tokens (docs/DESIGN_FRAMEWORK.md section 6), shared by both halves of the site. */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1); /* arrives and settles */
+  --ease-swap: cubic-bezier(0.7, 0, 0.3, 1); /* state changes in place */
+  --dur-fast: 150ms;
+  --dur-base: 300ms;
+  --dur-slow: 600ms;
+  --ease-expo: var(--ease); /* legacy name, same curve */
   --dur: 180ms;
+
+  /* The three golds (framework section 3). Gold means measured, the brand line, or the one primary button. */
+  --gold-shine: #f8dfa3;
+  --gold-lamp: #f2c66d;
+  --gold-ember: #c9933a;
 
   /* Paper — warm ivory */
   --background: oklch(0.9718 0.0093 92); /* #F8F6F0 */
@@ -97,20 +114,26 @@
   --stone: oklch(0.5315 0.0142 264);
   --rule: oklch(0.8878 0.0093 92);
 
-  /* Alert + evidence states (fixed meanings) */
-  --signal: oklch(0.4938 0.1354 30); /* restrained brick, for caution only */
-  --evidence: oklch(0.4106 0.0742 175); /* measured: forest */
-  --clay: oklch(0.5905 0.1004 72); /* assumed: muted amber */
-  --plum: oklch(0.5315 0.0142 264); /* unknown: quiet grey */
+  /* Evidence states: the same four meanings as the dark room (framework sections 2 and 3).
+   * measured = ochre (gold, darkened to pass contrast on ivory), assumed = sky, unknown = ash, barrier = brick.
+   * Contrast on ivory #F8F6F0: ochre 5.6, sky 5.5, grey 4.8, brick 6.1 (all >= 4.5). */
+  --signal: oklch(0.4938 0.1354 30); /* barrier: brick, for caution only */
+  --state-measured: oklch(0.5 0.09 78); /* ochre */
+  --state-assumed: oklch(0.5 0.06 240); /* sky, darkened for paper */
+  --state-unknown: oklch(0.5315 0.0142 264); /* quiet grey */
+  --state-barrier: var(--signal);
+
+  --evidence: var(--state-measured);
+  --plum: var(--state-unknown);
+  /* Not a state: a warm caution tone used for "moderate", "fragile" and cost. */
+  --clay: oklch(0.5905 0.1004 72);
 
   --tint-teal: oklch(0.9538 0.0173 172);
   --tint-clay: oklch(0.9578 0.0233 84);
   --tint-navy: oklch(0.9448 0.0072 265);
   --tint-plum: oklch(0.9496 0.0045 264);
-
-  --state-measured: var(--evidence);
-  --state-assumed: var(--clay);
-  --state-unknown: var(--plum);
+  --tint-measured: oklch(0.9578 0.0233 84);
+  --tint-assumed: oklch(0.955 0.015 240);
 
   --card: var(--surface);
   --card-foreground: var(--ink);
@@ -153,9 +176,12 @@
   --ink: oklch(0.9502 0.0072 92);
   --navy: oklch(0.9502 0.0072 92);
   --teal: oklch(0.7108 0.0788 172);
-  --evidence: oklch(0.7108 0.0788 172);
+  --state-measured: #f2c66d;
+  --state-assumed: #93b4cc;
+  --state-unknown: oklch(0.7015 0.012 264);
+  --evidence: var(--state-measured);
+  --plum: var(--state-unknown);
   --clay: oklch(0.7611 0.1006 78);
-  --plum: oklch(0.7015 0.012 264);
   --rule: oklch(1 0 0 / 14%);
   --card: var(--surface);
   --card-foreground: var(--ink);
@@ -189,6 +215,7 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums; /* precision: numbers align wherever they appear */
   }
 
   :focus-visible {
@@ -207,12 +234,12 @@
 }
 
 @utility label-xs {
-  font-family: var(--font-sans);
+  font-family: var(--font-mono);
   font-size: 0.6875rem;
   line-height: 1.1;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 @utility rule-t {
@@ -271,7 +298,7 @@
 }
 
 @utility progress-bar {
-  transition: width 220ms var(--ease-expo);
+  transition: width var(--dur-base) var(--ease-expo);
 }
 
 @utility lift {
@@ -352,8 +379,8 @@
   line-height: 1.4;
   font-weight: 600;
   transition:
-    background-color 180ms var(--ease-expo),
-    border-color 180ms var(--ease-expo);
+    background-color var(--dur-fast) var(--ease-expo),
+    border-color var(--dur-fast) var(--ease-expo);
 }
 .action-primary {
   background: var(--navy);
@@ -377,9 +404,9 @@
 }
 .decision-choice {
   transition:
-    background-color 180ms,
-    border-color 180ms,
-    transform 150ms;
+    background-color var(--dur-fast),
+    border-color var(--dur-fast),
+    transform var(--dur-fast);
 }
 .decision-choice:active {
   transform: scale(0.992);
@@ -391,7 +418,7 @@
   display: none;
 }
 .disclosure > summary > svg {
-  transition: transform 180ms var(--ease-expo);
+  transition: transform var(--dur-fast) var(--ease-expo);
 }
 .disclosure[open] > summary > svg {
   transform: rotate(180deg);
@@ -421,7 +448,7 @@
   }
 }
 .review-overlay {
-  animation: review-fade 180ms ease-out;
+  animation: review-fade var(--dur-fast) var(--ease);
 }
 .review-drawer {
   animation: review-in 260ms var(--ease-expo);
@@ -482,28 +509,10 @@
  * Dark "light table": gold = measured, sky = assumed, grey = unknown, coral = barrier.
  * ======================================================================== */
 .ec {
-  --ec-void: #0d0c0a;
-  --ec-panel: #161411;
-  --ec-raise: #221f1b;
-  --ec-line: rgba(255, 255, 255, 0.1);
-  --ec-paper: #ece7dc;
-  --ec-muted: #a59f96;
-  --ec-lamp: #f2c66d;
-  --ec-lamp-soft: rgba(242, 198, 109, 0.16);
-  --ec-haze: #93b4cc;
-  --ec-haze-soft: rgba(147, 180, 204, 0.12);
-  --ec-ash: #78726a;
-  --ec-flag: #ef8f74;
-  --ec-flag-soft: rgba(239, 143, 116, 0.14);
-  --ec-display: "Instrument Serif", "Iowan Old Style", Georgia, serif;
-  --ec-body: "IBM Plex Sans", "Source Sans 3", system-ui, sans-serif;
-  --ec-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
-  --ec-ease: cubic-bezier(0.22, 1, 0.36, 1);
-  /* In-place state change. See docs/DESIGN_FRAMEWORK.md, section 6. */
-  --ec-ease-swap: cubic-bezier(0.7, 0, 0.3, 1);
-  --ec-dur-fast: 150ms;
-  --ec-dur-base: 300ms;
-  --ec-dur-slow: 600ms;
+  /* The --ec-* tokens live once, in landing.css (.product-shell, .ec). */
+  position: relative; /* holds the .l-grain layer, shared with the landing page */
+  isolation: isolate;
+  font-variant-numeric: tabular-nums;
   background: var(--ec-void);
   color: var(--ec-paper);
   font-family: var(--ec-body);
@@ -591,7 +600,7 @@
   align-items: flex-start;
   padding: 12px 14px;
   border: 1px solid var(--ec-line);
-  border-radius: 12px;
+  border-radius: var(--r-panel);
   background: var(--ec-panel);
   font-size: 0.9rem;
   color: var(--ec-muted);
@@ -632,10 +641,10 @@
   color: var(--ec-muted);
   min-height: 44px;
   transition:
-    background 0.2s var(--ec-ease),
-    color 0.2s var(--ec-ease),
-    border-color 0.2s var(--ec-ease),
-    transform 0.15s var(--ec-ease);
+    background var(--dur-fast) var(--ec-ease),
+    color var(--dur-fast) var(--ec-ease),
+    border-color var(--dur-fast) var(--ec-ease),
+    transform var(--dur-fast) var(--ec-ease);
 }
 .ec-preset:hover {
   color: var(--ec-paper);
@@ -661,7 +670,7 @@
   margin-top: 24px;
   padding: 30px 22px 24px;
   border: 1px solid var(--ec-line);
-  border-radius: 18px;
+  border-radius: var(--r-panel);
   background: var(--ec-panel);
   overflow: hidden;
   isolation: isolate;
@@ -679,7 +688,7 @@
     ),
     radial-gradient(35% 45% at 85% 80%, rgba(147, 180, 204, 0.08), transparent 70%);
   animation: ec-drift 18s ease-in-out infinite alternate;
-  transition: background-position 0.8s var(--ec-ease);
+  transition: background-position var(--dur-slow) var(--ec-ease);
 }
 @keyframes ec-drift {
   from {
@@ -756,8 +765,8 @@
   background: transparent;
   color: inherit;
   text-align: center;
-  border-radius: 12px;
-  transition: transform 0.25s var(--ec-ease);
+  border-radius: var(--r-panel);
+  transition: transform var(--dur-base) var(--ec-ease);
 }
 .ec-node:hover {
   transform: translateY(-3px);
@@ -784,10 +793,10 @@
   border: 2px dotted var(--ec-ash);
   color: var(--ec-ash-text, #958e85);
   transition:
-    background 0.4s var(--ec-ease),
-    box-shadow 0.4s var(--ec-ease),
-    border-color 0.4s var(--ec-ease),
-    color 0.4s var(--ec-ease);
+    background var(--dur-base) var(--ec-ease),
+    box-shadow var(--dur-base) var(--ec-ease),
+    border-color var(--dur-base) var(--ec-ease),
+    color var(--dur-base) var(--ec-ease);
 }
 .ec-link.measured .ec-dot {
   background: var(--ec-lamp);
@@ -991,7 +1000,7 @@
 }
 .ec-card {
   border: 1px solid var(--ec-line);
-  border-radius: 16px;
+  border-radius: var(--r-panel);
   background: var(--ec-panel);
   padding: 22px;
 }
@@ -1039,9 +1048,9 @@
   font-size: 0.92rem;
   text-align: left;
   transition:
-    background 0.2s var(--ec-ease),
-    border-color 0.2s var(--ec-ease),
-    transform 0.15s var(--ec-ease);
+    background var(--dur-fast) var(--ec-ease),
+    border-color var(--dur-fast) var(--ec-ease),
+    transform var(--dur-fast) var(--ec-ease);
 }
 .ec-chip:hover {
   border-color: var(--ec-muted);
@@ -1082,7 +1091,7 @@
   min-height: 260px;
   color: var(--ec-muted);
   border: 1px dashed var(--ec-line);
-  border-radius: 12px;
+  border-radius: var(--r-panel);
   padding: 24px;
 }
 .ec-insp-empty h3 {
@@ -1155,14 +1164,14 @@
 .ec-insp-grid .wide {
   grid-column: 1 / -1;
   padding: 14px 16px;
-  border-radius: 12px;
+  border-radius: var(--r-panel);
   background: var(--ec-lamp-soft);
   border: 1px solid rgba(242, 198, 109, 0.35);
 }
 .ec-insp-grid .bar {
   grid-column: 1 / -1;
   padding: 12px 16px;
-  border-radius: 12px;
+  border-radius: var(--r-panel);
   background: var(--ec-flag-soft);
   border: 1px solid rgba(239, 143, 116, 0.4);
 }
@@ -1233,12 +1242,12 @@
 }
 .ec-cond {
   border: 1px solid var(--ec-line);
-  border-radius: 14px;
+  border-radius: var(--r-panel);
   background: var(--ec-panel);
   padding: 16px 18px;
   transition:
-    border-color 0.3s var(--ec-ease),
-    background 0.3s var(--ec-ease);
+    border-color var(--dur-base) var(--ec-ease),
+    background var(--dur-base) var(--ec-ease);
 }
 .ec-cond.is-no {
   border-color: rgba(239, 143, 116, 0.55);
@@ -1262,7 +1271,7 @@
   display: inline-flex;
   margin-top: 12px;
   border: 1px solid var(--ec-line);
-  border-radius: 10px;
+  border-radius: var(--r-field);
   overflow: hidden;
 }
 .ec-seg3 button {
@@ -1273,8 +1282,8 @@
   font-size: 0.88rem;
   min-height: 44px;
   transition:
-    background 0.2s var(--ec-ease),
-    color 0.2s var(--ec-ease);
+    background var(--dur-fast) var(--ec-ease),
+    color var(--dur-fast) var(--ec-ease);
 }
 .ec-seg3 button + button {
   border-left: 1px solid var(--ec-line);
@@ -1292,7 +1301,7 @@
 
 .ec-brief {
   margin-top: 22px;
-  border-radius: 18px;
+  border-radius: var(--r-paper);
   background: var(--ec-paper);
   color: #161b20;
   padding: clamp(22px, 4vw, 40px);
@@ -1316,7 +1325,7 @@
   align-items: flex-start;
   margin-top: 20px;
   padding: 16px 18px;
-  border-radius: 14px;
+  border-radius: var(--r-panel);
   background: #161b20;
   color: var(--ec-paper);
 }
@@ -1383,7 +1392,7 @@
 .ec-skeptic {
   margin-top: 26px;
   padding: 20px 22px;
-  border-radius: 14px;
+  border-radius: var(--r-panel);
   border: 2px solid #161b20;
 }
 .ec-brief .ec-skeptic .ec-label {
@@ -1419,8 +1428,8 @@
   color: var(--ec-paper);
   font-weight: 500;
   transition:
-    transform 0.15s var(--ec-ease),
-    background 0.2s var(--ec-ease);
+    transform var(--dur-fast) var(--ec-ease),
+    background var(--dur-fast) var(--ec-ease);
 }
 .ec-btn:hover {
   background: #2a323a;
@@ -1452,7 +1461,7 @@
   margin-top: 12px;
   padding: 10px;
   border: 1px solid #5b636a;
-  border-radius: 8px;
+  border-radius: var(--r-field);
   background: #fff;
   color: #161b20;
   font-family: var(--ec-mono);
@@ -1476,13 +1485,13 @@
   gap: 6px;
   padding: 20px;
   border: 1px solid var(--ec-line);
-  border-radius: 14px;
+  border-radius: var(--r-panel);
   background: var(--ec-panel);
   color: var(--ec-paper);
   text-decoration: none;
   transition:
-    border-color 0.2s var(--ec-ease),
-    transform 0.2s var(--ec-ease);
+    border-color var(--dur-fast) var(--ec-ease),
+    transform var(--dur-fast) var(--ec-ease);
 }
 .ec-door:hover {
   border-color: var(--ec-lamp);
@@ -1654,22 +1663,22 @@
 .ec-values-n { font-size: 0.78rem; font-weight: 400; color: var(--ec-muted); font-family: "IBM Plex Mono", ui-monospace, monospace; letter-spacing: 0.04em; }
 .ec-values > summary:focus-visible { outline: 2px solid var(--ec-lamp); outline-offset: 3px; border-radius: 6px; }
 .ec-vlist { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 10px; }
-.ec-vrow fieldset { margin: 0; padding: 12px 14px 14px; border: 1px solid var(--ec-line); border-radius: 12px; background: var(--ec-raise); display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; min-width: 0; }
+.ec-vrow fieldset { margin: 0; padding: 12px 14px 14px; border: 1px solid var(--ec-line); border-radius: var(--r-panel); background: var(--ec-raise); display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; min-width: 0; }
 .ec-vrow legend { padding: 0 6px; font-size: 0.9rem; font-weight: 600; color: var(--ec-paper); }
 .ec-vrow label { display: grid; gap: 4px; min-width: 0; }
 .ec-vrow label > span { font-size: 0.78rem; color: var(--ec-muted); }
-.ec-vrow input, .ec-vrow select { width: 100%; min-height: 44px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--ec-line); background: rgba(0, 0, 0, 0.25); color: var(--ec-paper); font: inherit; font-size: 1rem; font-variant-numeric: tabular-nums; transition: border-color 0.2s var(--ec-ease), box-shadow 0.2s var(--ec-ease); }
+.ec-vrow input, .ec-vrow select { width: 100%; min-height: 44px; padding: 8px 10px; border-radius: var(--r-field); border: 1px solid var(--ec-line); background: rgba(0, 0, 0, 0.25); color: var(--ec-paper); font: inherit; font-size: 1rem; font-variant-numeric: tabular-nums; transition: border-color var(--dur-fast) var(--ec-ease), box-shadow var(--dur-fast) var(--ec-ease); }
 .ec-vrow select option { color: #111; }
 .ec-vrow input::placeholder { color: var(--ec-muted); opacity: 0.55; }
 .ec-vrow input:focus-visible, .ec-vrow select:focus-visible { outline: none; border-color: var(--ec-lamp); box-shadow: 0 0 0 3px rgba(242, 198, 109, 0.22); }
-.ec-results { margin-top: 12px; padding: 10px 12px; border: 1px solid rgba(0, 0, 0, 0.14); border-radius: 8px; background: rgba(255, 255, 255, 0.45); }
+.ec-results { margin-top: 12px; padding: 10px 12px; border: 1px solid rgba(0, 0, 0, 0.14); border-radius: var(--r-field); background: rgba(255, 255, 255, 0.45); }
 .ec-results h5 { margin: 0 0 6px; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600; color: #4a5258; }
 @media (prefers-reduced-motion: reduce) { .ec-vrow input, .ec-vrow select { transition: none; } }
 .ec-vrow input[aria-invalid="true"] { border-color: #e58a7a; box-shadow: 0 0 0 3px rgba(229, 138, 122, 0.2); }
 .ec-own { margin-top: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; font-size: 0.86rem; color: var(--ec-muted); }
 .ec-own > span { flex: 1 1 220px; }
 .ec-own.done { color: var(--ec-lamp); }
-.ec-own-btn { min-height: 44px; padding: 8px 16px; border-radius: 999px; border: 1px solid var(--ec-lamp); background: var(--ec-lamp-soft); color: var(--ec-paper); font: inherit; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: background 0.2s var(--ec-ease), transform 0.15s var(--ec-ease); }
+.ec-own-btn { min-height: 44px; padding: 8px 16px; border-radius: 999px; border: 1px solid var(--ec-lamp); background: var(--ec-lamp-soft); color: var(--ec-paper); font: inherit; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: background var(--dur-fast) var(--ec-ease), transform var(--dur-fast) var(--ec-ease); }
 .ec-own-btn:hover { background: rgba(242, 198, 109, 0.26); }
 .ec-own-btn:active { transform: scale(0.97); }
 .ec-own-btn:focus-visible { outline: 2px solid var(--ec-lamp); outline-offset: 3px; }

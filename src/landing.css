@@ -19,7 +19,9 @@
   --ec-line-2: rgba(255, 255, 255, 0.16);
   --ec-paper: #eee8dc;
   --ec-muted: #a59f96;
-  --ec-lamp: #f2c66d;
+  --ec-lamp: var(--gold-lamp);
+  --ec-lamp-shine: var(--gold-shine);
+  --ec-lamp-ember: var(--gold-ember);
   --ec-lamp-deep: #d9a441;
   --ec-lamp-soft: rgba(242, 198, 109, 0.14);
   --ec-haze: #93b4cc;
@@ -30,14 +32,14 @@
   --ec-flag: #ef8f74;
   --ec-flag-soft: rgba(239, 143, 116, 0.13);
   --ec-display: "Instrument Serif", "Iowan Old Style", Georgia, serif;
-  --ec-body: "IBM Plex Sans", "Source Sans 3", system-ui, sans-serif;
+  --ec-body: "IBM Plex Sans", system-ui, sans-serif;
   --ec-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
-  --ec-ease: cubic-bezier(0.22, 1, 0.36, 1);
-  /* In-place state change (a link turning measured, a chip toggling). See docs/DESIGN_FRAMEWORK.md, section 6. */
-  --ec-ease-swap: cubic-bezier(0.7, 0, 0.3, 1);
-  --ec-dur-fast: 150ms;
-  --ec-dur-base: 300ms;
-  --ec-dur-slow: 600ms;
+  /* Motion: aliases of the shared tokens in styles.css (:root). Section 6 of docs/DESIGN_FRAMEWORK.md. */
+  --ec-ease: var(--ease);
+  --ec-ease-swap: var(--ease-swap);
+  --ec-dur-fast: var(--dur-fast);
+  --ec-dur-base: var(--dur-base);
+  --ec-dur-slow: var(--dur-slow);
 }
 .product-shell {
   background: var(--ec-void);
@@ -56,9 +58,9 @@
   top: 0;
   z-index: 50;
   transition:
-    background 0.35s var(--ec-ease),
-    border-color 0.35s var(--ec-ease),
-    backdrop-filter 0.35s;
+    background var(--dur-base) var(--ec-ease),
+    border-color var(--dur-base) var(--ec-ease),
+    backdrop-filter var(--dur-base);
   border-bottom: 1px solid transparent;
 }
 .ph.is-scrolled {
@@ -106,7 +108,7 @@
 .ph-sheet a {
   color: var(--ec-muted);
   text-decoration: none;
-  transition: color 0.2s var(--ec-ease);
+  transition: color var(--dur-fast) var(--ec-ease);
 }
 .ph-nav a:hover {
   color: var(--ec-paper);
@@ -133,8 +135,8 @@
   text-decoration: none;
   white-space: nowrap;
   transition:
-    background 0.2s var(--ec-ease),
-    transform 0.2s var(--ec-ease);
+    background var(--dur-fast) var(--ec-ease),
+    transform var(--dur-fast) var(--ec-ease);
 }
 .ph-cta:hover {
   background: var(--ec-lamp);
@@ -156,7 +158,7 @@
   width: 16px;
   height: 1.5px;
   background: var(--ec-paper);
-  transition: transform 0.3s var(--ec-ease);
+  transition: transform var(--dur-base) var(--ec-ease);
 }
 .ph-menu[aria-expanded="true"] i:first-of-type {
   transform: translateY(3.25px) rotate(45deg);
@@ -355,11 +357,11 @@ body:has(.product-shell) {
   text-decoration: none;
   cursor: pointer;
   transition:
-    transform 0.25s var(--ec-ease),
-    box-shadow 0.3s var(--ec-ease),
-    background 0.2s var(--ec-ease),
-    border-color 0.2s var(--ec-ease),
-    color 0.2s;
+    transform var(--dur-base) var(--ec-ease),
+    box-shadow var(--dur-base) var(--ec-ease),
+    background var(--dur-fast) var(--ec-ease),
+    border-color var(--dur-fast) var(--ec-ease),
+    color var(--dur-fast);
 }
 .l-btn.primary {
   position: relative;
@@ -381,7 +383,7 @@ body:has(.product-shell) {
     transparent 70%
   );
   transform: translateX(-120%);
-  transition: transform 0.8s var(--ec-ease);
+  transition: transform var(--dur-slow) var(--ec-ease);
 }
 .l-btn.primary:hover {
   transform: translateY(-2px);
@@ -396,7 +398,7 @@ body:has(.product-shell) {
   transform: translateY(0) scale(0.98);
 }
 .l-btn.primary span {
-  transition: transform 0.25s var(--ec-ease);
+  transition: transform var(--dur-base) var(--ec-ease);
 }
 .l-btn.primary:hover span {
   transform: translateX(4px);
@@ -553,7 +555,7 @@ body:has(.product-shell) {
 /* ---------- Hero chain instrument ---------- */
 .hc {
   position: relative;
-  border-radius: 22px;
+  border-radius: var(--r-panel);
   padding: 1px;
   background: linear-gradient(
     140deg,
@@ -572,7 +574,7 @@ body:has(.product-shell) {
   content: "";
   position: absolute;
   inset: 1px;
-  border-radius: 21px;
+  border-radius: 11px;
   background: #12100e;
 }
 .hc-top {
@@ -644,9 +646,9 @@ body:has(.product-shell) {
   font-size: 0.84rem;
   min-height: 38px;
   transition:
-    color 0.2s,
-    background 0.25s var(--ec-ease),
-    border-color 0.25s;
+    color var(--dur-fast),
+    background var(--dur-base) var(--ec-ease),
+    border-color var(--dur-base);
 }
 .hc-tab:hover {
   color: var(--ec-paper);
@@ -731,11 +733,11 @@ body:has(.product-shell) {
   background: var(--ec-void);
   border: 2px dotted var(--ec-ash);
   transition:
-    background 0.55s var(--ec-ease),
-    box-shadow 0.55s var(--ec-ease),
-    color 0.4s,
-    border-color 0.4s,
-    transform 0.55s var(--ec-ease);
+    background var(--dur-slow) var(--ec-ease),
+    box-shadow var(--dur-slow) var(--ec-ease),
+    color var(--dur-base),
+    border-color var(--dur-base),
+    transform var(--dur-slow) var(--ec-ease);
   transition-delay: calc(var(--i) * 70ms);
 }
 .hc-link.measured .hc-node {
@@ -827,7 +829,7 @@ body:has(.product-shell) {
 }
 .hc-open span {
   display: inline-block;
-  transition: transform 0.25s var(--ec-ease);
+  transition: transform var(--dur-base) var(--ec-ease);
 }
 .hc-open:hover span {
   transform: translateX(4px);
@@ -877,7 +879,7 @@ body:has(.product-shell) {
 }
 .l-claim {
   border: 1px solid var(--ec-line);
-  border-radius: 18px;
+  border-radius: var(--r-panel);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent), var(--ec-panel);
   padding: 26px;
   display: flex;
@@ -904,8 +906,8 @@ body:has(.product-shell) {
   background-size: 100% 2.5px;
   color: var(--ec-muted);
   transition:
-    color 0.7s var(--ec-ease),
-    background-size 1s var(--ec-ease);
+    color var(--dur-slow) var(--ec-ease),
+    background-size var(--dur-slow) var(--ec-ease);
 }
 .l-claim-ok {
   display: flex;
@@ -933,7 +935,7 @@ body:has(.product-shell) {
   }
   /* The correction is fully legible from the first frame; it only settles into place. */
   .l-claim .l-claim-ok {
-    transition: transform 0.7s var(--ec-ease);
+    transition: transform var(--dur-slow) var(--ec-ease);
     transition-delay: calc(var(--d) + 900ms);
   }
   .l-claim:not(.in) .l-claim-ok {
@@ -958,7 +960,7 @@ body:has(.product-shell) {
   justify-content: center;
   gap: 14px;
   opacity: 0.8;
-  transition: opacity 0.5s var(--ec-ease);
+  transition: opacity var(--dur-slow) var(--ec-ease);
 }
 .gd-step.on {
   opacity: 1;
@@ -1003,7 +1005,7 @@ body:has(.product-shell) {
   padding: 12px 14px;
   border: 1px solid var(--ec-line-2);
   background: rgba(255, 255, 255, 0.03);
-  border-radius: 10px;
+  border-radius: var(--r-field);
   font-size: 0.92rem;
   line-height: 1.55;
   color: var(--ec-paper);
@@ -1044,8 +1046,8 @@ body:has(.product-shell) {
   border-radius: 3px;
   background: var(--ec-line-2);
   transition:
-    background 0.4s,
-    box-shadow 0.4s;
+    background var(--dur-base),
+    box-shadow var(--dur-base);
 }
 .gd-dots li.done {
   background: rgba(242, 198, 109, 0.45);
@@ -1055,7 +1057,7 @@ body:has(.product-shell) {
   box-shadow: 0 0 12px rgba(242, 198, 109, 0.7);
 }
 .gd-stage {
-  border-radius: 16px;
+  border-radius: var(--r-panel);
   overflow: hidden;
   border: 1px solid var(--ec-line-2);
   background: #100e0c;
@@ -1167,10 +1169,10 @@ body:has(.product-shell) {
   background: #100e0c;
   border: 2px dotted var(--ec-ash);
   transition:
-    background-color 0.5s var(--ec-ease-swap),
-    border-color 0.5s var(--ec-ease-swap),
-    color 0.5s var(--ec-ease-swap),
-    box-shadow 0.5s var(--ec-ease-swap);
+    background-color var(--dur-slow) var(--ec-ease-swap),
+    border-color var(--dur-slow) var(--ec-ease-swap),
+    color var(--dur-slow) var(--ec-ease-swap),
+    box-shadow var(--dur-slow) var(--ec-ease-swap);
 }
 .gd-link.measured .gd-node {
   background: var(--ec-lamp);
@@ -1269,12 +1271,12 @@ body:has(.product-shell) {
 }
 .gd-panel {
   border: 1px solid var(--ec-line);
-  border-radius: 14px;
+  border-radius: var(--r-panel);
   background: #171512;
   padding: 18px 22px;
   transition:
-    border-color 0.4s,
-    background 0.4s;
+    border-color var(--dur-base),
+    background var(--dur-base);
 }
 .gd-k {
   font-family: var(--ec-mono);
@@ -1475,7 +1477,7 @@ body:has(.product-shell) {
 .gd-next {
   margin-top: 18px;
   padding: 14px 16px;
-  border-radius: 12px;
+  border-radius: var(--r-panel);
   border: 1px solid rgba(242, 198, 109, 0.35);
   background: rgba(242, 198, 109, 0.1);
 }
@@ -1502,7 +1504,7 @@ body:has(.product-shell) {
   position: absolute;
   display: flex;
   border: 1px solid var(--ec-line-2);
-  border-radius: 10px;
+  border-radius: var(--r-field);
   overflow: hidden;
 }
 .gd-seg3 span {
@@ -1554,7 +1556,7 @@ body:has(.product-shell) {
   font-size: 13px;
 }
 .gd-brief {
-  border-radius: 14px;
+  border-radius: var(--r-paper);
   background: #eee8dc;
   color: #161b20;
   padding: 24px 26px;
@@ -1575,7 +1577,7 @@ body:has(.product-shell) {
   align-items: flex-start;
   margin-top: 16px;
   padding: 12px 14px;
-  border-radius: 10px;
+  border-radius: var(--r-field);
   background: #161b20;
   color: var(--ec-paper);
   font-size: 14px;
@@ -1625,13 +1627,13 @@ body:has(.product-shell) {
   color: var(--ec-paper);
   font-size: 14px;
   font-weight: 500;
-  transition: background 0.3s;
+  transition: background var(--dur-base);
 }
 .gd-copy.done {
   background: #2f6b4f;
 }
 .gd-mail {
-  border-radius: 14px;
+  border-radius: var(--r-panel);
   background: #fbfaf7;
   color: #1c2126;
   box-shadow:
@@ -1677,7 +1679,7 @@ body:has(.product-shell) {
   top: -3px;
   z-index: 30;
   pointer-events: none;
-  transition: transform 0.55s cubic-bezier(0.45, 0, 0.2, 1);
+  transition: transform var(--dur-slow) cubic-bezier(0.45, 0, 0.2, 1);
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.6));
 }
 .gd-ripple {
@@ -1733,7 +1735,7 @@ body:has(.product-shell) {
 .l-paper {
   background: #f1ebdf;
   color: #161b20;
-  border-radius: 6px;
+  border-radius: var(--r-paper);
   padding: clamp(24px, 4vw, 48px);
   box-shadow:
     0 1px 0 #fff inset,
@@ -1772,7 +1774,7 @@ body:has(.product-shell) {
   align-items: flex-start;
   margin-top: 22px;
   padding: 16px 18px;
-  border-radius: 10px;
+  border-radius: var(--r-paper);
   background: #161b20;
   color: var(--ec-paper);
 }
@@ -1818,7 +1820,7 @@ body:has(.product-shell) {
   margin-top: 24px;
   padding: 16px 18px;
   border: 2px solid #161b20;
-  border-radius: 10px;
+  border-radius: var(--r-paper);
 }
 .l-paper-q .q {
   font-family: var(--ec-display);
@@ -1870,8 +1872,8 @@ body:has(.product-shell) {
   }
   .l-notes li {
     transition:
-      opacity 0.7s var(--ec-ease),
-      transform 0.7s var(--ec-ease);
+      opacity var(--dur-slow) var(--ec-ease),
+      transform var(--dur-slow) var(--ec-ease);
     transition-delay: var(--d);
   }
 }
@@ -1879,7 +1881,7 @@ body:has(.product-shell) {
 /* ---------- Video ---------- */
 .l-video {
   margin-top: 40px;
-  border-radius: 20px;
+  border-radius: var(--r-panel);
   overflow: hidden;
   border: 1px solid var(--ec-line-2);
   background: #000;
@@ -1910,7 +1912,7 @@ body:has(.product-shell) {
   inset: 0;
   /* Darken only the foot of the poster, where the play control and its label sit. */
   background: linear-gradient(180deg, rgba(13, 12, 10, 0) 45%, rgba(13, 12, 10, 0.82));
-  transition: opacity 0.4s;
+  transition: opacity var(--dur-base);
 }
 .l-video-poster:hover::after {
   opacity: 0.8;
@@ -1933,8 +1935,8 @@ body:has(.product-shell) {
     0 0 0 8px rgba(242, 198, 109, 0.18),
     0 16px 40px -10px rgba(242, 198, 109, 0.6);
   transition:
-    transform 0.35s var(--ec-ease),
-    box-shadow 0.35s;
+    transform var(--dur-base) var(--ec-ease),
+    box-shadow var(--dur-base);
 }
 .l-video-poster:hover .l-play {
   transform: scale(1.08);
@@ -1968,7 +1970,7 @@ body:has(.product-shell) {
 .l-transcript {
   margin-top: 16px;
   border: 1px solid var(--ec-line);
-  border-radius: 14px;
+  border-radius: var(--r-panel);
   padding: 0 18px;
 }
 .l-transcript summary {
@@ -2013,15 +2015,15 @@ body:has(.product-shell) {
 }
 .l-aud-card {
   border: 1px solid var(--ec-line);
-  border-radius: 18px;
+  border-radius: var(--r-panel);
   padding: 26px 24px;
   background: linear-gradient(160deg, rgba(242, 198, 109, 0.06), transparent 45%), var(--ec-panel);
   display: flex;
   flex-direction: column;
   gap: 14px;
   transition:
-    transform 0.35s var(--ec-ease),
-    border-color 0.35s;
+    transform var(--dur-base) var(--ec-ease),
+    border-color var(--dur-base);
 }
 .l-aud-card:hover {
   transform: translateY(-4px);
@@ -2051,7 +2053,7 @@ body:has(.product-shell) {
   margin-top: 44px;
   overflow-x: auto;
   border: 1px solid var(--ec-line);
-  border-radius: 18px;
+  border-radius: var(--r-panel);
 }
 .l-table {
   width: 100%;
@@ -2111,7 +2113,7 @@ body:has(.product-shell) {
     display: block;
     margin-bottom: 12px;
     border: 1px solid var(--ec-line);
-    border-radius: 14px;
+    border-radius: var(--r-panel);
     overflow: hidden;
   }
   .l-table th,
@@ -2152,14 +2154,14 @@ body:has(.product-shell) {
   justify-content: space-between;
   gap: 18px;
   padding: 22px;
-  border-radius: 16px;
+  border-radius: var(--r-panel);
   border: 1px solid var(--ec-line);
   background: var(--ec-panel);
   color: var(--ec-paper);
   text-decoration: none;
   transition:
-    border-color 0.3s,
-    transform 0.3s var(--ec-ease);
+    border-color var(--dur-base),
+    transform var(--dur-base) var(--ec-ease);
 }
 .l-paper-link:hover {
   border-color: rgba(242, 198, 109, 0.5);
@@ -2189,7 +2191,7 @@ body:has(.product-shell) {
 .l-portrait {
   position: relative;
   margin: 0;
-  border-radius: 22px;
+  border-radius: var(--r-panel);
   overflow: hidden;
   border: 1px solid var(--ec-line-2);
   aspect-ratio: 4 / 5;
@@ -2280,7 +2282,7 @@ body:has(.product-shell) {
   flex-direction: column;
   gap: 10px;
   padding: 30px 28px;
-  border-radius: 22px;
+  border-radius: var(--r-panel);
   border: 1px solid var(--ec-line);
   background: var(--ec-panel);
 }
@@ -2387,7 +2389,7 @@ body:has(.product-shell) {
   font-family: var(--ec-mono);
   color: var(--ec-lamp);
   font-size: 1.2rem;
-  transition: transform 0.35s var(--ec-ease);
+  transition: transform var(--dur-base) var(--ec-ease);
 }
 .l-faq-list details[open] summary::after {
   transform: rotate(45deg);
@@ -2580,7 +2582,7 @@ body:has(.product-shell) {
     overscroll-behavior: contain;
     scrollbar-width: thin;
     scrollbar-color: var(--ec-line-2) transparent;
-    border-radius: 18px;
+    border-radius: var(--r-panel);
   }
   .ec-bench .ec-conds {
     grid-template-columns: 1fr;
@@ -2678,7 +2680,7 @@ body:has(.product-shell) {
 }
 .ec-live-dec {
   padding: 12px 14px;
-  border-radius: 12px;
+  border-radius: var(--r-panel);
   background: var(--ec-raise);
 }
 .ec-live-dec p {
@@ -2974,7 +2976,7 @@ body:has(.product-shell) {
   margin: 0 -12px;
   padding: 16px 12px;
   border-top-color: transparent;
-  border-radius: 12px;
+  border-radius: var(--r-panel);
   background: var(--ec-flag-soft);
 }
 
