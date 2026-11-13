@@ -7,9 +7,9 @@
 
 /*
  * Evidence Studio design system — warm editorial.
- * Paper: ivory #F8F6F0. Ink: charcoal-navy #192132. Accent: forest/teal #14594C.
- * Evidence states are fixed and meaningful:
- *   measured = forest, assumed = muted amber, unknown = quiet grey.
+ * Paper: ivory #F8F6F0. Ink and accent: charcoal-navy #192132.
+ * Evidence states are fixed and meaningful, and match the dark room:
+ *   measured = ochre, assumed = sky, unknown = quiet grey, barrier = brick.
  * All colour values are oklch. Fine rules, restrained radius, compact spacing.
  */
 
@@ -108,9 +108,11 @@
   --deep: oklch(0.1962 0.0223 265);
   --mid: oklch(0.3402 0.0289 264);
 
-  /* Accent — forest / teal */
-  --teal: oklch(0.4106 0.0742 175); /* #14594C */
-  --sage: oklch(0.6412 0.0632 172);
+  /* Accent: navy, decided November 13, 2026. Forest green was a fifth hue (framework section 3).
+   * The name --teal is kept so its ~115 uses need no edits; read it as "accent". */
+  --teal: var(--navy);
+  /* Label on the dark case-quote panel: warm light grey, no longer green. */
+  --sage: oklch(0.8 0.012 92);
   --stone: oklch(0.5315 0.0142 264);
   --rule: oklch(0.8878 0.0093 92);
 
@@ -128,7 +130,7 @@
   /* Not a state: a warm caution tone used for "moderate", "fragile" and cost. */
   --clay: oklch(0.5905 0.1004 72);
 
-  --tint-teal: oklch(0.9538 0.0173 172);
+  --tint-teal: oklch(0.9448 0.0072 265); /* = tint-navy */
   --tint-clay: oklch(0.9578 0.0233 84);
   --tint-navy: oklch(0.9448 0.0072 265);
   --tint-plum: oklch(0.9496 0.0045 264);
@@ -154,7 +156,7 @@
   --ring: var(--teal);
 
   --chart-1: var(--navy);
-  --chart-2: var(--teal);
+  --chart-2: var(--mid);
   --chart-3: var(--evidence);
   --chart-4: var(--clay);
   --chart-5: var(--plum);
@@ -175,7 +177,7 @@
   --foreground: oklch(0.9502 0.0072 92);
   --ink: oklch(0.9502 0.0072 92);
   --navy: oklch(0.9502 0.0072 92);
-  --teal: oklch(0.7108 0.0788 172);
+  --teal: var(--navy);
   --state-measured: #f2c66d;
   --state-assumed: #93b4cc;
   --state-unknown: oklch(0.7015 0.012 264);
@@ -195,7 +197,7 @@
   --muted-foreground: oklch(0.7402 0.0106 264);
   --border: oklch(1 0 0 / 14%);
   --input: oklch(1 0 0 / 18%);
-  --tint-teal: oklch(0.3 0.03 172);
+  --tint-teal: oklch(0.2698 0.0216 265);
   --tint-clay: oklch(0.3 0.04 80);
   --tint-navy: oklch(0.2698 0.0216 265);
   --tint-plum: oklch(0.29 0.008 264);
@@ -427,7 +429,7 @@
   animation: inspector-in 200ms var(--ease-expo);
 }
 .skeptical-band {
-  background: oklch(0.31 0.047 175);
+  background: var(--deep); /* was dark forest; navy since the accent decision */
   color: var(--surface);
 }
 .skeptical-band h2 {

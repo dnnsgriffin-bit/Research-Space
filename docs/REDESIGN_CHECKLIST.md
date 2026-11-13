@@ -96,7 +96,7 @@ How it was checked: Vite cannot resolve packages inside the OneDrive folder (bar
 **Still open after Phase 2.**
 
 - Step 13's expanding card, and step 14's line styles in charts and the film.
-- The Studio accent `--teal` (forest) remains a fifth hue for links, focus rings and buttons on the paper pages. Changing it touches about 115 uses, so it needs your decision: navy (quiet) or ochre (on-brand, but then gold carries two meanings on paper).
+- ~~The Studio accent `--teal` (forest) remains a fifth hue.~~ Decided: navy. `--teal` now points at `--navy` (name kept, so its ~115 uses need no edits); `--tint-teal` is the navy tint; the forest `.skeptical-band` is `--deep`; the one `--sage` label is warm light grey. Checked in the preview: no green left on `/studio`, `/example`, `/framework` or `/about` (computed colors scanned).
 - Still gold and worth a second look: the "us" column header in the comparison table (`.l-table thead .us`) and the featured pricing note (`.l-plan.featured .l-plan-note`).
 - On phones, at step 5 of the guided demo, a sliver of the brief shows at the left edge behind the email window.
 - The Lovable build itself was not run (the local install cannot run it from OneDrive), only the `preview/` harness, which renders the same components and CSS.
