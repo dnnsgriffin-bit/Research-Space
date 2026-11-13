@@ -393,18 +393,28 @@ export function Landing() {
         <div className="l-wrap">
           <ul className="l-proof" aria-label="Why you can trust it">
             <li>
-              <b>Built on peer-reviewed research</b> Alliger · Arthur · Blume · Warr
+              <b>7</b>
+              <span>Links in the evidence chain</span>
             </li>
             <li>
-              <b>Kirkpatrick levels built in</b> No new jargon to learn
+              <b>4</b>
+              <span>Kirkpatrick levels built in, no new jargon</span>
             </li>
             <li>
-              <b>Private by design</b> No sign-up; nothing leaves your browser
+              <b>
+                2<small>min</small>
+              </b>
+              <span>About how long a check takes</span>
             </li>
             <li>
-              <b>Made by a learning scientist</b> Dennis Griffin, Ed.D.
+              <b>0</b>
+              <span>Sign-ups. Nothing leaves your browser</span>
             </li>
           </ul>
+          <p className="l-proof-cite">
+            <b>Built on peer-reviewed research</b> (Alliger · Arthur · Blume · Warr) by a learning
+            scientist, Dennis Griffin, Ed.D.
+          </p>
         </div>
       </section>
 

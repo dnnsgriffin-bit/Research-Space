@@ -312,16 +312,19 @@ body:has(.product-shell) {
   text-wrap: balance;
 }
 .l h1 em,
+/* Emphasis by dimming (framework section 9, Hebbia): the payoff line steps back in contrast
+ * instead of turning gold, so gold keeps meaning "measured". The hero line stays the brand line. */
 .l h2 em {
   font-style: italic;
-  color: var(--ec-lamp);
+  color: var(--ec-muted);
 }
 .l-eyebrow {
   font-family: var(--ec-mono);
   font-size: 0.72rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--ec-lamp);
+  /* Instrument label, not gold: gold is reserved for measured, the brand line and the primary button. */
+  color: var(--ec-muted);
 }
 .l-h2 {
   font-size: clamp(2.2rem, 4.8vw, 4rem);
@@ -443,11 +446,6 @@ body:has(.product-shell) {
      links. (The drifting corner haze that used to sit here pointed at nothing.) */
   background: radial-gradient(46% 34% at 50% 100%, rgba(242, 198, 109, 0.1), transparent 72%);
 }
-@keyframes l-aurora {
-  to {
-    transform: translate3d(3%, 2%, 0) scale(1.05);
-  }
-}
 .l-hero-copy {
   text-align: center;
   display: flex;
@@ -471,11 +469,6 @@ body:has(.product-shell) {
   border-radius: 50%;
   background: var(--ec-lamp);
   box-shadow: 0 0 0 4px rgba(242, 198, 109, 0.18);
-}
-@keyframes l-breathe {
-  50% {
-    box-shadow: 0 0 0 8px rgba(242, 198, 109, 0);
-  }
 }
 .l-hero h1 {
   margin-top: 26px;
@@ -515,15 +508,44 @@ body:has(.product-shell) {
   grid-template-columns: repeat(4, minmax(0, 1fr));
   border-top: 1px solid var(--ec-line);
 }
+/* Proof as type (framework section 9, Hebbia and Harvey): big serif figures, small mono labels.
+ * Every figure is a fact the product states elsewhere; no impact or ROI numbers. */
 .l-proof li {
-  padding: 18px 18px 0 0;
-  font-size: 0.85rem;
-  color: var(--ec-muted);
+  padding: 22px 18px 0 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 8px;
 }
 .l-proof b {
+  font-family: var(--ec-display);
+  font-weight: 400;
+  font-size: clamp(2.4rem, 4.2vw, 3.4rem);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  color: var(--ec-paper);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.l-proof b small {
+  font-size: 0.42em;
+  margin-left: 0.12em;
+  letter-spacing: 0;
+  color: var(--ec-muted);
+}
+.l-proof span {
+  font-family: var(--ec-mono);
+  font-size: 0.7rem;
+  line-height: 1.45;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ec-muted);
+  max-width: 22ch;
+}
+.l-proof-cite {
+  margin: 28px 0 0;
+  font-size: 0.85rem;
+  color: var(--ec-muted);
+}
+.l-proof-cite b {
   color: var(--ec-paper);
   font-weight: 500;
 }
@@ -600,12 +622,13 @@ body:has(.product-shell) {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #7fd1a0;
+  background: var(--ec-muted);
 }
-/* Pulse only while the hero is actually auto-playing; a still dot otherwise. */
+/* Pulse only while the hero is actually auto-playing; a still dot otherwise.
+ * Neutral, no glow: a status light, not a fifth hue (framework sections 3 and 7). */
 .hc-dot.playing {
-  box-shadow: 0 0 10px #7fd1a0;
-  animation: l-breathe-g 2s ease-in-out infinite;
+  background: var(--ec-paper);
+  animation: l-breathe-g 2s var(--ease) infinite;
 }
 @keyframes l-breathe-g {
   50% {
@@ -1730,7 +1753,6 @@ body:has(.product-shell) {
   gap: 48px;
   align-items: center;
   margin-top: 48px;
-  perspective: 1600px;
 }
 .l-paper {
   background: #f1ebdf;
@@ -1741,12 +1763,58 @@ body:has(.product-shell) {
     0 1px 0 #fff inset,
     0 60px 120px -50px rgba(0, 0, 0, 1),
     0 0 0 1px rgba(0, 0, 0, 0.2);
-  transform: rotateX(4deg) rotateY(6deg) rotateZ(-1deg);
-  transition: transform 1.1s var(--ec-ease);
 }
-.l-artifact.in .l-paper,
-.l-paper:hover {
-  transform: none;
+/* Signature moment (framework sections 6 and 9, checklist steps 12 and 13).
+ * The brief prints onto the table, then its parts arrive as loose records and settle
+ * into one readable document, in reading order. Transform and opacity only, no tilt,
+ * nothing overshoots; reduced motion shows the finished page. */
+@media (prefers-reduced-motion: no-preference) {
+  .l-paper {
+    transition:
+      opacity var(--dur-slow) var(--ease),
+      transform var(--dur-slow) var(--ease);
+  }
+  .l-artifact:not(.in) .l-paper {
+    opacity: 0;
+    transform: translateY(-32px);
+  }
+  .l-paper > * {
+    transition:
+      opacity var(--dur-slow) var(--ease),
+      transform var(--dur-slow) var(--ease);
+    transition-delay: calc(var(--dur-base) + var(--rec, 0) * 110ms);
+  }
+  .l-artifact:not(.in) .l-paper > * {
+    opacity: 0;
+    transform: translate(var(--rx, 0), 14px);
+  }
+  .l-paper > :nth-child(odd) {
+    --rx: -18px;
+  }
+  .l-paper > :nth-child(even) {
+    --rx: 18px;
+  }
+  .l-paper > :nth-child(1) {
+    --rec: 0;
+  }
+  .l-paper > :nth-child(2) {
+    --rec: 1;
+  }
+  .l-paper > :nth-child(3) {
+    --rec: 2;
+  }
+  .l-paper > :nth-child(4) {
+    --rec: 3;
+  }
+  .l-paper > :nth-child(5) {
+    --rec: 4;
+  }
+  .l-paper > :nth-child(6) {
+    --rec: 5;
+  }
+  .l-paper > :nth-child(7) {
+    --rec: 6;
+  }
 }
 .l-paper h3 {
   color: #161b20 !important;
@@ -1854,8 +1922,8 @@ body:has(.product-shell) {
   border-radius: 50%;
   display: grid;
   place-items: center;
-  border: 1px solid rgba(242, 198, 109, 0.5);
-  color: var(--ec-lamp);
+  border: 1px solid var(--ec-line-2);
+  color: var(--ec-muted);
   font-family: var(--ec-mono);
   font-size: 0.72rem;
 }
@@ -2230,13 +2298,13 @@ body:has(.product-shell) {
   line-height: 1.6;
 }
 .l-about-copy > p.l-eyebrow {
-  color: var(--ec-lamp);
+  color: var(--ec-muted);
   font-size: 0.72rem;
 }
 .l-about blockquote {
   margin: 4px 0;
   padding-left: 20px;
-  border-left: 2px solid var(--ec-lamp);
+  border-left: 1px solid var(--ec-line-2);
   font-family: var(--ec-display);
   font-style: italic;
   font-size: clamp(1.5rem, 2.6vw, 2rem);
@@ -2478,7 +2546,7 @@ body:has(.product-shell) {
     width: 100%;
   }
   .l-proof {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
   }
   .l-video {
     /* The film is 16:9; keep the whole frame on phones too. */

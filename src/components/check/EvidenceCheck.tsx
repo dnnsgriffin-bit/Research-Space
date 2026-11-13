@@ -27,6 +27,7 @@ import {
 } from "@/lib/evidence-check";
 import { GENERIC_PROVENANCE } from "@/lib/chain-provenance";
 import { BriefChain } from "./BriefChain";
+import { CountUp } from "@/hooks/use-count-up";
 import type { ChainState } from "@/lib/studio-data";
 import { listPhrase } from "@/lib/studio-engine";
 
@@ -432,7 +433,10 @@ function ChainStage({
           The evidence chain · select any link to inspect it
         </h2>
         <p className="ec-count">
-          <b>{reach.observedCount}</b> of 7 links observed
+          <b>
+            <CountUp value={reach.observedCount} />
+          </b>{" "}
+          of 7 links observed
         </p>
       </div>
       <ol className="ec-chain">
@@ -791,11 +795,15 @@ function LiveBrief({
       <dl className="ec-live-counts">
         <div>
           <dt>You can say</dt>
-          <dd>{brief.canSay.length}</dd>
+          <dd>
+            <CountUp value={brief.canSay.length} />
+          </dd>
         </div>
         <div>
           <dt>You can’t say yet</dt>
-          <dd>{brief.cannotSay.length}</dd>
+          <dd>
+            <CountUp value={brief.cannotSay.length} />
+          </dd>
         </div>
       </dl>
       {next && (

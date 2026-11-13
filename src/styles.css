@@ -687,16 +687,8 @@
       transparent 70%
     ),
     radial-gradient(35% 45% at 85% 80%, rgba(147, 180, 204, 0.08), transparent 70%);
-  animation: ec-drift 18s ease-in-out infinite alternate;
+  /* Still light from the lit link only: the endless drift was ambient glow (framework section 7). */
   transition: background-position var(--dur-slow) var(--ec-ease);
-}
-@keyframes ec-drift {
-  from {
-    transform: translate3d(-3%, 0, 0);
-  }
-  to {
-    transform: translate3d(4%, 3%, 0);
-  }
 }
 .ec-stage-top {
   display: flex;
