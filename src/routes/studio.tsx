@@ -43,7 +43,7 @@ function phaseOf(step: number) {
 }
 
 function StudioPage() {
-  const { state, step, setStep, loadDemo, reset } = useStudio();
+  const { state, restoredAt, step, setStep, loadDemo, reset } = useStudio();
   const current = STEPS[step] ?? STEPS[0]!;
   const activePhase = Math.max(0, phaseOf(step));
 
@@ -92,8 +92,8 @@ function StudioPage() {
           what leaders can decide now.
         </p>
         <p className="mt-3 text-[14px] text-muted-foreground">
-          Your inputs stay in this tab only and are not saved. Copy or download your brief before
-          you close it.
+          Your work is kept in this browser on this device, so you can close the tab and come back.
+          It is never sent anywhere. On a shared computer, choose <b>Start over</b> when you finish.
         </p>
       </Orientation>
 
@@ -105,7 +105,9 @@ function StudioPage() {
             <p className="mt-1 text-[14px] text-foreground/80">
               {state.demo
                 ? `${state.context.company} — fictional worked example loaded`
-                : "Your own working session. Nothing leaves your browser."}
+                : restoredAt
+                  ? `Welcome back. Your work from ${new Date(restoredAt).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })} is here, kept in this browser only.`
+                  : "Your own working session. Kept in this browser; nothing is sent anywhere."}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
