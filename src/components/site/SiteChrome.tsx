@@ -223,7 +223,7 @@ export function SiteFooter() {
               </a>
             </p>
             <p className="mt-4 text-[13.5px] leading-relaxed text-muted-foreground">
-              Your Studio inputs stay in this browser session. No account is needed. All
+              Studio work stays in this browser and is never sent. No account is needed. All
               organizations and figures in the worked example are fictional.
             </p>
           </div>
