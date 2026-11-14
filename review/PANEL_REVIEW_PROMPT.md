@@ -4,7 +4,7 @@ This prompt asks a model to review Evidence Studio the way a hiring panel would:
 
 ## Before you send it
 
-1. **Publish first.** The prompt points at the live site, `https://evidence-studio-lab.lovable.app`. It must show the November 13 redesign (dark room and paper pages with one type system, ochre "measured", navy accent, orientation bands, the Studio that keeps work in the browser).
+1. **Publish first.** The prompt points at the live site, `https://evidence-studio-lab.lovable.app`. It must show the November 13 redesign (dark room and paper pages with one type system, ochre "measured", navy accent, orientation bands, the Studio that keeps work in the browser, the brief that opens as a full page).
 2. **Refresh the screenshots.** Most models cannot click through the interactive tool, so they rely on images. After publishing, capture the set listed under "Review pack" into `review/images/panel/` and push it. The old `review/images/` set shows the previous design and must not be used.
 3. **Screenshot links are filled in.** They point at `https://raw.githubusercontent.com/dnnsgriffin-bit/Research-Space/evidence-check-redesign/review/images/panel` (captured November 14 from the live site). If you recapture, keep the same file names.
 
@@ -31,6 +31,7 @@ Desktop at 1440 px wide and phone at 390 px, reduced motion off unless noted:
 4. `04-check-first-visit.jpg`: `/check` on a first visit, with the "Start here" note
 5. `05-check-own-data.jpg`: `/check` after changing the ticks and answering one barrier "No"
 6. `06-check-brief.jpg`: the full brief at the bottom of `/check`
+   - `13-check-full-page.jpg`: the same brief after **Open full page**, which grows the card into a full ivory page
 7. `07-example-top.jpg`: `/example` first screen with its orientation band
 8. `08-example-chain.jpg`: `/example` with one chain link open in the inspector
 9. `09-studio-top.jpg`: `/studio` first screen with its guide open
@@ -74,6 +75,7 @@ MATERIALS
   https://raw.githubusercontent.com/dnnsgriffin-bit/Research-Space/evidence-check-redesign/review/images/panel/10-studio-brief.jpg
   https://raw.githubusercontent.com/dnnsgriffin-bit/Research-Space/evidence-check-redesign/review/images/panel/11-framework.jpg
   https://raw.githubusercontent.com/dnnsgriffin-bit/Research-Space/evidence-check-redesign/review/images/panel/12-about.jpg
+  https://raw.githubusercontent.com/dnnsgriffin-bit/Research-Space/evidence-check-redesign/review/images/panel/13-check-full-page.jpg (the /check brief opened as a full page)
 First, state plainly which pages and images you could actually open. Do not describe anything you could not see. Mark every finding Observed (you saw it) or Inferred (you are reasoning from indirect evidence).
 
 THE PANEL
