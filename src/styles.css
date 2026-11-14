@@ -1467,6 +1467,97 @@
   color: #5b636a;
 }
 
+/* "Open full page": the brief grows from its card into a full ivory page over the dark
+ * tool. Only .ec-sheet-bg is scaled (a plain paper layer); the text fades in above it. */
+.ec-sheet {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: hidden;
+  color: #161b20;
+  color-scheme: light;
+}
+.ec-sheet::backdrop {
+  background: rgb(13 12 10 / 0.55);
+}
+.ec-sheet-bg {
+  position: absolute;
+  inset: 0;
+  background: var(--ec-paper);
+  transform-origin: 0 0;
+}
+.ec-sheet-scroll {
+  position: relative;
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.ec-sheet-bar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 12px clamp(20px, 4vw, 40px);
+  background: var(--ec-paper);
+  border-bottom: 1px solid rgb(22 27 32 / 0.14);
+}
+.ec-sheet-bar .ec-label {
+  color: #5b636a;
+}
+.ec-sheet-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ec-brief.ec-brief-page {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding-top: clamp(24px, 4vw, 48px);
+  padding-bottom: 72px;
+  border-radius: 0;
+  background: transparent;
+}
+.ec-brief.ec-brief-page h3 {
+  font-size: clamp(2rem, 4.4vw, 3.1rem);
+  max-width: 24ch;
+}
+@media (max-width: 520px) {
+  /* One row of tools on phones; the page itself already says "Decision brief". */
+  .ec-sheet-bar > .ec-label {
+    display: none;
+  }
+  .ec-sheet-tools {
+    flex-wrap: nowrap;
+    width: 100%;
+    justify-content: space-between;
+  }
+  .ec-sheet-tools .ec-btn {
+    padding: 8px 14px;
+    font-size: 0.9rem;
+  }
+}
+html:has(.ec-sheet[open]) {
+  overflow: hidden;
+}
+@media print {
+  .ec-sheet {
+    display: none !important;
+  }
+}
+
 .ec-deeper {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

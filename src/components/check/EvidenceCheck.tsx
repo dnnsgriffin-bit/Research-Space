@@ -956,8 +956,182 @@ function Brief({
     URL.revokeObjectURL(url);
   };
 
+  // "Open full page": the card grows from where it sits into a full ivory page, so the
+  // move from the dark tool to the paper brief reads as one gesture. Only the plain paper
+  // layer is scaled (transform); the text fades in on top, so type is never stretched.
+  const cardRef = useRef<HTMLElement>(null);
+  const sheetRef = useRef<HTMLDialogElement>(null);
+  const reduced = usePrefersReducedMotion();
+
+  const flipFrom = (sheet: HTMLDialogElement) => {
+    const card = cardRef.current;
+    const bg = sheet.querySelector<HTMLElement>(".ec-sheet-bg");
+    if (!card || !bg) return null;
+    const a = card.getBoundingClientRect();
+    const b = bg.getBoundingClientRect();
+    return `translate(${a.left - b.left}px, ${a.top - b.top}px) scale(${a.width / b.width}, ${a.height / b.height})`;
+  };
+
+  const openPage = () => {
+    const sheet = sheetRef.current;
+    if (!sheet || sheet.open) return;
+    sheet.showModal();
+    const scroller = sheet.querySelector<HTMLElement>(".ec-sheet-scroll");
+    scroller?.scrollTo(0, 0);
+    if (reduced) return;
+    const from = flipFrom(sheet);
+    const bg = sheet.querySelector<HTMLElement>(".ec-sheet-bg");
+    if (from && bg) {
+      bg.animate([{ transform: from }, { transform: "none" }], {
+        duration: 480,
+        easing: SHEET_EASE,
+      });
+    }
+    scroller?.animate(
+      [
+        { opacity: 0, transform: "translateY(14px)" },
+        { opacity: 1, transform: "none" },
+      ],
+      { duration: 320, delay: 220, easing: SHEET_EASE, fill: "backwards" },
+    );
+  };
+
+  const closePage = () => {
+    const sheet = sheetRef.current;
+    if (!sheet || !sheet.open) return;
+    if (reduced) return sheet.close();
+    const from = flipFrom(sheet);
+    const bg = sheet.querySelector<HTMLElement>(".ec-sheet-bg");
+    const scroller = sheet.querySelector<HTMLElement>(".ec-sheet-scroll");
+    const fade = scroller?.animate([{ opacity: 1 }, { opacity: 0 }], {
+      duration: 160,
+      fill: "forwards",
+    });
+    const finish = () => {
+      sheet.close();
+      bg?.getAnimations().forEach((x) => x.cancel());
+      fade?.cancel();
+    };
+    if (!from || !bg) return finish();
+    const shrink = bg.animate([{ transform: "none" }, { transform: from }], {
+      duration: 380,
+      delay: 100,
+      easing: SHEET_EASE,
+      fill: "forwards",
+    });
+    shrink.onfinish = finish;
+  };
+
+  const printBrief = () => {
+    if (sheetRef.current?.open) {
+      sheetRef.current.close();
+      window.setTimeout(() => window.print(), 50);
+    } else window.print();
+  };
+
+  const body = (
+    <BriefBody
+      brief={brief}
+      origin={origin}
+      provenance={provenance}
+      states={states}
+      barriers={barriers}
+      today={today}
+    />
+  );
+  const fine = (
+    <p className="ec-fine">
+      Rule-based suggestions. They describe which measures exist and what they can support, and
+      quote any numbers as entered. They don’t verify results, predict impact or calculate ROI.
+    </p>
+  );
+
   return (
-    <article className="ec-brief" id="ec-brief">
+    <article className="ec-brief" id="ec-brief" ref={cardRef}>
+      {body}
+      <div className="ec-actions">
+        <button type="button" className={`ec-btn ${copied ? "done" : ""}`} onClick={copy}>
+          {copied ? "Copied ✓" : "Copy brief"}
+        </button>
+        <button type="button" className="ec-btn ghost" onClick={openPage} aria-haspopup="dialog">
+          Open full page
+        </button>
+        <button type="button" className="ec-btn ghost" onClick={download}>
+          Download .txt
+        </button>
+        <button type="button" className="ec-btn ghost" onClick={printBrief}>
+          Save as PDF
+        </button>
+        <span className="ec-status" role="status" aria-live="polite">
+          {copied ? "Brief copied. Paste it into an email or slide." : ""}
+        </span>
+      </div>
+      {fallback && (
+        <textarea
+          className="ec-fallback"
+          aria-label="Brief text to copy"
+          readOnly
+          value={fallback}
+          onFocus={(e) => e.currentTarget.select()}
+          autoFocus
+        />
+      )}
+      {fine}
+
+      <dialog
+        ref={sheetRef}
+        className="ec-sheet"
+        aria-label="Decision brief, full page"
+        onCancel={(e) => {
+          e.preventDefault();
+          closePage();
+        }}
+      >
+        <div className="ec-sheet-bg" aria-hidden />
+        <div className="ec-sheet-scroll">
+          <div className="ec-sheet-bar">
+            <p className="ec-label">Evidence Studio · Decision brief{today ? ` · ${today}` : ""}</p>
+            <div className="ec-sheet-tools">
+              <button type="button" className={`ec-btn ${copied ? "done" : ""}`} onClick={copy}>
+                {copied ? "Copied ✓" : "Copy brief"}
+              </button>
+              <button type="button" className="ec-btn ghost" onClick={printBrief}>
+                Save as PDF
+              </button>
+              <button type="button" className="ec-btn ghost" onClick={closePage}>
+                Close <span aria-hidden>×</span>
+              </button>
+            </div>
+          </div>
+          <div className="ec-brief ec-brief-page">
+            {body}
+            {fine}
+          </div>
+        </div>
+      </dialog>
+    </article>
+  );
+}
+
+const SHEET_EASE = "cubic-bezier(0.2, 0.7, 0.2, 1)";
+
+function BriefBody({
+  brief,
+  origin,
+  provenance,
+  states,
+  barriers,
+  today,
+}: {
+  brief: ReturnType<typeof buildCheckBrief>;
+  origin: InputOrigin;
+  provenance: string;
+  states: Record<string, ChainState>;
+  barriers: Record<string, string[]>;
+  today: string;
+}) {
+  return (
+    <>
       <p className="ec-print-head" aria-hidden>
         Evidence Studio · Training evidence brief{today ? ` · ${today}` : ""}
       </p>
@@ -1012,34 +1186,6 @@ function Brief({
         <p className="ec-sq">{brief.question}</p>
         <p className="ec-sa">{brief.answer}</p>
       </div>
-      <div className="ec-actions">
-        <button type="button" className={`ec-btn ${copied ? "done" : ""}`} onClick={copy}>
-          {copied ? "Copied ✓" : "Copy brief"}
-        </button>
-        <button type="button" className="ec-btn ghost" onClick={download}>
-          Download .txt
-        </button>
-        <button type="button" className="ec-btn ghost" onClick={() => window.print()}>
-          Save as PDF
-        </button>
-        <span className="ec-status" role="status" aria-live="polite">
-          {copied ? "Brief copied. Paste it into an email or slide." : ""}
-        </span>
-      </div>
-      {fallback && (
-        <textarea
-          className="ec-fallback"
-          aria-label="Brief text to copy"
-          readOnly
-          value={fallback}
-          onFocus={(e) => e.currentTarget.select()}
-          autoFocus
-        />
-      )}
-      <p className="ec-fine">
-        Rule-based suggestions. They describe which measures exist and what they can support, and
-        quote any numbers as entered. They don’t verify results, predict impact or calculate ROI.
-      </p>
-    </article>
+    </>
   );
 }
