@@ -6,7 +6,7 @@ This prompt asks a model to review Evidence Studio the way a hiring panel would:
 
 1. **Publish first.** The prompt points at the live site, `https://evidence-studio-lab.lovable.app`. It must show the November 13 redesign (dark room and paper pages with one type system, ochre "measured", navy accent, orientation bands, the Studio that keeps work in the browser).
 2. **Refresh the screenshots.** Most models cannot click through the interactive tool, so they rely on images. After publishing, capture the set listed under "Review pack" into `review/images/panel/` and push it. The old `review/images/` set shows the previous design and must not be used.
-3. **Fill in the placeholder** `{SCREENSHOT_BASE}` in the prompt with the folder's raw GitHub address, for example `https://raw.githubusercontent.com/dnnsgriffin-bit/Research-Space/main/review/images/panel`.
+3. **Screenshot links are filled in.** They point at `https://raw.githubusercontent.com/dnnsgriffin-bit/Research-Space/evidence-check-redesign/review/images/panel` (captured November 14 from the live site). If you recapture, keep the same file names.
 
 ## How to run it
 
@@ -62,18 +62,18 @@ It uses transparent rules and deliberately does not predict impact or calculate 
 MATERIALS
 - Live site: https://evidence-studio-lab.lovable.app (open every page above if you can).
 - Screenshots, because the tool is interactive and you may not be able to click it:
-  {SCREENSHOT_BASE}/01-landing-hero.jpg
-  {SCREENSHOT_BASE}/02-landing-full.jpg
-  {SCREENSHOT_BASE}/03-landing-phone.jpg
-  {SCREENSHOT_BASE}/04-check-first-visit.jpg
-  {SCREENSHOT_BASE}/05-check-own-data.jpg
-  {SCREENSHOT_BASE}/06-check-brief.jpg
-  {SCREENSHOT_BASE}/07-example-top.jpg
-  {SCREENSHOT_BASE}/08-example-chain.jpg
-  {SCREENSHOT_BASE}/09-studio-top.jpg
-  {SCREENSHOT_BASE}/10-studio-brief.jpg
-  {SCREENSHOT_BASE}/11-framework.jpg
-  {SCREENSHOT_BASE}/12-about.jpg
+  https://raw.githubusercontent.com/dnnsgriffin-bit/Research-Space/evidence-check-redesign/review/images/panel/01-landing-hero.jpg
+  https://raw.githubusercontent.com/dnnsgriffin-bit/Research-Space/evidence-check-redesign/review/images/panel/02-landing-full.jpg
+  https://raw.githubusercontent.com/dnnsgriffin-bit/Research-Space/evidence-check-redesign/review/images/panel/03-landing-phone.jpg
+  https://raw.githubusercontent.com/dnnsgriffin-bit/Research-Space/evidence-check-redesign/review/images/panel/04-check-first-visit.jpg
+  https://raw.githubusercontent.com/dnnsgriffin-bit/Research-Space/evidence-check-redesign/review/images/panel/05-check-own-data.jpg
+  https://raw.githubusercontent.com/dnnsgriffin-bit/Research-Space/evidence-check-redesign/review/images/panel/06-check-brief.jpg
+  https://raw.githubusercontent.com/dnnsgriffin-bit/Research-Space/evidence-check-redesign/review/images/panel/07-example-top.jpg
+  https://raw.githubusercontent.com/dnnsgriffin-bit/Research-Space/evidence-check-redesign/review/images/panel/08-example-chain.jpg
+  https://raw.githubusercontent.com/dnnsgriffin-bit/Research-Space/evidence-check-redesign/review/images/panel/09-studio-top.jpg
+  https://raw.githubusercontent.com/dnnsgriffin-bit/Research-Space/evidence-check-redesign/review/images/panel/10-studio-brief.jpg
+  https://raw.githubusercontent.com/dnnsgriffin-bit/Research-Space/evidence-check-redesign/review/images/panel/11-framework.jpg
+  https://raw.githubusercontent.com/dnnsgriffin-bit/Research-Space/evidence-check-redesign/review/images/panel/12-about.jpg
 First, state plainly which pages and images you could actually open. Do not describe anything you could not see. Mark every finding Observed (you saw it) or Inferred (you are reasoning from indirect evidence).
 
 THE PANEL
